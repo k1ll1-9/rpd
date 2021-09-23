@@ -1,0 +1,14 @@
+.idea
+/vue/.DS_Store
+/vue/node_modules
+/dist
+
+
+# local env files
+/vue/.env.local
+/vue/.env.*.local
+
+# Log files
+/vue/npm-debug.log*
+/vue/pnpm-debug.log*
+

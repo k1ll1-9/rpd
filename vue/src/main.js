@@ -6,5 +6,13 @@ import 'bootstrap/dist/js/bootstrap.min.js'
 import VueAxios from 'vue-axios'
 import axios from 'axios'
 
-createApp(App).use(VueAxios, axios).mount('#app')
+const mixins = {
+  methods: {
+    updateData(e) {
+      console.log(e.target.value);
+    }
+  }
+}
+
+createApp(App).mixin([mixins]).use(VueAxios, axios).mount('#app')
 

@@ -1,9 +1,6 @@
-<?
+<?php
 
 use Bitrix\Main\Context;
-
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Headers: Content-Type');
 
 if (!$_SERVER['DOCUMENT_ROOT']) {
     $_SERVER['DOCUMENT_ROOT'] = '/home/bitrix/www';
@@ -12,13 +9,26 @@ define('NOT_CHECK_PERMISSIONS', true);
 
 require $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_before.php";
 
-$action = Context::getCurrent()->getRequest()['action'];
+$request = Context::getCurrent()->getRequest();
+$method = $request->getRequestMethod();
 
-//$body = file_get_contents('php://input');
-
-switch ($action){
-    case 'getData':
-        $data = \file_get_contents(__DIR__.'/data.json');
-        die($data);
+switch ($method) {
+    case 'GET':
+    {
+        switch ($request->getQuery('action')) {
+            case 'getData':
+                $data = \file_get_contents(__DIR__ . '/data.json');
+                die($data);
+        }
         break;
+    }
+    case 'POST' : {
+        //axios использует поток 'php://input' вместо POST'а 
+        $request = \json_decode(\file_get_contents('php://input'), true);
+        switch ($request['action']) {
+            case 'setData':
+                $data = $request['data'];
+                die(\json_encode($data));
+        }
+    }
 }

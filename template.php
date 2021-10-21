@@ -11,10 +11,12 @@ if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
 use VAVT\Main\MUP;
 
 $APPLICATION->SetTitle('РПД - ' . $arResult['upName'] . ' - ' . $arResult['upYear'] . ' - ' . $arResult['subjectName']);
-
 ?>
     <div class="d-flex justify-content-center align-items-center">
-        <div id="app"></div>
+        <div data-template-path="/local/components/MUP-2/RPD.single/templates/.default<?/*= $templateFolder */?>"
+             id="app">
+
+        </div>
     </div>
 <?
 require($_SERVER['DOCUMENT_ROOT'] . '/bitrix/footer.php');

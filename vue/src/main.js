@@ -1,4 +1,4 @@
-import { createApp } from 'vue'
+import {createApp} from 'vue'
 import App from './App.vue'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'jquery/src/jquery.js'
@@ -14,5 +14,10 @@ const mixins = {
   }
 }
 
-createApp(App).mixin([mixins]).use(VueAxios, axios).mount('#app')
+createApp(
+  App,
+  {
+    templatePath : document.querySelector('#app').dataset.templatePath
+  })
+  .mixin([mixins]).use(VueAxios, axios).mount('#app')
 

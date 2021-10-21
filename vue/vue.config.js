@@ -1,3 +1,5 @@
+const Dotenv = require('dotenv-webpack');
+
 module.exports = {
   css: {
     extract: false,
@@ -5,7 +7,10 @@ module.exports = {
   configureWebpack: {
     optimization: {
       splitChunks: false
-    }
+    },
+    plugins: [
+      new Dotenv()
+    ]
   },
   filenameHashing: false,
   outputDir: '../dist',
@@ -14,5 +19,16 @@ module.exports = {
       options[0].ignore.push('RPD Form - dev_files/**')
       return [options]
     })
+  }
+}
+
+if (process.env.NODE_ENV === 'development') {
+  module.exports.devServer = {
+    proxy: {
+      '/api':
+        {
+          target: 'https://lk.vavt.ru/local/components/MUP-2/RPD.single/templates/.default/api/index.php'
+        }
+    }
   }
 }

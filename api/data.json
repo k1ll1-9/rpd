@@ -1,24 +1,31 @@
 {
-  "upName" : "Новый Учебный План",
-  "discContent" :
-  {
-    "units" : [
-      {
-        "name" :"Рыбная ловля",
-        "type" : "Практика",
-        "hours" : ""
-      },
-      {
-        "name" :"Езда на санках",
-        "type" : "Практика",
-        "hours" : ""
-      },
-      {
-        "name" :"Криптоинвестиции",
-        "type" : "Теория",
-        "hours" : ""
-      }
-    ],
-    "totalTime": 50
-  }
+  "title": {
+    "code": "38.04.02 «Менеджмент»",
+    "profile": "Международный маркетинг",
+    "eduForm": "очная",
+    "year": 2021
+  },
+  "discStructure": [
+    {
+      "semestr": 1,
+      "name": "Международная конкуренция",
+      "lectures": 0,
+      "practice": 0,
+      "self": 0
+    },
+    {
+      "semestr": 1,
+      "name": "Езда на санках",
+      "lectures": 0,
+      "practice": 0,
+      "self": 0
+    },
+    {
+      "semestr": 1,
+      "name": "Кегельбан",
+      "lectures": 0,
+      "practice": 0,
+      "self": 0
+    }
+  ]
 }

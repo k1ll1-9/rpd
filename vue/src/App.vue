@@ -36,6 +36,8 @@ export default {
         const index = e[unit].index;
         const name = e[unit].name;
 
+        this.$socket.emit('rpd',{data:e[unit].value})
+
         this.data[unit][index][name] = e[unit].value;
       }
     },

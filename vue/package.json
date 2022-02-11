@@ -16,11 +16,11 @@
     "cors": "^2.8.5",
     "jquery": "^3.6.0",
     "save": "^2.4.0",
-    "socket.io-client": "^4.3.2",
+    "sockjs-client": "^1.5.2",
     "vue": "^3.0.11",
-    "vue-3-socket.io": "^1.0.4",
     "vue-axios": "^3.3.6",
-    "vuex": "^4.0.2"
+    "vuex": "^4.0.2",
+    "webstomp-client": "^1.2.6"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",

@@ -15,7 +15,10 @@ export default {
   name: "EntryBlock",
   props: {
     title: String
-  }
+  },
+  created: function () {
+    this.connect();
+  },
 }
 </script>
 

@@ -21,6 +21,8 @@
       </tbody>
     </table>
     <button type="button" @click="addRow" class="btn btn-primary">Добавить строку</button>
+    <br>
+    <button type="button" @click="$store.commit('increment')" class="btn btn-primary">TestFlux</button>
   </div>
 </template>
 

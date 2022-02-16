@@ -7,7 +7,7 @@ import VueAxios from 'vue-axios'
 import axios from 'axios'
 import store from './store'
 //import SockJS from "sockjs-client";
-import Stomp from "webstomp-client";
+//import Stomp from "webstomp-client";
 
 const mixins = {
   methods: {
@@ -17,7 +17,7 @@ const mixins = {
   }
 }
 
-const webstomp = {
+/*const webstomp = {
   methods: {
     connect() {
       let client = Stomp.client( "wss://rabbitmq.vavt.ru:15673/ws")
@@ -25,14 +25,16 @@ const webstomp = {
       })
     }
   }
-}
+}*/
+
+
+store.axios = axios
 
 createApp(
   App,
   {
     templatePath : document.querySelector('#app').dataset.templatePath
   })
-  .mixin(webstomp)
   .mixin(mixins)
   .use(VueAxios, axios)
   .use(store)

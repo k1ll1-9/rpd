@@ -1,23 +1,22 @@
 <template>
-  <div v-if="data !== null">
+  <div>
     <EntryBlock :key="title" :title="title"/>
-    <DiscStructure :discStructure="data.discStructure"
-                   @deleteRow="deleteRow"
-                   @addRow="addRow"
-                   @updateField="updateField($event)/*,saveFiled($event)*/"
-    />
+    <DisciplineValue/>
+    <DisciplineStructure/>
   </div>
 </template>
 <script>
 
-import DiscStructure from './components/DiscStructure.vue'
+import DisciplineValue from './components/DisciplineValue.vue'
+import DisciplineStructure from './components/DisciplineStructure.vue'
 import EntryBlock from "./components/EntryBlock";
 
 export default {
   name: 'App',
   components: {
     EntryBlock,
-    DiscStructure
+    DisciplineValue,
+    DisciplineStructure
   },
   props: {
     templatePath: String
@@ -26,21 +25,10 @@ export default {
     return {
       testVal: 'test',
       title: '',
-      APIurl: (process.env.NODE_ENV === 'development') ? process.env.VUE_APP_API_PROXY : `https://lk.vavt.ru/${this.templatePath}/api/index.php`,
       data: null
     }
   },
   methods: {
-    updateField(e) {
-      for (let unit in e){
-        const index = e[unit].index;
-        const name = e[unit].name;
-
-        this.$socket.emit('rpd',{data:e[unit].value})
-
-        this.data[unit][index][name] = e[unit].value;
-      }
-    },
 /*    async saveFiled(e) {
       const res = await this.axios.post(this.APIurl,
           {
@@ -50,22 +38,11 @@ export default {
 
       console.log(res.data)
     },*/
-    deleteRow(e) {
-      this.data[e.unit].splice([e.index], 1);
-    },
-    addRow(e) {
-      this.data[e.unit].push(e.row);
-    }
   },
-  async mounted() {
-    const res = await this.axios.get(this.APIurl,
-        {
-          params: {
-            action: "getData"
-          }
-        });
-
-    this.data = res.data
+  mounted() {
+    const url = (process.env.NODE_ENV === 'development') ? process.env.VUE_APP_API_PROXY : `https://lk.vavt.ru/${this.templatePath}/api/index.php`;
+    this.$store.commit('SET_API_URL', url);
+    this.$store.dispatch('GET_DATA');
   }
 }
 </script>

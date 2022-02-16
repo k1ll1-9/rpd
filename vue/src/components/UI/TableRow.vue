@@ -1,7 +1,7 @@
 <template>
     <tr>
       <td>
-        <span>{{ index + 1 }}</span>
+        <span>{{ $store.state.rpdData.comp.value1 }}</span>
       </td>
       <td>
         <div class="input-group">

@@ -1,31 +1,26 @@
 {
-  "title": {
-    "code": "38.04.02 «Менеджмент»",
-    "profile": "Международный маркетинг",
-    "eduForm": "очная",
-    "year": 2021
+  "syllabusData": {
+    "name": "Международная конкуренция",
+    "special" : "66.6 Менеджмент:",
+    "profile" : "Корпоративный менеджмент менеджмент в Мордовии:",
+    "year" : "2077"
   },
-  "discStructure": [
+  "disciplineStructure": [
     {
-      "semestr": 1,
-      "name": "Международная конкуренция",
-      "lectures": 0,
-      "practice": 0,
-      "self": 0
+      "name": "Серьезные переговоры",
+      "l": 0,
+      "pz": 0,
+      "sr": 0,
+      "pr": 0,
+      "semestr" : ""
     },
     {
-      "semestr": 1,
       "name": "Езда на санках",
-      "lectures": 0,
-      "practice": 0,
-      "self": 0
-    },
-    {
-      "semestr": 1,
-      "name": "Кегельбан",
-      "lectures": 0,
-      "practice": 0,
-      "self": 0
+      "l": 0,
+      "pz": 0,
+      "sr": 0,
+      "pr":null,
+      "semestr" : null
     }
   ]
 }

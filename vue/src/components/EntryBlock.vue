@@ -5,9 +5,6 @@
     «ВСЕРОССИЙСКАЯ АКАДЕМИЯ ВНЕШНЕЙ ТОРГОВЛИ
     МИНИСТЕРСТВА ЭКОНОМИЧЕСКОГО РАЗВИТИЯ РОССИЙСКОЙ ФЕДЕРАЦИИ»
   </h2>
-  <h3>
-    {{ $store.state.rpdData.title }}
-  </h3>
 </template>
 
 <script>
@@ -17,7 +14,6 @@ export default {
     title: String
   },
   created: function () {
-    this.connect();
   },
 }
 </script>

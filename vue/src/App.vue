@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <EntryBlock :key="title" :title="title"/>
+  <div v-if="ready">
+    <EntryBlock/>
     <DisciplineValue/>
     <DisciplineStructure/>
   </div>
@@ -23,26 +23,16 @@ export default {
   },
   data() {
     return {
-      testVal: 'test',
-      title: '',
-      data: null
+      ready: false
     }
   },
-  methods: {
-/*    async saveFiled(e) {
-      const res = await this.axios.post(this.APIurl,
-          {
-            action: "setData",
-            data: e
-          });
-
-      console.log(res.data)
-    },*/
-  },
-  mounted() {
+  methods: {},
+  async mounted() {
     const url = (process.env.NODE_ENV === 'development') ? process.env.VUE_APP_API_PROXY : `https://lk.vavt.ru/${this.templatePath}/api/index.php`;
-    this.$store.commit('SET_API_URL', url);
-    this.$store.dispatch('GET_DATA');
+
+    await this.$store.commit('SET_API_URL', url);
+    await this.$store.commit('SET_PARAMS');
+    this.ready = await this.$store.dispatch('initData');
   }
 }
 </script>

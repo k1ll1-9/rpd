@@ -12,6 +12,7 @@
             <th class="col-1" rowspan="2">Семестр</th>
             <th class="col-4" colspan="3">Вид учебной работы <br> (в академических часах)</th>
             <th class="col-2" rowspan="2">В том числе в форме практической подготовки</th>
+            <th class="col-1" rowspan="2"></th>
           </tr>
           <tr>
             <th>Л</th>
@@ -24,14 +25,44 @@
             <td>
               {{ index + 1 }}
             </td>
-            <td v-for="(value,name) in discipline" :key="name">
-                <Input :identity="['disciplineStructure',index,name,value]" />
+            <td>
+              <TextInput :identity="['managed','disciplineStructure',index,'title']"/>
+            </td>
+            <td>
+              <TextInput :identity="['managed','disciplineStructure',index,'semester']"/>
+            </td>
+            <td>
+              <DigitInput class='text-center'
+                          :identity="['managed','disciplineStructure',index,'lectures']"/>
+            </td>
+            <td>
+              <DigitInput class='text-center'
+                          :identity="['managed','disciplineStructure',index,'practice']"/>
+            </td>
+            <td>
+              <DigitInput class='text-center'
+                          :identity="['managed','disciplineStructure',index,'SRS']"/>
+            </td>
+            <td>
+              <DigitInput class='text-center'
+                          :identity="['managed','disciplineStructure',index,'practicePrepare']"/>
+            </td>
+            <td style="min-width: 62px">
+              <button type="button" v-show="disciplineStructure.length > 1"
+                      @click="removeRow(index)"
+                      class="btn btn-danger px-3 ">
+                <BIconX-octagon class="cross"/>
+              </button>
             </td>
           </tr>
           </tbody>
         </table>
         <div>
-          <button type="button" @click="addRow" class="btn btn-primary mt-4">Добавить строку</button>
+          <button type="button"
+                  @click="addRow"
+                  class="btn btn-primary mt-4">
+            Добавить строку
+          </button>
         </div>
       </div>
     </div>
@@ -41,33 +72,26 @@
 <script>
 
 import {mapState} from 'vuex'
-import Input from "./Input";
+import TextInput from "./TextInput";
+import DigitInput from "./DigitInput";
 
 export default {
-  components: {Input},
+  components: {TextInput, DigitInput},
   name: 'DisciplineStructure',
   props: {},
-  computed: mapState({
-    disciplineStructure: state => state.disciplineStructure,
-  }),
+  computed:
+      mapState({
+        disciplineStructure: state => state.managed.disciplineStructure,
+      }),
   methods: {
-    updateField(e) {
-      this.$emit('updateField', {
-        discStructure: e
-      });
-    },
     addRow() {
-      const newRow = Object.fromEntries(Object.entries(this.disciplineStructure[0]).map(([key, val]) => {
-            val = null;
-            return [key, val]
-          })
-      );
-
-      this.disciplineStructure.push(newRow);
+      this.$store.commit('PUSH_RPD_ITEM', {identity: ['managed', 'disciplineStructure']})
+    },
+    removeRow(index) {
+      this.$store.commit('SPLICE_RPD_ITEM', {identity: ['managed', 'disciplineStructure'], index: index})
     }
   },
   mounted() {
-
   }
 }
 </script>
@@ -95,4 +119,8 @@ th {
   vertical-align: middle;
 }
 
+.cross {
+  width: 25px;
+  height: 25px;
+}
 </style>

@@ -5,34 +5,24 @@
       <table class="table table-bordered">
         <thead>
         <tr>
-          <th class="col-6" rowspan="2">Вид учебной работы</th>
+          <th class="col-5" rowspan="2">Вид учебной работы</th>
           <th class="col-1" rowspan="2">Всего часов</th>
-          <th class="col-1" :colspan="semestersCount">Семестр</th>
+          <th class="col-2" :colspan="semestersCount">Семестр</th>
         </tr>
         <tr>
-          <th v-for="(index) in semestersCount" :key="index">{{ index }}</th>
+          <th v-for="index in semestersCount" :key="index">
+            {{ index }}
+          </th>
         </tr>
         </thead>
         <tbody>
-        <tr>
-          <td class="text-start ps-3">Аудиторные занятия (всего)</td>
-          <td></td>
-          <td v-for="(index) in semesters" :key="index"></td>
-        </tr>
-        <tr>
-          <td class="text-start ps-3">Лекции</td>
-          <td></td>
-          <td v-for="(index) in semesters" :key="index"></td>
-        </tr>
-        <tr>
-          <td class="text-start ps-3">Занятия семинарского типа</td>
-          <td></td>
-          <td v-for="(index) in semesters" :key="index"></td>
-        </tr>
-        <tr>
-          <td class="text-start ps-3">Самостоятельная работа (всего)</td>
-          <td></td>
-          <td v-for="(index) in semesters" :key="index"></td>
+        <tr v-for="(item,index) in $store.state.disciplineValue" :key="{index}">
+          <td class="text-start ps-3"
+              :class="{strong : item.strong}">
+            {{ item.label }}
+          </td>
+          <td>{{ item.total || '' }}</td>
+          <td v-for="(semester,number) in item.semesters" :key="number">{{tableData(index,item,semester)}}</td>
         </tr>
         </tbody>
       </table>
@@ -45,28 +35,22 @@
 
 export default {
   components: {},
-  data() {
-    return {
-      semesters: {
-        "1": {
-          "totalHours": 100,
-          "totalUnits": 500
-        },
-        "2": {
-          "totalHours": 50,
-          "totalUnits": 200
-        }
-      }
-    }
-  },
   name: 'DisciplineValue',
   props: {},
   computed: {
     semestersCount() {
-      return  Object.keys(this.semesters).length
+      return Object.keys(this.$store.state.static.disciplineStructure).length
+    },
+  },
+  methods: {
+    tableData(index,item,semester){
+      if (index === 'control'){
+        return semester.controlName
+      } else {
+        return semester.maxQuantity || ''
+      }
     }
   },
-  methods: {},
 }
 </script>
 
@@ -91,6 +75,10 @@ a {
 
 th {
   vertical-align: middle;
+}
+
+.strong {
+  font-weight: 600;
 }
 
 table {

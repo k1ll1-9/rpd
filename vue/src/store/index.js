@@ -27,6 +27,6 @@ export default createStore({
       console.log(state.disciplineStructure)
     }
   },
-  modules: {},
+
 
 })

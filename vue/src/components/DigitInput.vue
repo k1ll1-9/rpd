@@ -4,7 +4,7 @@
          :value="value"
          @focus="lastValid = $event.target.value"
          @input="validate"
-         @blur="updateState">
+         @change="updateState">
 </template>
 
 <script>
@@ -19,10 +19,7 @@ export default {
   },
   methods: {
     updateState(e) {
-      const newValue = e.target.value.trim()
-      if (newValue !== '') {
-        this.$store.dispatch('updateData', {identity: this.identity, value: e.target.value});
-      }
+      this.$store.dispatch('updateData', {identity: this.identity, value: e.target.value});
     },
     validate(e) {
       const pattern = /^(0|[1-9]\d*)$/g;

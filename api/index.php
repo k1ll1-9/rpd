@@ -8,6 +8,7 @@ if (!$_SERVER['DOCUMENT_ROOT']) {
 }
 define('NOT_CHECK_PERMISSIONS', true);
 
+
 require $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_before.php";
 
 $request = Context::getCurrent()->getRequest();

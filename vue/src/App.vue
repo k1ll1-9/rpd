@@ -1,6 +1,7 @@
 <template>
   <div v-if="ready">
     <EntryBlock/>
+    <Competencies/>
     <DisciplineValue/>
     <DisciplineStructure/>
   </div>
@@ -10,11 +11,13 @@
 import DisciplineValue from './components/DisciplineValue.vue'
 import DisciplineStructure from './components/DisciplineStructure.vue'
 import EntryBlock from "./components/EntryBlock";
+import Competencies from "./components/Competencies";
 
 export default {
   name: 'App',
   components: {
     EntryBlock,
+    Competencies,
     DisciplineValue,
     DisciplineStructure
   },

@@ -10,6 +10,7 @@ if (!$_SERVER['DOCUMENT_ROOT']) {
 
 define('NOT_CHECK_PERMISSIONS', true);
 
+
 require $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_before.php";
 require __DIR__ . '/RPDManager.php';
 

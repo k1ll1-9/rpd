@@ -1,31 +1,31 @@
 <template>
-  <input class="form-control"
-         type="text"
-         :value="value"
-         @focus="lastValid = $event.target.value"
-         @input="validate"
-         @change="updateState">
+  <textarea class="form-control "
+            rows="3"
+            type="text"
+            :value="value"
+            @focus="lastValid = $event.target.value"
+            @change="updateState"></textarea>
 </template>
 
 <script>
 
 export default {
-  name: "TextInput",
+  name: "TextArea",
   props: ['identity'],
   data() {
     return {
-      lastValid : null
+      lastValid: null
     }
   },
   methods: {
-    updateState(e) {
+/*    updateState(e) {
       this.$store.dispatch('updateData', {identity: this.identity, value: e.target.value});
-    }
+    },*/
   },
   computed: {
-    value() {
+/*    value() {
       return this.identity.reduce((acc, c) => acc && acc[c], this.$store.state)
-    }
+    }*/
   }
 
 }

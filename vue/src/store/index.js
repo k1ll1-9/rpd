@@ -208,6 +208,6 @@ export default createStore({
         });
     }
   },
-  modules: {},
+
 
 })

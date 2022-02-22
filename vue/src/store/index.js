@@ -45,53 +45,12 @@ export default createStore({
           }
         });
 
+      console.log(res)
+
       state.static = res.data.static
 
       if (res.data.managed === null) {
         res.data.managed = {}
-      }
-
-      state.disciplineValue = {
-        classroom: {
-          label: 'Аудиторные занятия (всего)',
-          strong: true,
-          semesters: {},
-          total: 0
-        },
-        lectures: {
-          label: 'Лекции',
-          semesters: {},
-          total: 0
-        },
-        practice: {
-          label: 'Семинарские и практические занятия',
-          semesters: {},
-          total: 0
-        },
-        SRS: {
-          label: 'Самостоятельная работа (всего)',
-          strong: true,
-          semesters: {},
-          total: 0
-        },
-        control: {
-          label: 'Вид промежуточной аттестации',
-          strong: true,
-          semesters: {},
-          total: 0
-        },
-        controlSum: {
-          label: 'Общая трудоемкость, зач. ед.',
-          strong: true,
-          semesters: {},
-          total: 0
-        },
-        sum: {
-          label: 'Общая трудоемкость, час.',
-          strong: true,
-          semesters: {},
-          total: 0
-        }
       }
 
       //TODO перенести на бэкенд
@@ -194,7 +153,7 @@ export default createStore({
       } else {
         state.competencies = res.data.managed.competencies
       }
-      console.log(state.competencies)
+
       return true;
     },
     async updateData({commit, state}, payload) {

@@ -10,6 +10,7 @@ define('NOT_CHECK_PERMISSIONS', true);
 
 
 require $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_before.php";
+require __DIR__ .'/RPDManager.php';
 
 $request = Context::getCurrent()->getRequest();
 $method = $request->getRequestMethod();
@@ -58,6 +59,9 @@ switch ($method) {
 
                 $data['static'] = $staticData;
                 $data['managed'] = $managedData;
+
+                RPDManager::getDisciplineValues($data);
+
                 die(\json_encode($data));
         }
         break;

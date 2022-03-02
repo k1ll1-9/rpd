@@ -45,7 +45,7 @@ export default createStore({
           }
         });
 
-      console.log(res)
+      console.log(res.data.static)
 
       state.static = res.data.static
 
@@ -54,67 +54,6 @@ export default createStore({
       }
 
       //TODO перенести на бэкенд
-      for (const [semester, value] of Object.entries(state.static.disciplineStructure)) {
-        value.load.forEach((load) => {
-          if (load.classroom === 'Аудиторная') {
-            if (!state.disciplineValue.classroom.semesters[semester]) {
-              state.disciplineValue.classroom.semesters[semester] = {
-                maxQuantity: 0
-              }
-            }
-            state.disciplineValue.classroom.semesters[semester].maxQuantity += load.quantity
-            state.disciplineValue.classroom.total += load.quantity
-          }
-          if (load.loadName === 'Лекции') {
-            if (!state.disciplineValue.lectures.semesters[semester]) {
-              state.disciplineValue.lectures.semesters[semester] = {
-                maxQuantity: 0
-              }
-            }
-            state.disciplineValue.lectures.semesters[semester].maxQuantity += load.quantity
-            state.disciplineValue.lectures.total += load.quantity
-          }
-          if (load.loadName === 'СРС') {
-            if (!state.disciplineValue.SRS.semesters[semester]) {
-              state.disciplineValue.SRS.semesters[semester] = {
-                maxQuantity: 0
-              }
-            }
-            state.disciplineValue.SRS.semesters[semester].maxQuantity += load.quantity
-            state.disciplineValue.SRS.total += load.quantity
-          }
-          if (load.loadName === 'Практические') {
-            if (!state.disciplineValue.practice.semesters[semester]) {
-              state.disciplineValue.practice.semesters[semester] = {
-                maxQuantity: 0
-              }
-            }
-            state.disciplineValue.practice.semesters[semester].maxQuantity += load.quantity
-            state.disciplineValue.practice.total += load.quantity
-          }
-          if (!state.disciplineValue.sum.semesters[semester]) {
-            state.disciplineValue.sum.semesters[semester] = {
-              maxQuantity: 0
-            }
-          }
-          state.disciplineValue.sum.semesters[semester].maxQuantity += load.quantity
-          state.disciplineValue.sum.total += load.quantity
-        })
-
-        value.control.forEach((load) => {
-          if (!state.disciplineValue.control.semesters[semester]) {
-            state.disciplineValue.control.semesters[semester] = {
-              controlName: load.loadName,
-            }
-          }
-          if (!state.disciplineValue.controlSum.semesters[semester]) {
-            state.disciplineValue.controlSum.semesters[semester] = {
-              maxQuantity: load.ЗЕТ,
-            }
-          }
-          state.disciplineValue.controlSum.total += load.ЗЕТ
-        })
-      }
 
       if (!res.data.managed.disciplineStructure) {
         state.managed.disciplineStructure = [

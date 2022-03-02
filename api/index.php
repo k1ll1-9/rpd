@@ -60,9 +60,9 @@ switch ($method) {
                 $data['static'] = $staticData;
                 $data['managed'] = $managedData;
 
-                RPDManager::getDisciplineValues($data);
+                $RPD = new RPD($data);
 
-                die(\json_encode($data));
+                die(\json_encode($RPD->data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
         }
         break;
     }

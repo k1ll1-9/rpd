@@ -1,18 +1,35 @@
 <?php
 declare(strict_types=1);
 
-class RPDManager
+class RPD
 {
-    public static function getDisciplineValues(&$data)
+
+    public $data;
+
+    public function __construct($data)
     {
-        $disciplineValues = [
+        $this->data = $data;
+        $this->data['static']['semesters'] = \count($this->data['static']['disciplineStructure']);
+        self::getDisciplineValue();
+    }
+
+    public function getDisciplineValue()
+    {
+        /*        echo "<pre>";
+                var_dump($data);
+                echo "</pre>";
+                die();*/
+
+        $semesters = \array_fill(1,($this->data['static']['semesters']),[]);
+
+
+        $disciplineValue = [
             'classroom' => [
                 'label' => [
                     'value' => 'Аудиторные занятия (всего)',
                     'strong' => true
                 ],
-                'sum' => 0,
-                'semesters' => [],
+                'semesters' => $semesters,
                 'total' => 0
             ],
             'lectures' => [
@@ -20,8 +37,7 @@ class RPDManager
                     'value' => 'Лекции',
                     'strong' => false
                 ],
-                'sum' => 0,
-                'semesters' => [],
+                'semesters' => $semesters,
                 'total' => 0
             ],
             'practice' => [
@@ -29,76 +45,81 @@ class RPDManager
                     'value' => 'Семинарские и практические занятия',
                     'strong' => false
                 ],
-                'sum' => 0,
-                'semesters' => [],
+                'semesters' => $semesters,
                 'total' => 0
             ],
             'SRS' => [
                 'label' => [
                     'value' => 'Самостоятельная работа (всего)',
-                    'strong' => false
+                    'strong' => true
                 ],
-                'sum' => 0,
-                'semesters' => [],
-                'total' => 0
-            ],
-            'control' => [
-                'label' => [
-                    'value' => 'Вид промежуточной аттестации',
-                    'strong' => false
-                ],
-                'sum' => 0,
-                'semesters' => [],
-                'total' => 0
-            ],
-            'controlOverall' => [
-                'label' => [
-                    'value' => 'Общая трудоемкость, зач. ед.',
-                    'strong' => false
-                ],
-                'sum' => 0,
-                'semesters' => [],
+                'semesters' => $semesters,
                 'total' => 0
             ],
             'overall' => [
                 'label' => [
                     'value' => 'Общая трудоемкость, час.',
-                    'strong' => false
+                    'strong' => true
+                ],
+                'semesters' => $semesters,
+                'total' => 0
+            ],
+            'control' => [
+                'label' => [
+                    'value' => 'Вид промежуточной аттестации',
+                    'strong' => true
                 ],
                 'sum' => 0,
-                'semesters' => [],
+                'semesters' => $semesters,
+                'total' => 0
+            ],
+            'controlOverall' => [
+                'label' => [
+                    'value' => 'Общая трудоемкость, зач. ед.',
+                    'strong' => true
+                ],
+                'semesters' => $semesters,
                 'total' => 0
             ],
         ];
 
-        foreach ($data['static']['disciplineStructure'] as $semester => $item) {
-            switch ($item['Вид']) {
-                case 'Нагрузка':
-                    switch ($item['loadName']) {
-                        case 'Практические':
-                            $disciplineValues['practice'][$semester]['quantity'] = $item['quantity'];
-                            $disciplineValues['practice']['total'] += $item['quantity'];
-                            break;
-                        case 'СРС':
-                            $disciplineValues['SRS'][$semester]['quantity'] = $item['quantity'];
-                            $disciplineValues['SRS']['total'] += $item['quantity'];
-                            break;
-                        case 'Лекции':
-                            $disciplineValues['lectures'][$semester]['quantity'] = $item['quantity'];
-                            $disciplineValues['lectures']['total'] += $item['quantity'];
-                            break;
+        foreach ($this->data['static']['disciplineStructure'] as $semester => $loadGroup) {
+            foreach ($loadGroup as $type => $load) {
+                if ($type === 'load') {
+                    foreach ($load as $item) {
+                        switch ($item['loadName']) {
+                            case 'Практические':
+                                $disciplineValue['practice']['semesters'][$semester]['quantity'] = $item['quantity'];
+                                $disciplineValue['practice']['total'] += $item['quantity'];
+                                break;
+                            case 'СРС':
+                                $disciplineValue['SRS']['semesters'][$semester]['quantity'] = $item['quantity'];
+                                $disciplineValue['SRS']['total'] += $item['quantity'];
+                                break;
+                            case 'Лекции':
+                                $disciplineValue['lectures']['semesters'][$semester]['quantity'] = $item['quantity'];
+                                $disciplineValue['lectures']['total'] += $item['quantity'];
+                                break;
+                        }
+                        if ($item['classroom'] === 'Аудиторная') {
+                            $disciplineValue['classroom']['semesters'][$semester]['quantity'] = $item['quantity'];
+                            $disciplineValue['classroom']['total'] += $item['quantity'];
+                        }
+                        $disciplineValue['overall']['semesters'][$semester]['quantity'] += $item['quantity'];
+                        $disciplineValue['overall']['total'] += $item['quantity'];
                     }
-                    if ($item['classroom'] === 'Аудиторная') {
-                        $disciplineValues['classroom'][$semester]['quantity'] = $item['quantity'];
-                        $disciplineValues['classroom']['total'] += $item['quantity'];
+                } elseif ($type === 'control') {
+                    foreach ($load as $item) {
+                        $disciplineValue['controlOverall']['semesters'][$semester]['quantity'] = $item['ZET'];
+                        $disciplineValue['control']['semesters'][$semester]['controlName'] = $item['loadName'];
+                        $disciplineValue['controlOverall']['total'] += $item['ZET'];
                     }
-
+                }
             }
         }
-        echo "<pre>";
-        var_dump($data['static']['disciplineStructure']);
-        echo "</pre>";
-        die();
+
+        $this->data['static']['disciplineValue'] = $disciplineValue;
 
     }
+
 }

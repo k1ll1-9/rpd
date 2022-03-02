@@ -16,13 +16,13 @@
         </tr>
         </thead>
         <tbody>
-        <tr v-for="(item,index) in $store.state.disciplineValue" :key="{index}">
-          <td class="text-start ps-3"
-              :class="{strong : item.strong}">
-            {{ item.label }}
-          </td>
+        <tr v-for="(item,index) in $store.state.static.disciplineValue" :key="{index}"
+            :class="{strong : item.label.strong}">
+          <td class="text-start ps-3">{{ item.label.value }}</td>
           <td>{{ item.total || '' }}</td>
-          <td v-for="(semester,number) in item.semesters" :key="number">{{tableData(index,item,semester)}}</td>
+          <td v-for="(semester,number) in item.semesters" :key="number">
+            {{ tableData(index, semester) }}
+          </td>
         </tr>
         </tbody>
       </table>
@@ -31,7 +31,6 @@
 </template>
 
 <script>
-
 
 export default {
   components: {},
@@ -43,11 +42,12 @@ export default {
     },
   },
   methods: {
-    tableData(index,item,semester){
-      if (index === 'control'){
+    tableData(index, semester) {
+      console.log(semester)
+      if (index === 'control') {
         return semester.controlName
       } else {
-        return semester.maxQuantity || ''
+        return semester.quantity || ''
       }
     }
   },

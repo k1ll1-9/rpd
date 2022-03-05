@@ -78,8 +78,8 @@ switch ($method) {
                 $params = $request['params'];
 
                 try {
-                    $sql = 'INSERT INTO disciplines_history as dh (profile,special,year,name,last_change)
-                            VALUES (:profile,:special,:year,:name, current_timestamp)
+                    $sql = 'INSERT INTO disciplines_history as dh (profile,special,year,name,last_change,json)
+                            VALUES (:profile,:special,:year,:name, current_timestamp,:data)
                             ON CONFLICT (profile,special,year,name)
                             DO UPDATE
                             SET json = :data, last_change = current_timestamp

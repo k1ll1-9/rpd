@@ -13,14 +13,20 @@
   </h2>
   <h4>{{ $store.state.static.syllabusData.special_code }} "{{ $store.state.static.syllabusData.special }}"</h4>
   <h4>Профиль - "{{ $store.state.static.syllabusData.profile }}"</h4>
-  <h4>Год набора - {{ $store.state.static.syllabusData.year }}</h4>
+  <h4>Год набора - {{ yearOfEntrance }}</h4>
 </template>
 
 <script>
 export default {
   name: "EntryBlock",
-  created: function () {
+  data(){
+    return {
+      yearOfEntrance: new Date(this.$store.state.static.syllabusData.year).getFullYear()
+    }
   },
+  computed: {
+
+  }
 }
 </script>
 

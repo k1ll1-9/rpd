@@ -19,7 +19,7 @@ export default {
   },
   methods: {
     updateState(e) {
-      this.$store.dispatch('updateData', {identity: this.identity, value: e.target.value});
+      this.$store.dispatch('updateData', {identity: this.identity, value: e.target.value , updateType: 'UPDATE_RPD_ITEM'});
     }
   },
   computed: {

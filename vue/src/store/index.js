@@ -45,58 +45,15 @@ export default createStore({
           }
         });
 
-      console.log(res.data.static)
+      console.log(res.data)
 
       state.static = res.data.static
-
-      if (res.data.managed === null) {
-        res.data.managed = {}
-      }
-
-      //TODO перенести на бэкенд
-
-      if (!res.data.managed.disciplineStructure) {
-        state.managed.disciplineStructure = [
-          {
-            "title": '',
-            "semester": res.data.static.disciplineStructure.length,
-            "lectures": null,
-            "practice": null,
-            "SRS": null,
-            "practicePrepare": null,
-          }
-        ]
-      } else {
-        state.managed.disciplineStructure = res.data.managed.disciplineStructure
-      }
-
-      if (!res.data.managed.competencies){
-
-        state.competencies = res.data.static.competencies
-        for (const item in state.competencies) {
-          for (const indicators in state.competencies[item].nextLvl) {
-            state.competencies[item].nextLvl[indicators].results = {
-              know: [{
-                value: ''
-              }],
-              can:  [{
-                value: ''
-              }],
-              own:  [{
-                value: ''
-              }],
-            }
-          }
-
-        }
-      } else {
-        state.competencies = res.data.managed.competencies
-      }
+      state.managed = res.data.managed
 
       return true;
     },
     async updateData({commit, state}, payload) {
-      commit('UPDATE_RPD_ITEM', payload)
+      commit(payload.updateType, payload)
 
       await this.axios.post(state.APIurl,
         {

@@ -7,10 +7,10 @@
         <tr>
           <th class="col-5" rowspan="2">Вид учебной работы</th>
           <th class="col-1" rowspan="2">Всего часов</th>
-          <th class="col-2" :colspan="semestersCount">Семестр</th>
+          <th class="col-2" :colspan="$store.state.static.semesters">Семестр</th>
         </tr>
         <tr>
-          <th v-for="index in semestersCount" :key="index">
+          <th v-for="index in $store.state.static.semesters" :key="index">
             {{ index }}
           </th>
         </tr>
@@ -36,14 +36,9 @@ export default {
   components: {},
   name: 'DisciplineValue',
   props: {},
-  computed: {
-    semestersCount() {
-      return Object.keys(this.$store.state.static.disciplineStructure).length
-    },
-  },
+  computed: {},
   methods: {
     tableData(index, semester) {
-      console.log(semester)
       if (index === 'control') {
         return semester.controlName
       } else {

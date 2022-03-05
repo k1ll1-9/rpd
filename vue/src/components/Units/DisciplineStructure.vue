@@ -72,8 +72,8 @@
 <script>
 
 import {mapState} from 'vuex'
-import TextInput from "./TextInput";
-import DigitInput from "./DigitInput";
+import TextInput from "../UI/TextInput";
+import DigitInput from "../UI/DigitInput";
 
 export default {
   components: {TextInput, DigitInput},
@@ -85,10 +85,10 @@ export default {
       }),
   methods: {
     addRow() {
-      this.$store.commit('PUSH_RPD_ITEM', {identity: ['managed', 'disciplineStructure']})
+      this.$store.dispatch('updateData', {identity: ['managed', 'disciplineStructure'], updateType: 'PUSH_RPD_ITEM'})
     },
     removeRow(index) {
-      this.$store.commit('SPLICE_RPD_ITEM', {identity: ['managed', 'disciplineStructure'], index: index})
+      this.$store.dispatch('updateData', {identity: ['managed', 'disciplineStructure'], index: index, updateType: 'SPLICE_RPD_ITEM'})
     }
   },
   mounted() {

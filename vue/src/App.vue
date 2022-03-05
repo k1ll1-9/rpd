@@ -1,23 +1,23 @@
 <template>
   <div v-if="ready">
     <EntryBlock/>
-<!--    <Competencies/>-->
+    <Competencies/>
     <DisciplineValue/>
     <DisciplineStructure/>
   </div>
 </template>
 <script>
 
-import DisciplineValue from './components/DisciplineValue.vue'
-import DisciplineStructure from './components/DisciplineStructure.vue'
-import EntryBlock from "./components/EntryBlock";
-/*import Competencies from "./components/Competencies";*/
+import DisciplineValue from './components/Units/DisciplineValue.vue'
+import DisciplineStructure from './components/Units/DisciplineStructure.vue'
+import EntryBlock from "./components/Units/EntryBlock";
+import Competencies from "./components/Units/Competencies";
 
 export default {
   name: 'App',
   components: {
     EntryBlock,
-/*    Competencies,*/
+    Competencies,
     DisciplineValue,
     DisciplineStructure
   },

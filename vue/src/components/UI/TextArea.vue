@@ -6,7 +6,6 @@
             @focus="lastValid = $event.target.value"
             @change="updateState"></textarea>
 </template>
-
 <script>
 
 export default {
@@ -18,14 +17,18 @@ export default {
     }
   },
   methods: {
-/*    updateState(e) {
-      this.$store.dispatch('updateData', {identity: this.identity, value: e.target.value});
-    },*/
+    updateState(e) {
+      this.$store.dispatch('updateData', {
+        identity: this.identity,
+        value: e.target.value,
+        updateType: 'UPDATE_RPD_ITEM'
+      });
+    },
   },
   computed: {
-/*    value() {
+    value() {
       return this.identity.reduce((acc, c) => acc && acc[c], this.$store.state)
-    }*/
+    }
   }
 
 }

@@ -1,7 +1,7 @@
 import {createApp} from 'vue'
 import App from './App.vue'
-import 'bootstrap/dist/css/bootstrap.min.css'
 import 'jquery/src/jquery.js'
+import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap/dist/js/bootstrap.min.js'
 import VueAxios from 'vue-axios'
 import axios from 'axios'
@@ -9,14 +9,6 @@ import store from './store'
 import { BootstrapIconsPlugin } from 'bootstrap-icons-vue';
 //import SockJS from "sockjs-client";
 //import Stomp from "webstomp-client";
-
-const mixins = {
-  methods: {
-    updateData(e) {
-      console.log(e.target.value);
-    }
-  }
-}
 
 /*const webstomp = {
   methods: {
@@ -36,7 +28,6 @@ createApp(
   {
     templatePath : document.querySelector('#app').dataset.templatePath
   })
-  .mixin(mixins)
   .use(VueAxios, axios)
   .use(store)
   .use(BootstrapIconsPlugin)

@@ -8,7 +8,6 @@ if (!$_SERVER['DOCUMENT_ROOT']) {
 }
 define('NOT_CHECK_PERMISSIONS', true);
 
-
 require $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_before.php";
 require __DIR__ .'/RPDManager.php';
 
@@ -60,7 +59,7 @@ switch ($method) {
                 $data['static'] = $staticData;
                 $data['managed'] = $managedData;
 
-                $RPD = new RPD($data);
+                $RPD = new RPDManager($data);
 
                 die(\json_encode($RPD->data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
         }

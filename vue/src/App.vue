@@ -1,6 +1,7 @@
 <template>
   <div v-if="ready">
     <EntryBlock/>
+    <Target/>
     <Competencies/>
     <DisciplineValue/>
     <DisciplineStructure/>
@@ -11,12 +12,14 @@
 import DisciplineValue from './components/Units/DisciplineValue.vue'
 import DisciplineStructure from './components/Units/DisciplineStructure.vue'
 import EntryBlock from "./components/Units/EntryBlock";
+import Target from "./components/Units/Target";
 import Competencies from "./components/Units/Competencies";
 
 export default {
   name: 'App',
   components: {
     EntryBlock,
+    Target,
     Competencies,
     DisciplineValue,
     DisciplineStructure
@@ -55,5 +58,8 @@ a:hover {
   color: #ffffff !important;
   text-decoration: none !important;
   background-color: transparent !important;
+}
+h3 {
+  font-weight: 600 !important;
 }
 </style>

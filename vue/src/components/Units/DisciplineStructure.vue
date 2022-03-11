@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h3 class="my-4"><strong>Структура и содержание дисциплины (модуля)</strong></h3>
+    <h3 class="my-4">Структура и содержание дисциплины (модуля)</h3>
     <h1>{{ }}</h1>
     <div class="row">
       <div class="col">
@@ -88,7 +88,11 @@ export default {
       this.$store.dispatch('updateData', {identity: ['managed', 'disciplineStructure'], updateType: 'PUSH_RPD_ITEM'})
     },
     removeRow(index) {
-      this.$store.dispatch('updateData', {identity: ['managed', 'disciplineStructure'], index: index, updateType: 'SPLICE_RPD_ITEM'})
+      this.$store.dispatch('updateData', {
+        identity: ['managed', 'disciplineStructure'],
+        index: index,
+        updateType: 'SPLICE_RPD_ITEM'
+      })
     }
   },
   mounted() {

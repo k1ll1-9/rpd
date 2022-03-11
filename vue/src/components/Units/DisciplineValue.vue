@@ -1,6 +1,6 @@
 <template>
   <div class="row">
-    <h3 class="my-4"><strong>Объем дисциплины и виды учебной работы</strong></h3>
+    <h3 class="my-4">Объем дисциплины и виды учебной работы</h3>
     <div class="col-8 mx-auto">
       <table class="table table-bordered">
         <thead>
@@ -10,7 +10,7 @@
           <th class="col-2" :colspan="$store.state.static.semesters">Семестр</th>
         </tr>
         <tr>
-          <th v-for="index in $store.state.static.semesters" :key="index">
+          <th v-for="(item,index) in $store.state.static.disciplineStructure" :key="index">
             {{ index }}
           </th>
         </tr>

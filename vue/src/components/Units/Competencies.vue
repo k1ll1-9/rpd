@@ -1,6 +1,6 @@
 <template>
   <div class="row">
-    <h3 class="my-4"><strong>КОМПЕТЕНЦИИ ОБУЧАЮЩИХСЯ, ФОРМИРУЕМЫЕ В РЕЗУЛЬТАТЕ ОСВОЕНИЯ ДИСЦИПЛИНЫ</strong></h3>
+    <h3 class="my-4">КОМПЕТЕНЦИИ ОБУЧАЮЩИХСЯ, ФОРМИРУЕМЫЕ В РЕЗУЛЬТАТЕ ОСВОЕНИЯ ДИСЦИПЛИНЫ</h3>
     <table class="table table-bordered">
       <thead>
       <tr>

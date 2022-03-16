@@ -29,23 +29,23 @@
               <TextInput :identity="['managed','disciplineStructure',index,'title']"/>
             </td>
             <td>
-              <TextInput :identity="['managed','disciplineStructure',index,'semester']"/>
+              <Select :identity="['managed','disciplineStructure',index,'semester']" :options="$store.state.static.semesters"/>
             </td>
             <td>
               <DigitInput class='text-center'
-                          :identity="['managed','disciplineStructure',index,'lectures']"/>
+                          :identity="['managed','disciplineStructure',index,'load','lectures']"/>
             </td>
             <td>
               <DigitInput class='text-center'
-                          :identity="['managed','disciplineStructure',index,'practice']"/>
+                          :identity="['managed','disciplineStructure',index,'load','seminars']"/>
             </td>
             <td>
               <DigitInput class='text-center'
-                          :identity="['managed','disciplineStructure',index,'SRS']"/>
+                          :identity="['managed','disciplineStructure',index,'load','SRS']"/>
             </td>
             <td>
               <DigitInput class='text-center'
-                          :identity="['managed','disciplineStructure',index,'practicePrepare']"/>
+                          :identity="['managed','disciplineStructure',index,'load','practicePrepare']"/>
             </td>
             <td style="min-width: 62px">
               <button type="button" v-show="disciplineStructure.length > 1"
@@ -74,9 +74,10 @@
 import {mapState} from 'vuex'
 import TextInput from "../UI/TextInput";
 import DigitInput from "../UI/DigitInput";
+import Select from "../UI/Select";
 
 export default {
-  components: {TextInput, DigitInput},
+  components: {Select, TextInput, DigitInput},
   name: 'DisciplineStructure',
   props: {},
   computed:

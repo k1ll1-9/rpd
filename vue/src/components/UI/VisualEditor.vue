@@ -1,7 +1,5 @@
 <template>
-  <ejs-richtexteditor @change="test">
-
-  </ejs-richtexteditor>
+  <ejs-richtexteditor ref="rteObj" :value="value" @change="updateState"/>
 </template>
 
 <script>
@@ -13,12 +11,22 @@ export default {
     "ejs-richtexteditor": RichTextEditorComponent,
   },
   name: "VisualEditor",
+  props: ['identity'],
   data() {
     return {}
   },
   methods: {
-    test(e){
-      console.log(e.value.replace(/<[^>]*>?/gm, ''))
+    updateState() {
+      this.$store.dispatch('updateData', {
+        identity: this.identity,
+        value: this.$refs.rteObj.ej2Instances.getHtml(),
+        updateType: 'UPDATE_RPD_ITEM'
+      });
+    }
+  },
+  computed: {
+    value() {
+      return this.identity.reduce((acc, c) => acc && acc[c], this.$store.state)
     }
   },
   provide: {
@@ -27,7 +35,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
 @import "../../../node_modules/@syncfusion/ej2-base/styles/material.css";
 @import "../../../node_modules/@syncfusion/ej2-inputs/styles/material.css";
 @import "../../../node_modules/@syncfusion/ej2-lists/styles/material.css";
@@ -35,5 +43,9 @@ export default {
 @import "../../../node_modules/@syncfusion/ej2-buttons/styles/material.css";
 @import "../../../node_modules/@syncfusion/ej2-navigations/styles/material.css";
 @import "../../../node_modules/@syncfusion/ej2-splitbuttons/styles/material.css";
-@import "../../../node_modules/@syncfusion/ej2-vue-richtexteditor/styles/material.css"
+@import "../../../node_modules/@syncfusion/ej2-vue-richtexteditor/styles/material.css";
+
+.e-richtexteditor .e-rte-content .e-content {
+  min-height: 400px;
+}
 </style>

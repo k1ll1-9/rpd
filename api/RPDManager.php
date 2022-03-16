@@ -8,7 +8,6 @@ class RPDManager
     public function __construct($data)
     {
         $this->data = $data;
-        $this->data['static']['semesters'] = \count($this->data['static']['disciplineStructure']);
         self::getDisciplineStructure();
         self::getCompetencies();
     }
@@ -17,15 +16,12 @@ class RPDManager
     {
         if (null === $this->data['managed']['disciplineStructure']) {
             $this->data['managed']['disciplineStructure'] = [
-                0 =>
-                    [
-                        "title" => '',
-                        "semester" => $this->data['static']['semesters'],
-                        "lectures" => null,
-                        "practice" => null,
-                        "SRS" => null,
-                        "practicePrepare" => null
-                    ]
+                0 => [
+                    'title' => null,
+                    'semester' => null,
+                    'load' => null,
+                    'theme' => null
+                ]
             ];
         }
     }

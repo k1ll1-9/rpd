@@ -45,8 +45,6 @@ export default createStore({
           }
         });
 
-      console.log(res.data)
-
       state.static = res.data.static
       state.managed = res.data.managed
 

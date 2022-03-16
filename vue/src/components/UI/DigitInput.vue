@@ -14,15 +14,19 @@ export default {
   props: ['identity'],
   data() {
     return {
-      lastValid : null
+      lastValid: null
     }
   },
   methods: {
     updateState(e) {
-      this.$store.dispatch('updateData', {identity: this.identity, value: e.target.value , updateType: 'UPDATE_RPD_ITEM'});
+      this.$store.dispatch('updateData', {
+        identity: this.identity,
+        value: parseInt(e.target.value.trim()),
+        updateType: 'UPDATE_RPD_ITEM'
+      });
     },
     validate(e) {
-      const pattern = /^(0|[1-9]\d*)$/g;
+      const pattern = /^(|\d)+$/g;
       if (!pattern.test(e.target.value)) {
         e.target.value = this.lastValid;
       } else {

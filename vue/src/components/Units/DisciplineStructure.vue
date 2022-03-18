@@ -29,7 +29,8 @@
               <TextInput :identity="['managed','disciplineStructure',index,'title']"/>
             </td>
             <td>
-              <Select :identity="['managed','disciplineStructure',index,'semester']" :options="$store.state.static.semesters"/>
+              <Select :identity="['managed','disciplineStructure',index,'semester']"
+                      :options="$store.state.static.semesters"/>
             </td>
             <td>
               <DigitInput class='text-center'

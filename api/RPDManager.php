@@ -20,7 +20,8 @@ class RPDManager
                     'title' => null,
                     'semester' => null,
                     'load' => null,
-                    'theme' => null
+                    'theme' => null,
+                    'seminars' => null
                 ]
             ];
         }

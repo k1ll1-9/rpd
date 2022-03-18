@@ -4,7 +4,7 @@
 
 <script>
 
-import {RichTextEditorComponent, Toolbar, Link, Image, HtmlEditor, Table} from "@syncfusion/ej2-vue-richtexteditor"
+import {RichTextEditorComponent, Toolbar, Link, Image, HtmlEditor} from "@syncfusion/ej2-vue-richtexteditor"
 
 export default {
   components: {
@@ -30,7 +30,7 @@ export default {
     }
   },
   provide: {
-    richtexteditor: [Toolbar, Link, Image, HtmlEditor, Table],
+    richtexteditor: [Toolbar, Link, Image, HtmlEditor],
   }
 }
 </script>

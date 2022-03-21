@@ -59,8 +59,14 @@ export default createStore({
           data: state.managed,
           params: state.params
         });
+    },
+    async initPDF({state}){
+      const res = await this.axios.post('https://lk.vavt.ru/oplyuyko_test/printFormRPD.php',
+        {
+          action: "getPDF",
+          data: state
+        });
+      return res.data.link;
     }
   },
-
-
 })

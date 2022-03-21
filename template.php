@@ -9,7 +9,6 @@ if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
 /** @var string $templateFolder */
 
 
-$APPLICATION->SetTitle('РПД - ' . $arResult['upName'] . ' - ' . $arResult['upYear'] . ' - ' . $arResult['subjectName']);
 ?>
     <div class="d-flex justify-content-center align-items-center">
 

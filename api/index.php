@@ -26,11 +26,11 @@ switch ($method) {
 
                 try {
                     $sql = 'SELECT json FROM  disciplines 
-                            WHERE (profile,special,year,name) = (:profile,:special,:year,:name) ';
+                            WHERE (profile,special,entrance_year,name) = (:profile,:special,:entrance_year,:name) ';
                     $stmt = $pdo->prepare($sql);
                     $stmt->bindParam(':profile', $params['profile'], PDO::PARAM_STR);
                     $stmt->bindParam(':special', $params['special'], PDO::PARAM_STR);
-                    $stmt->bindParam(':year', $params['year'], PDO::PARAM_STR);
+                    $stmt->bindParam(':entrance_year', $params['year'], PDO::PARAM_STR);
                     $stmt->bindParam(':name', $params['name'], PDO::PARAM_STR);
                     $stmt->execute();
                     $res = $stmt->fetchColumn();
@@ -41,13 +41,13 @@ switch ($method) {
 
                 try {
                     $sql = 'SELECT json FROM  disciplines_history
-                            WHERE (profile,special,year,name) = (:profile,:special,:year,:name) 
+                            WHERE (profile,special,entrance_year,name) = (:profile,:special,:entrance_year,:name) 
                             ORDER  BY last_change DESC NULLS 
                             LAST LIMIT 1 ';
                     $stmt = $pdo->prepare($sql);
                     $stmt->bindParam(':profile', $params['profile'], PDO::PARAM_STR);
                     $stmt->bindParam(':special', $params['special'], PDO::PARAM_STR);
-                    $stmt->bindParam(':year', $params['year'], PDO::PARAM_STR);
+                    $stmt->bindParam(':entrance_year', $params['year'], PDO::PARAM_STR);
                     $stmt->bindParam(':name', $params['name'], PDO::PARAM_STR);
                     $stmt->execute();
                     $res = $stmt->fetchColumn();
@@ -77,19 +77,19 @@ switch ($method) {
                 $params = $request['params'];
 
                 try {
-                    $sql = 'INSERT INTO disciplines_history as dh (profile,special,year,name,last_change,json)
-                            VALUES (:profile,:special,:year,:name, current_timestamp,:data)
-                            ON CONFLICT (profile,special,year,name)
+                    $sql = 'INSERT INTO disciplines_history as dh (profile,special,entrance_year,name,last_change,json)
+                            VALUES (:profile,:special,:entrance_year,:name, current_timestamp,:data)
+                            ON CONFLICT (profile,special,entrance_year,name)
                             DO UPDATE
                             SET json = :data, last_change = current_timestamp
                             WHERE dh.profile = :profile
                                 AND dh.special = :special
-                                AND dh.year = :year
+                                AND dh.entrance_year = :entrance_year
                                 AND dh.name = :name';
                     $stmt = $pdo->prepare($sql);
                     $stmt->bindParam(':profile', $params['profile'], PDO::PARAM_STR);
                     $stmt->bindParam(':special', $params['special'], PDO::PARAM_STR);
-                    $stmt->bindParam(':year', $params['year'], PDO::PARAM_STR);
+                    $stmt->bindParam(':entrance_year', $params['year'], PDO::PARAM_STR);
                     $stmt->bindParam(':name', $params['name'], PDO::PARAM_STR);
                     $stmt->bindParam(':data', $data, PDO::PARAM_STR);
                     $stmt->execute();

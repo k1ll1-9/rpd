@@ -26,6 +26,7 @@ export default {
   },
   computed: {
     value() {
+
       return this.identity.reduce((acc, c) => acc && acc[c], this.$store.state)
     }
   },

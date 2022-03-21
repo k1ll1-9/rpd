@@ -10,6 +10,11 @@
       <ModulesSeminars/>
       <ModulesSRS/>
     </div>
+<!--    <GradesCurrent/>-->
+    <button v-if="!PDFLink" class="btn btn-lg btn-primary mb-4" @click="getPDF()">
+      Сгенерировать PDF
+    </button>
+    <a v-else :href="PDFLink" class="btn btn-success btn-lg mb-4" target="_blank">Перейти к PDF</a>
   </div>
 </template>
 <script>
@@ -22,6 +27,7 @@ import EntryBlock from "./components/Units/EntryBlock";
 import Target from "./components/Units/Target";
 import Competencies from "./components/Units/Competencies";
 import ModulesSRS from "./components/Units/DisciplineModules/ModulesSRS";
+//import GradesCurrent from "./components/Units/Grades/GradesCurrent"
 
 export default {
   name: 'App',
@@ -33,17 +39,23 @@ export default {
     Competencies,
     DisciplineValue,
     DisciplineStructure,
-    ModulesThemes
+    ModulesThemes,
+//    GradesCurrent
   },
   props: {
     templatePath: String
   },
   data() {
     return {
-      ready: false
+      ready: false,
+      PDFLink: ''
     }
   },
-  methods: {},
+  methods: {
+    async getPDF(){
+      this.PDFLink =  await this.$store.dispatch('initPDF')
+    }
+  },
   async mounted() {
     const url = (process.env.NODE_ENV === 'development') ? process.env.VUE_APP_API_PROXY : `https://lk.vavt.ru/${this.templatePath}/api/index.php`;
 
@@ -66,9 +78,7 @@ export default {
 }
 
 a:hover {
-  color: #ffffff !important;
-  text-decoration: none !important;
-  background-color: transparent !important;
+
 }
 
 h3 {

@@ -1,7 +1,8 @@
 <template>
-  <h2>5. Содержание дисциплины</h2>
   <div class="my-3">
-    <h3>5.1. Темы и их аннотации</h3>
+    <h3 class="my-4" :id="$store.state.static.unitTitles[5].subUnits[1].code">
+      5.1 {{ $store.state.static.unitTitles[5].subUnits[1].title }}
+    </h3>
     <div v-for="(module,title,index) in modules" :key="title" class="my-4">
       <h3 class="my-4">Тема {{index +1 }}. {{ title }}</h3>
       <template v-if="module !== null">

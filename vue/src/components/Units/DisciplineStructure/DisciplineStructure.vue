@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h3 class="my-4">Структура и содержание дисциплины (модуля)</h3>
+    <h3 class="my-5">Структура и содержание дисциплины (модуля)</h3>
     <h1>{{ }}</h1>
     <div class="row">
       <div class="col">
@@ -73,9 +73,9 @@
 <script>
 
 import {mapState} from 'vuex'
-import TextInput from "../UI/TextInput";
-import DigitInput from "../UI/DigitInput";
-import Select from "../UI/Select";
+import TextInput from "../../UI/TextInput";
+import DigitInput from "../../UI/DigitInput";
+import Select from "../../UI/Select";
 
 export default {
   components: {Select, TextInput, DigitInput},

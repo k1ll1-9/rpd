@@ -1,6 +1,6 @@
 <template>
   <div class="row">
-    <h3 class="my-4">КОМПЕТЕНЦИИ ОБУЧАЮЩИХСЯ, ФОРМИРУЕМЫЕ В РЕЗУЛЬТАТЕ ОСВОЕНИЯ ДИСЦИПЛИНЫ</h3>
+    <h3 class="my-4" :id="$store.state.static.unitTitles[3].code">3. {{ $store.state.static.unitTitles[3].title }}</h3>
     <table class="table table-bordered">
       <thead>
       <tr>

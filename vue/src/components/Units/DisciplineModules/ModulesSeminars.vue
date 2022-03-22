@@ -1,6 +1,8 @@
 <template>
   <div class="my-5">
-    <h3>5.2 Планы семинарских / практических занятий (если предусмотрены учебным планом)</h3>
+    <h3 class="my-4" :id="$store.state.static.unitTitles[5].subUnits[2].code">
+      5.2 {{ $store.state.static.unitTitles[5].subUnits[2].title }}
+    </h3>
     <div v-for="(modules,title,index) in seminars" :key="index" class="my-4">
       <h3>Тема {{ title }}</h3>
       <div v-for="(semester,number) in modules" :key="number" class="my-4">

@@ -1,16 +1,21 @@
 <template>
   <div v-if="ready">
+    <Navigation/>
     <EntryBlock/>
     <Target/>
     <Competencies/>
-    <DisciplineValue/>
-    <DisciplineStructure/>
     <div class="my-5">
+      <h2 class="my-4" :id="$store.state.static.unitTitles[4].code">4. {{ $store.state.static.unitTitles[4].title }}</h2>
+      <DisciplineValue/>
+      <DisciplineStructure/>
+    </div>
+    <div class="my-5">
+      <h2 class="my-4" :id="$store.state.static.unitTitles[5].code">5. {{ $store.state.static.unitTitles[5].title }}</h2>
       <ModulesThemes/>
       <ModulesSeminars/>
       <ModulesSRS/>
     </div>
-<!--    <GradesCurrent/>-->
+    <!--    <GradesCurrent/>-->
     <button v-if="!PDFLink" class="btn btn-lg btn-primary mb-4" @click="getPDF()">
       Сгенерировать PDF
     </button>
@@ -21,17 +26,19 @@
 
 import ModulesSeminars from "./components/Units/DisciplineModules/ModulesSeminars";
 import ModulesThemes from "./components/Units/DisciplineModules/ModulesThemes.vue";
-import DisciplineValue from './components/Units/DisciplineValue.vue'
-import DisciplineStructure from './components/Units/DisciplineStructure.vue'
+import DisciplineValue from './components/Units/DisciplineStructure/DisciplineValue.vue'
+import DisciplineStructure from './components/Units/DisciplineStructure/DisciplineStructure.vue'
 import EntryBlock from "./components/Units/EntryBlock";
 import Target from "./components/Units/Target";
 import Competencies from "./components/Units/Competencies";
 import ModulesSRS from "./components/Units/DisciplineModules/ModulesSRS";
+import Navigation from "./components/Units/Navigation";
 //import GradesCurrent from "./components/Units/Grades/GradesCurrent"
 
 export default {
   name: 'App',
   components: {
+    Navigation,
     ModulesSeminars,
     ModulesSRS,
     EntryBlock,
@@ -52,8 +59,8 @@ export default {
     }
   },
   methods: {
-    async getPDF(){
-      this.PDFLink =  await this.$store.dispatch('initPDF')
+    async getPDF() {
+      this.PDFLink = await this.$store.dispatch('initPDF')
     }
   },
   async mounted() {
@@ -78,10 +85,14 @@ export default {
 }
 
 a:hover {
-
+  text-decoration: underline;
 }
 
-h3 {
+a {
+  color: #000000 !important;
+}
+
+h3,h2 {
   font-weight: 600 !important;
 }
 

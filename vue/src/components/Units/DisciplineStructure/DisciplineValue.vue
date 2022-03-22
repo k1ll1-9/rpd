@@ -1,6 +1,6 @@
 <template>
   <div class="row">
-    <h3 class="my-4">Объем дисциплины и виды учебной работы</h3>
+    <h3 class="mb-5 mt-3">Объем дисциплины и виды учебной работы</h3>
     <div class="col-8 mx-auto">
       <table class="table table-bordered">
         <thead>

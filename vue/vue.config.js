@@ -27,7 +27,7 @@ if (process.env.NODE_ENV === 'development') {
     proxy: {
       '/api':
         {
-          target: 'https://lk.vavt.ru/local/components/syllabuses/RPD.single/templates/.default/api/index.php'
+          target: 'https://lk.vavt.ru/local/components/syllabuses-test/RPD.single/templates/.default/api/index.php'
         }
     }
   }

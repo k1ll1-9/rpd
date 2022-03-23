@@ -95,5 +95,7 @@ a {
 h3,h2 {
   font-weight: 600 !important;
 }
-
+*{
+  font-family: 'PT Sans', sans-serif;
+}
 </style>

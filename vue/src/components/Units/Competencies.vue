@@ -10,7 +10,7 @@
       </tr>
       </thead>
       <tbody>
-      <template v-for="(competence,index) in $store.state.static.competencies" :key="index">
+      <template v-for="(competence,index) in managedCompetencies" :key="index">
         <tr v-for="(indicator,id,indicatorIndex) in competence.nextLvl" :key="id">
           <td class="text-start align-middle"
               :rowspan="countIndicators(competence.nextLvl)"

@@ -20,7 +20,7 @@ switch ($method) {
         switch ($request->getQuery('action')) {
             case 'getData':
 
-                $pdo = Postgres::getInstance()->connect('pgsql:host=172.16.10.59;port=5432;dbname=Syllabuses;', 'umd-web', 'klopik463');
+                $pdo = Postgres::getInstance()->connect('pgsql:host=172.16.10.59;port=5432;dbname=Syllabuses_test;', 'umd-web', 'klopik463');
                 $params = $request->getQueryList()->toArray();
                 $params = \json_decode($params['params'],true);
 
@@ -73,7 +73,7 @@ switch ($method) {
             case 'setData':
 
                 $data = \json_encode($request['data'], JSON_PRETTY_PRINT || JSON_UNESCAPED_UNICODE);
-                $pdo = Postgres::getInstance()->connect('pgsql:host=172.16.10.59;port=5432;dbname=Syllabuses;', 'umd-web', 'klopik463');
+                $pdo = Postgres::getInstance()->connect('pgsql:host=172.16.10.59;port=5432;dbname=Syllabuses_test;', 'umd-web', 'klopik463');
                 $params = $request['params'];
 
                 try {

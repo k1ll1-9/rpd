@@ -32,13 +32,18 @@ class RPDManager
 
         $this->data['managed']['competencies'] = $this->data['managed']['competencies'] ?? [];
 
-        foreach ($this->data['static']['competencies'] as $compID => $competency) {
+        foreach ($this->data['static']['competencies'] as  $competency) {
+
+            $compID = $competency['competenceCipher'];
 
             if (!isset($this->data['managed']['competencies'][$compID])) {
                 $this->data['managed']['competencies'][$compID] = $competency;
+                $this->data['managed']['competencies'][$compID]['nextLvl'] = [];
             }
 
-            foreach ($competency['nextLvl'] as $indID => $indicator) {
+            foreach ($competency['nextLvl'] as  $indicator) {
+
+                $indID = $indicator['competenceCipher'];
 
                 if (!isset($this->data['managed']['competencies'][$compID]['nextLvl'][$indID])) {
                     $this->data['managed']['competencies'][$compID]['nextLvl'][$indID] = $indicator;
@@ -64,9 +69,11 @@ class RPDManager
                         ]
                     ];
                 }
-
             }
+        }
 
+        foreach ($this->data['managed']['competencies'] as &$competency) {
+            \ksort($competency['nextLvl']);
         }
     }
 

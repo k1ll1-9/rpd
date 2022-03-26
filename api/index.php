@@ -6,7 +6,6 @@ use VAVT\Services\Postgres;
 if (!$_SERVER['DOCUMENT_ROOT']) {
     $_SERVER['DOCUMENT_ROOT'] = '/home/bitrix/www';
 }
-define('NOT_CHECK_PERMISSIONS', true);
 
 require $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_before.php";
 require __DIR__ .'/RPDManager.php';

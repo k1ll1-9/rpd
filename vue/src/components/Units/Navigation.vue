@@ -42,6 +42,13 @@ export default {
 </script>
 
 <style scoped>
+a:hover {
+  text-decoration: underline;
+}
+
+a {
+  color: #000000 !important;
+}
 ul {
   list-style: none;
 }

@@ -15,8 +15,8 @@
       <ModulesSeminars/>
       <ModulesSRS/>
     </div>
+    <GradesCurrent/>
     <PDFButton/>
-    <!--    <GradesCurrent/>-->
   </div>
   <Preloader v-else style="margin-top: 200px"/>
 </template>
@@ -33,7 +33,7 @@ import ModulesSRS from "./components/Units/DisciplineModules/ModulesSRS";
 import Navigation from "./components/Units/Navigation";
 import PDFButton from "./components/Units/PDFButton";
 import Preloader from "./components/Misc/Preloader";
-//import GradesCurrent from "./components/Units/Grades/GradesCurrent"
+import GradesCurrent from "./components/Units/Grades/GradesCurrent"
 
 export default {
   name: 'App',
@@ -49,7 +49,7 @@ export default {
     DisciplineValue,
     DisciplineStructure,
     ModulesThemes,
-//    GradesCurrent
+    GradesCurrent
   },
   props: {
     templatePath: String

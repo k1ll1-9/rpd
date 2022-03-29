@@ -30,7 +30,9 @@
             </td>
             <td>
               <Select :identity="['managed','disciplineStructure',index,'semester']"
-                      :options="$store.state.static.semesters"/>
+                      :dataSource="$store.state.static.semesters"
+                      cssClass="defaults"
+                      width="60%"/>
             </td>
             <td>
               <DigitInput class='text-center'

@@ -1,18 +1,13 @@
 <template>
-  <DropDown :dataSource="options"
-            cssClass="defaults"
-            width="60%"
-            :value="value"
-            @change="updateState"/>
+  <DropDown  :value="value" @change="updateState"/>
 </template>
 
 <script>
-
 import { DropDownListComponent } from "@syncfusion/ej2-vue-dropdowns";
 
 export default {
   name: "Select",
-  props: ['identity', 'options'],
+  props: ['identity'],
   components : {
     "DropDown" : DropDownListComponent
   },

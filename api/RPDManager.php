@@ -21,7 +21,14 @@ class RPDManager
                     'semester' => null,
                     'load' => null,
                     'theme' => null,
-                    'seminars' => null
+                    'seminars' => null,
+                    'indicators' => null,
+                    'competences' => null,
+                    'currentControl' => [
+                        0 => [
+                            'value' => ''
+                        ]
+                    ]
                 ]
             ];
         }
@@ -32,7 +39,7 @@ class RPDManager
 
         $this->data['managed']['competencies'] = $this->data['managed']['competencies'] ?? [];
 
-        foreach ($this->data['static']['competencies'] as  $competency) {
+        foreach ($this->data['static']['competencies'] as $competency) {
 
             $compID = $competency['competenceCipher'];
 
@@ -41,7 +48,7 @@ class RPDManager
                 $this->data['managed']['competencies'][$compID]['nextLvl'] = [];
             }
 
-            foreach ($competency['nextLvl'] as  $indicator) {
+            foreach ($competency['nextLvl'] as $indicator) {
 
                 $indID = $indicator['competenceCipher'];
 

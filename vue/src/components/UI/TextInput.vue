@@ -14,7 +14,6 @@ export default {
   props: ['identity'],
   data() {
     return {
-      lastValid : null
     }
   },
   methods: {

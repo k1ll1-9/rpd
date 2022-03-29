@@ -2,7 +2,9 @@
   <div v-if="ready">
     <Navigation/>
     <EntryBlock/>
+    <Authors/>
     <Target/>
+    <Place/>
     <Competencies/>
     <div class="my-5">
       <h2 class="my-4" :id="$store.state.static.unitTitles[4].code">4. {{ $store.state.static.unitTitles[4].title }}</h2>
@@ -22,6 +24,8 @@
 </template>
 <script>
 
+import Authors from "./components/Units/Authors";
+import Place from "./components/Units/Place";
 import ModulesSeminars from "./components/Units/DisciplineModules/ModulesSeminars";
 import ModulesThemes from "./components/Units/DisciplineModules/ModulesThemes.vue";
 import DisciplineValue from './components/Units/DisciplineStructure/DisciplineValue.vue'
@@ -38,6 +42,7 @@ import GradesCurrent from "./components/Units/Grades/GradesCurrent"
 export default {
   name: 'App',
   components: {
+    Place,
     Preloader,
     PDFButton,
     Navigation,
@@ -49,7 +54,8 @@ export default {
     DisciplineValue,
     DisciplineStructure,
     ModulesThemes,
-    GradesCurrent
+    GradesCurrent,
+    Authors
   },
   props: {
     templatePath: String

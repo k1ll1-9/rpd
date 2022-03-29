@@ -7,17 +7,27 @@
     <Place/>
     <Competencies/>
     <div class="my-5">
-      <h2 class="my-4" :id="$store.state.static.unitTitles[4].code">4. {{ $store.state.static.unitTitles[4].title }}</h2>
+      <h2 class="my-4" :id="$store.state.static.unitTitles[4].code">4. {{
+          $store.state.static.unitTitles[4].title
+        }}</h2>
       <DisciplineValue/>
       <DisciplineStructure/>
     </div>
     <div class="my-5">
-      <h2 class="my-4" :id="$store.state.static.unitTitles[5].code">5. {{ $store.state.static.unitTitles[5].title }}</h2>
+      <h2 class="my-4" :id="$store.state.static.unitTitles[5].code">5. {{
+          $store.state.static.unitTitles[5].title
+        }}</h2>
       <ModulesThemes/>
       <ModulesSeminars/>
       <ModulesSRS/>
     </div>
-    <GradesCurrent/>
+    <div class="my-5">
+      <h2 class="my-4" :id="$store.state.static.unitTitles[7].code">7. {{
+          $store.state.static.unitTitles[7].title
+        }}</h2>
+      <GradesCurrent/>
+      <GradesCurrentDescription/>
+    </div>
     <PDFButton/>
   </div>
   <Preloader v-else style="margin-top: 200px"/>
@@ -38,6 +48,7 @@ import Navigation from "./components/Units/Navigation";
 import PDFButton from "./components/Units/PDFButton";
 import Preloader from "./components/Misc/Preloader";
 import GradesCurrent from "./components/Units/Grades/GradesCurrent"
+import GradesCurrentDescription from "./components/Units/Grades/GradesCurrentDescription";
 
 export default {
   name: 'App',
@@ -55,6 +66,7 @@ export default {
     DisciplineStructure,
     ModulesThemes,
     GradesCurrent,
+    GradesCurrentDescription,
     Authors
   },
   props: {
@@ -65,8 +77,7 @@ export default {
       ready: false,
     }
   },
-  methods: {
-  },
+  methods: {},
   async mounted() {
     const url = (process.env.NODE_ENV === 'development') ? process.env.VUE_APP_API_PROXY : `https://lk.vavt.ru/${this.templatePath}/api/index.php`;
 
@@ -83,17 +94,21 @@ export default {
   src: local("PT Sans"),
   url(./assets/fonts/PT-Sans/PTSans-Regular.ttf) format("truetype");
 }
+
 #app {
   margin-top: 60px;
   width: 1200px;
 }
-h3,h2 {
+
+h3, h2 {
   font-weight: 600 !important;
   text-align: center;
 }
-*{
+
+* {
   font-family: 'PT Sans', sans-serif;
 }
+
 td, th {
   text-align: center;
 }

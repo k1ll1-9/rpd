@@ -16,7 +16,7 @@
         </tr>
         </thead>
         <tbody>
-        <tr v-for="(item,index) in $store.state.static.disciplineValue" :key="{index}"
+        <tr v-for="(item,index) in disciplineValue" :key="{index}"
             :class="{strong : item.label.strong}">
           <td class="text-start ps-3">{{ item.label.value }}</td>
           <td>{{ item.total || '' }}</td>
@@ -32,11 +32,36 @@
 
 <script>
 
+import {mapState} from 'vuex'
+
 export default {
   components: {},
   name: 'DisciplineValue',
   props: {},
-  computed: {},
+  data() {
+    return {
+      order: {
+        lectures: 0,
+        practice: 1,
+        classroom: 2,
+        SRS: 3,
+        overall: 4,
+        control: 5,
+        controlOverall: 6
+      }
+    }
+  },
+  computed:
+      mapState({
+        disciplineValue: function (state) {
+          return Object.fromEntries(Object.entries(state.static.disciplineValue).map(([k, v]) => {
+            return [k, {
+              ...v,
+              order: this.order[k]
+            }]
+          }).sort(([, a], [, b]) => a.order - b.order))
+        }
+      }),
   methods: {
     tableData(index, semester) {
       if (index === 'control') {

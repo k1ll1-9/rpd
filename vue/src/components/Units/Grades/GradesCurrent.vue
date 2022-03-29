@@ -1,7 +1,5 @@
 <template>
-  <div class="my-5">
-    <h3 class="my-5">7. Оценочные средства</h3>
-
+  <div>
     <table class="table-bordered w-100">
       <thead style="border-bottom: 1px #000000 solid">
       <tr>
@@ -16,7 +14,7 @@
       <tr v-for="(discipline,index) in disciplines" :key="index">
         <td>{{ index + 1 }}</td>
         <td>{{ discipline.title }}</td>
-        <td>{{ discipline.competences.join(',') }}</td>
+        <td>{{ getCompetencesString(discipline.competences) }}</td>
         <td>
           <MultiSelect width="90%"
                        cssClass="defaults"
@@ -83,7 +81,7 @@ export default {
           return state.managed.disciplineStructure.map((el, i) => {
 
             if (el.currentControl === null) {
-              el.currentControl = [{'value': ''}]
+              el.currentControl = [{'title': ''}]
             }
 
             if (el.indicators === null) {
@@ -114,8 +112,11 @@ export default {
         }
       }),
   methods: {
+    getCompetencesString(competences){
+      return competences === null ? '' : competences.join(',')
+    },
     getTextAreaIdentity(identity, ID) {
-      return identity.concat([ID, 'value'])
+      return identity.concat([ID, 'title'])
     },
     addResult(identity) {
       this.$store.dispatch('updateData', {

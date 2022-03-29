@@ -26,6 +26,7 @@ class RPDManager
                     'competences' => null,
                     'currentControl' => [
                         0 => [
+                            'title' => '',
                             'value' => ''
                         ]
                     ]

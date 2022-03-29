@@ -19,7 +19,6 @@
 
 <script>
 
-
 export default {
   name: "Navigation",
   data() {
@@ -78,5 +77,6 @@ h2 {
   position: fixed;
   right: 130px;
   bottom: 50px;
+  z-index:5;
 }
 </style>

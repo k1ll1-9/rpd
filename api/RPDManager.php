@@ -10,6 +10,14 @@ class RPDManager
         $this->data = $data;
         self::getDisciplineStructure();
         self::getCompetencies();
+
+        if ($this->data['managed']['informationalResources'] === null){
+            $this->data['managed']['informationalResources'] = [
+                0 => [
+                    'value' => ''
+                ]
+            ];
+        }
     }
 
     public function getDisciplineStructure()

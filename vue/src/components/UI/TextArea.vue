@@ -1,6 +1,5 @@
 <template>
   <textarea class="form-control "
-            rows="3"
             type="text"
             :value="value"
             @focus="lastValid = $event.target.value"

@@ -14,7 +14,7 @@ export default {
 
 .preloader {
   animation: rotateY-anim 2s linear infinite;
-  background: url('../../assets/img/logo.png');
+  background: url("../../assets/img/logo.png");
   width: 128px;
   height: 128px;
 }

@@ -14,6 +14,7 @@ module.exports = {
   },
   filenameHashing: false,
   outputDir: '../dist',
+  publicPath: process.env.NODE_ENV === 'production' ? '/local/components/syllabuses/RPD.single/templates/.default/' : '/',
   chainWebpack: config => {
     config.plugin('copy').tap(([options]) => {
       options[0].ignore.push('RPD Form - dev_files/**')

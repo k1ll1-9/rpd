@@ -21,6 +21,7 @@
       <ModulesSeminars/>
       <ModulesSRS/>
     </div>
+    <Technologies/>
     <div class="my-5">
       <h2 class="my-4" :id="$store.state.static.unitTitles[7].code">7. {{
           $store.state.static.unitTitles[7].title
@@ -49,10 +50,12 @@ import PDFButton from "./components/Units/PDFButton";
 import Preloader from "./components/Misc/Preloader";
 import GradesCurrent from "./components/Units/Grades/GradesCurrent"
 import GradesCurrentDescription from "./components/Units/Grades/GradesCurrentDescription";
+import Technologies from "./components/Units/Technologies";
 
 export default {
   name: 'App',
   components: {
+    Technologies,
     Place,
     Preloader,
     PDFButton,

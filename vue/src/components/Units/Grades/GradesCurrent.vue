@@ -53,7 +53,7 @@
 
 import TextArea from "../../UI/TextArea";
 import MultiSelect from "../../UI/MultiSelect";
-import {mapState} from "vuex";
+import {mapActions, mapState} from "vuex";
 
 export default {
   name: 'GradesCurrent',
@@ -63,22 +63,18 @@ export default {
         indicators: state => {
           const indicators = []
 
-          for (let competence in state.managed.competencies) {
+          for (let competence in state.rpd.managed.competencies) {
 
-            for (let indicator in state.managed.competencies[competence].nextLvl) {
+            for (let indicator in state.rpd.managed.competencies[competence].nextLvl) {
               if (indicators[indicator] === undefined) {
                 indicators.push(indicator)
-                /*       indicators[indicator] = {
-                         ...state.managed.competencies[competence].nextLvl[indicator],
-                         "competence": competence
-                       }*/
               }
             }
           }
           return indicators
         },
         disciplines: state => {
-          return state.managed.disciplineStructure.map((el, i) => {
+          return state.rpd.managed.disciplineStructure.map((el, i) => {
 
             if (el.currentControl === null) {
               el.currentControl = [{'title': ''}]
@@ -98,9 +94,9 @@ export default {
         indicatorsMapping: state => {
           const indicatorsMapping = {}
 
-          for (let competence in state.managed.competencies) {
+          for (let competence in state.rpd.managed.competencies) {
 
-            for (let indicator in state.managed.competencies[competence].nextLvl) {
+            for (let indicator in state.rpd.managed.competencies[competence].nextLvl) {
 
               if (indicatorsMapping[indicator] === undefined) {
                 indicatorsMapping[indicator] = competence
@@ -112,6 +108,9 @@ export default {
         }
       }),
   methods: {
+    ...mapActions({
+      updateData: 'rpd/updateData'
+    }),
     getCompetencesString(competences){
       return competences === null ? '' : competences.join(',')
     },
@@ -119,13 +118,13 @@ export default {
       return identity.concat([ID, 'title'])
     },
     addResult(identity) {
-      this.$store.dispatch('updateData', {
+      this.updateData( {
         identity: identity,
         updateType: 'PUSH_RPD_ITEM'
       })
     },
     removeResult(identity, index) {
-      this.$store.dispatch('updateData', {
+      this.updateData({
         identity: identity,
         index: index,
         updateType: 'SPLICE_RPD_ITEM'
@@ -141,7 +140,7 @@ export default {
         }
       })
 
-      this.$store.dispatch('updateData', {
+      this.updateData({
         identity: ['managed', 'disciplineStructure', index, 'competences'],
         value: competences,
         updateType: 'UPDATE_RPD_ITEM'

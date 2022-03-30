@@ -29,6 +29,7 @@
       <GradesCurrent/>
       <GradesCurrentDescription/>
     </div>
+    <InformResources/>
     <PDFButton/>
   </div>
   <Preloader v-else style="margin-top: 200px"/>
@@ -51,6 +52,7 @@ import Preloader from "./components/Misc/Preloader";
 import GradesCurrent from "./components/Units/Grades/GradesCurrent"
 import GradesCurrentDescription from "./components/Units/Grades/GradesCurrentDescription";
 import Technologies from "./components/Units/Technologies";
+import InformResources from "./components/Units/InformResources";
 
 export default {
   name: 'App',
@@ -70,7 +72,8 @@ export default {
     ModulesThemes,
     GradesCurrent,
     GradesCurrentDescription,
-    Authors
+    Authors,
+    InformResources
   },
   props: {
     templatePath: String
@@ -95,7 +98,7 @@ export default {
 @font-face {
   font-family: "PT Sans";
   src: local("PT Sans"),
-  url(./assets/fonts/PT-Sans/PTSans-Regular.ttf) format("truetype");
+  url("./assets/fonts/PT-Sans/PTSans-Regular.ttf") format("truetype");
 }
 
 #app {

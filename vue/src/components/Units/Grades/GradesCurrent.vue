@@ -28,7 +28,7 @@
             <div class="d-flex align-items-center w-100"
                  v-for="(controlForm,ID) in discipline.currentControl"
                  :key="ID">
-              <TextArea class="my-2" :identity="getTextAreaIdentity(discipline.identity, ID)"/>
+              <TextArea class="my-2" rows="3" :identity="getTextAreaIdentity(discipline.identity, ID)"/>
               <button type="button"
                       v-if="discipline.currentControl.length > 1"
                       @click="removeResult(discipline.identity,ID)"

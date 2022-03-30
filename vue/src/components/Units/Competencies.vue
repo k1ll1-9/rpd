@@ -26,7 +26,7 @@
               <div class="d-flex align-items-center"
                    v-for="(results,resultID) in managedCompetencies[index].nextLvl[id].results.know"
                    :key="resultID">
-                <TextArea class="my-2" :identity="getTextAreaIdentity(index,id,'know',resultID)"/>
+                <TextArea class="my-2" rows="3" :identity="getTextAreaIdentity(index,id,'know',resultID)"/>
                 <button type="button"
                         @click="removeResult(index,id,'know',resultID)"
                         v-if="Object.keys(managedCompetencies[index].nextLvl[id].results.know).length > 1"
@@ -45,7 +45,7 @@
               <div class="d-flex align-items-center"
                    v-for="(results,resultID) in managedCompetencies[index].nextLvl[id].results.able"
                    :key="resultID">
-                <TextArea class="my-2" :identity="getTextAreaIdentity(index,id,'able',resultID)"/>
+                <TextArea class="my-2" rows="3" :identity="getTextAreaIdentity(index,id,'able',resultID)"/>
                 <button type="button"
                         @click="removeResult(index,id,'able',resultID)"
                         v-if="Object.keys(managedCompetencies[index].nextLvl[id].results.able).length > 1"
@@ -64,7 +64,7 @@
               <div class="d-flex align-items-center"
                    v-for="(results,resultID) in managedCompetencies[index].nextLvl[id].results.master"
                    :key="resultID">
-                <TextArea class="my-2" :identity="getTextAreaIdentity(index,id,'master',resultID)"/>
+                <TextArea class="my-2" rows="3" :identity="getTextAreaIdentity(index,id,'master',resultID)"/>
                 <button type="button"
                         @click="removeResult(index,id,'master',resultID)"
                         v-if="Object.keys(managedCompetencies[index].nextLvl[id].results.master).length > 1"

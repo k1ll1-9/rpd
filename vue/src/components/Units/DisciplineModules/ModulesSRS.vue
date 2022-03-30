@@ -1,7 +1,7 @@
 <template>
   <div class="my-5">
-    <h3 class="my-4" :id="$store.state.static.unitTitles[5].subUnits[3].code">
-      5.3 {{ $store.state.static.unitTitles[5].subUnits[3].title }}
+    <h3 class="my-4" :id="unitTitles[5].subUnits[3].code">
+      5.3 {{ unitTitles[5].subUnits[3].title }}
     </h3>
     <table class="table-bordered w-100">
       <thead style="border-bottom: 1px #000000 solid">
@@ -36,8 +36,11 @@ export default {
   components: {TextArea},
   computed:
       mapState({
+        ...mapState({
+          unitTitles: state => state.rpd.static.unitTitles
+        }),
         SRS: state => {
-          return state.managed.disciplineStructure.map((el, i) => {
+          return state.rpd.managed.disciplineStructure.map((el, i) => {
             return {
               ...el,
               'identity': ['managed', 'disciplineStructure', i, 'SRSDescription'],

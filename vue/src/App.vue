@@ -7,15 +7,15 @@
     <Place/>
     <Competencies/>
     <div class="my-5">
-      <h2 class="my-4" :id="$store.state.static.unitTitles[4].code">4. {{
-          $store.state.static.unitTitles[4].title
+      <h2 class="my-4" :id="unitTitles[4].code">4. {{
+          unitTitles[4].title
         }}</h2>
       <DisciplineValue/>
       <DisciplineStructure/>
     </div>
     <div class="my-5">
-      <h2 class="my-4" :id="$store.state.static.unitTitles[5].code">5. {{
-          $store.state.static.unitTitles[5].title
+      <h2 class="my-4" :id="unitTitles[5].code">5. {{
+          unitTitles[5].title
         }}</h2>
       <ModulesThemes/>
       <ModulesSeminars/>
@@ -23,8 +23,8 @@
     </div>
     <Technologies/>
     <div class="my-5">
-      <h2 class="my-4" :id="$store.state.static.unitTitles[7].code">7. {{
-          $store.state.static.unitTitles[7].title
+      <h2 class="my-4" :id="unitTitles[7].code">7. {{
+          unitTitles[7].title
         }}</h2>
       <GradesCurrent/>
       <GradesCurrentDescription/>
@@ -36,6 +36,7 @@
 </template>
 <script>
 
+import {mapActions,mapMutations,mapState} from "vuex";
 import Authors from "./components/Units/Authors";
 import Place from "./components/Units/Place";
 import ModulesSeminars from "./components/Units/DisciplineModules/ModulesSeminars";
@@ -83,13 +84,27 @@ export default {
       ready: false,
     }
   },
-  methods: {},
+  computed: {
+    ...mapState({
+      unitTitles: state => state.rpd.static.unitTitles
+    })
+  },
+  methods: {
+    ...mapMutations({
+      SET_API_URL: 'rpd/SET_API_URL',
+      SET_PARAMS: 'rpd/SET_PARAMS'
+    }),
+    ...mapActions({
+      initData: 'rpd/initData'
+    })
+  },
   async mounted() {
-    const url = (process.env.NODE_ENV === 'development') ? process.env.VUE_APP_API_PROXY : `https://lk.vavt.ru/${this.templatePath}/api/index.php`;
+    const url = (process.env.NODE_ENV === 'development') ? process.env.VUE_APP_API_PROXY : `https://lk.vavt.ru/${this.templatePath}/api/index.php`
 
-    await this.$store.commit('SET_API_URL', url);
-    await this.$store.commit('SET_PARAMS');
-    this.ready = await this.$store.dispatch('initData');
+    await this.SET_API_URL(url)
+    await this.SET_PARAMS()
+    await this.initData()
+    this.ready = true
   }
 }
 </script>

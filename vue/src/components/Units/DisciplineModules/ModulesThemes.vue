@@ -1,7 +1,7 @@
 <template>
   <div class="my-3">
-    <h3 class="my-4" :id="$store.state.static.unitTitles[5].subUnits[1].code">
-      5.1 {{ $store.state.static.unitTitles[5].subUnits[1].title }}
+    <h3 class="my-4" :id="unitTitles[5].subUnits[1].code">
+      5.1 {{ unitTitles[5].subUnits[1].title }}
     </h3>
     <div v-for="(module,title,index) in modules" :key="title" class="my-4">
       <h3 class="my-4">Тема {{index +1 }}. {{ title }}</h3>
@@ -25,10 +25,13 @@ export default {
   name: 'ModulesThemes',
   computed:
       mapState({
+        ...mapState({
+          unitTitles: state => state.rpd.static.unitTitles
+        }),
         modules: state => {
           const modules = {}
 
-          state.managed.disciplineStructure.forEach((el, i) => {
+          state.rpd.managed.disciplineStructure.forEach((el, i) => {
 
             if (el.title === null) {
               return;

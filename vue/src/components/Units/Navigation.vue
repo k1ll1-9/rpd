@@ -2,7 +2,7 @@
   <div class="wrapper">
     <h2 class="my-4">Оглавление</h2>
     <ol class="w-75 m-auto">
-      <li v-for="(item,code) in $store.state.static.unitTitles" :key="code" class="text-start my-1">
+      <li v-for="(item,code) in $store.state.rpd.static.unitTitles" :key="code" class="text-start my-1">
         <a :href="'#' + item.code">{{ item.title }}</a>
         <ol v-if="item.subUnits">
           <li v-for="(subItem,subCode) in item.subUnits" :key="subCode" class="text-start my-1">

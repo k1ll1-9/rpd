@@ -21,7 +21,7 @@ export default {
   methods: {
     async getPDF() {
       this.loading = true
-      this.PDFLink = await this.$store.dispatch('initPDF')
+      this.PDFLink = await this.$store.dispatch('rpd/initPDF')
       this.loading = false
     }
   }

@@ -17,7 +17,7 @@ export default {
   },
   methods: {
     updateState() {
-      this.$store.dispatch('updateData', {
+      this.$store.dispatch('rpd/updateData', {
         identity: this.identity,
         value: this.$refs.rteObj.ej2Instances.getHtml(),
         updateType: 'UPDATE_RPD_ITEM'
@@ -27,7 +27,7 @@ export default {
   computed: {
     value() {
 
-      return this.identity.reduce((acc, c) => acc && acc[c], this.$store.state)
+      return this.identity.reduce((acc, c) => acc && acc[c], this.$store.state.rpd)
     }
   },
   provide: {

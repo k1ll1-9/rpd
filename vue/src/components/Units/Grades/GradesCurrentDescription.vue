@@ -22,7 +22,7 @@ export default {
   computed:
       mapState({
         disciplines: (state) => {
-          return state.managed.disciplineStructure.map((el) => {
+          return state.rpd.managed.disciplineStructure.map((el) => {
             const currentControl = el.currentControl.filter((subEl) => {
               return subEl.title?.trim() !== '' && subEl.title !== null
             })

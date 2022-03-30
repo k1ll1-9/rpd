@@ -30,7 +30,7 @@
             </td>
             <td>
               <Select :identity="['managed','disciplineStructure',index,'semester']"
-                      :dataSource="$store.state.static.semesters"
+                      :dataSource="$store.state.rpd.static.semesters"
                       cssClass="defaults"
                       width="60%"/>
             </td>
@@ -74,7 +74,7 @@
 
 <script>
 
-import {mapState} from 'vuex'
+import {mapState, mapActions} from 'vuex'
 import TextInput from "../../UI/TextInput";
 import DigitInput from "../../UI/DigitInput";
 import Select from "../../UI/Select";
@@ -85,14 +85,17 @@ export default {
   props: {},
   computed:
       mapState({
-        disciplineStructure: state => state.managed.disciplineStructure,
+        disciplineStructure: state => state.rpd.managed.disciplineStructure,
       }),
   methods: {
+    ...mapActions({
+      updateData: 'rpd/updateData'
+    }),
     addRow() {
-      this.$store.dispatch('updateData', {identity: ['managed', 'disciplineStructure'], updateType: 'PUSH_RPD_ITEM'})
+      this.updateData({identity: ['managed', 'disciplineStructure'], updateType: 'PUSH_RPD_ITEM'})
     },
     removeRow(index) {
-      this.$store.dispatch('updateData', {
+      this.updateData({
         identity: ['managed', 'disciplineStructure'],
         index: index,
         updateType: 'SPLICE_RPD_ITEM'

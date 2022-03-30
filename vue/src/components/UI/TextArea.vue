@@ -17,7 +17,7 @@ export default {
   },
   methods: {
     updateState(e) {
-      this.$store.dispatch('updateData', {
+      this.$store.dispatch('rpd/updateData', {
         identity: this.identity,
         value: e.target.value,
         updateType: 'UPDATE_RPD_ITEM'
@@ -26,7 +26,7 @@ export default {
   },
   computed: {
     value() {
-      return this.identity.reduce((acc, c) => acc && acc[c], this.$store.state)
+      return this.identity.reduce((acc, c) => acc && acc[c], this.$store.state.rpd)
     }
   }
 

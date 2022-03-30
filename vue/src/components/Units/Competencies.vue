@@ -1,6 +1,6 @@
 <template>
   <div class="row">
-    <h3 class="my-4" :id="$store.state.static.unitTitles[3].code">3. {{ $store.state.static.unitTitles[3].title }}</h3>
+    <h3 class="my-4" :id="$store.state.rpd.static.unitTitles[3].code">3. {{ $store.state.rpd.static.unitTitles[3].title }}</h3>
     <table class="table table-bordered">
       <thead>
       <tr>
@@ -89,16 +89,19 @@
 <script>
 
 import TextArea from "../UI/TextArea";
-import {mapState} from 'vuex'
+import {mapState,mapActions} from 'vuex'
 
 export default {
   name: "Competencies",
   components: {TextArea},
   computed:
       mapState({
-        managedCompetencies: state => state.managed.competencies,
+        managedCompetencies: state => state.rpd.managed.competencies,
       }),
   methods: {
+    ...mapActions({
+      updateData: 'rpd/updateData'
+    }),
     countIndicators(indicators) {
       return Object.keys(indicators).length
     },
@@ -109,13 +112,13 @@ export default {
       return ['managed', 'competencies', compID, 'nextLvl', indID, 'results', resType]
     },
     addResult(compID, indID, resType) {
-      this.$store.dispatch('updateData', {
+      this.updateData( {
         identity: this.getIdentity(compID, indID, resType),
         updateType: 'PUSH_RPD_ITEM'
       })
     },
     removeResult(compID, indID, resType, index) {
-      this.$store.dispatch('updateData', {
+      this.updateData({
         identity: this.getIdentity(compID, indID, resType),
         index: index,
         updateType: 'SPLICE_RPD_ITEM'

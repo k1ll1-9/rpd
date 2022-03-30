@@ -7,10 +7,10 @@
         <tr>
           <th class="col-5" rowspan="2">Вид учебной работы</th>
           <th class="col-1" rowspan="2">Всего часов</th>
-          <th class="col-2" :colspan="$store.state.static.semestersCount">Семестр</th>
+          <th class="col-2" :colspan="$store.state.rpd.static.semestersCount">Семестр</th>
         </tr>
         <tr>
-          <th v-for="(item,index) in $store.state.static.disciplineStructure" :key="index">
+          <th v-for="(item,index) in $store.state.rpd.static.disciplineStructure" :key="index">
             {{ index }}
           </th>
         </tr>
@@ -54,7 +54,7 @@ export default {
   computed:
       mapState({
         disciplineValue: function (state) {
-          return Object.fromEntries(Object.entries(state.static.disciplineValue).map(([k, v]) => {
+          return Object.fromEntries(Object.entries(state.rpd.static.disciplineValue).map(([k, v]) => {
             return [k, {
               ...v,
               order: this.order[k]

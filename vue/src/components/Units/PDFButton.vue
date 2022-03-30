@@ -1,5 +1,5 @@
 <template>
-  <button v-if="!PDFLink" class="btn btn-lg btn-primary mb-4" @click="getPDF()">
+  <button v-if="!PDFLink && !loading"  class="btn btn-lg btn-primary mb-4" @click="getPDF()">
     Сгенерировать PDF
   </button>
   <Preloader v-else-if="loading"/>
@@ -14,8 +14,8 @@ export default {
   name: "PDFButton",
   data() {
     return {
+      PDFLink: null,
       loading: false,
-      PDFLink: ''
     }
   },
   methods: {

@@ -18,7 +18,7 @@
         <td>{{ index + 1 }}</td>
         <td>{{ module.title }}</td>
         <td>{{ module.semester }}</td>
-        <td><TextArea :identity="module.identity"/></td>
+        <td><TextArea rows="3" :identity="module.identity"/></td>
         <td>{{ module.load.SRS }}</td>
       </tr>
       </tbody>

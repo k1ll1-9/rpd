@@ -7,7 +7,7 @@
 </template>
 
 <script>
-import Preloader from "../../components/Misc/Preloader";
+import Preloader from "../Misc/Preloader";
 
 export default {
   components: {Preloader},

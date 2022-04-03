@@ -7,6 +7,7 @@ import VueAxios from 'vue-axios'
 import axios from 'axios'
 import store from './store'
 import { BootstrapIconsPlugin } from 'bootstrap-icons-vue';
+import router from './router/router'
 //import SockJS from "sockjs-client";
 //import Stomp from "webstomp-client";
 
@@ -29,6 +30,7 @@ createApp(
     templatePath : document.querySelector('#app').dataset.templatePath
   })
   .use(VueAxios, axios)
+  .use(router)
   .use(store)
   .use(BootstrapIconsPlugin)
   .mount('#app')

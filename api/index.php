@@ -17,7 +17,7 @@ switch ($method) {
     case 'GET':
     {
         switch ($request->getQuery('action')) {
-            case 'getData':
+            case 'getRPDData':
 
                 $pdo = Postgres::getInstance()->connect('pgsql:host=172.16.10.59;port=5432;dbname=Syllabuses_test;', 'umd-web', 'klopik463');
                 $params = $request->getQueryList()->toArray();

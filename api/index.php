@@ -7,8 +7,11 @@ if (!$_SERVER['DOCUMENT_ROOT']) {
     $_SERVER['DOCUMENT_ROOT'] = '/home/bitrix/www';
 }
 
+define('NOT_CHECK_PERMISSIONS', true);
+
 require $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_before.php";
 require __DIR__ .'/RPDManager.php';
+require __DIR__ .'/SyllabusManager.php';
 
 $request = Context::getCurrent()->getRequest();
 $method = $request->getRequestMethod();
@@ -17,8 +20,33 @@ switch ($method) {
     case 'GET':
     {
         switch ($request->getQuery('action')) {
-            case 'getRPDData':
+            case 'getSyllabusesList':
+                $pdo = Postgres::getInstance()->connect('pgsql:host=172.16.10.59;port=5432;dbname=Syllabuses_test;', 'umd-web', 'klopik463');
+                try {
+                    $res = $pdo->query('SELECT * FROM syllabuses')->fetchAll(PDO::FETCH_ASSOC);
+                } catch (\PDOException $e) {
+                    echo $e->getMessage();
+                }
+                die(\json_encode($res, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+            case 'getRPDList':
+                $pdo = Postgres::getInstance()->connect('pgsql:host=172.16.10.59;port=5432;dbname=Syllabuses_test;', 'umd-web', 'klopik463');
+                $params = $request->getQueryList()->toArray();
+                $params = \json_decode($params['params'],true);
 
+                try {
+                    $sql = 'SELECT json FROM  disciplines 
+                            WHERE (profile,special,entrance_year) = (:profile,:special,:entrance_year) ';
+                    $stmt = $pdo->prepare($sql);
+                    $stmt->bindParam(':profile', $params['profile'], PDO::PARAM_STR);
+                    $stmt->bindParam(':special', $params['special'], PDO::PARAM_STR);
+                    $stmt->bindParam(':entrance_year', $params['year'], PDO::PARAM_STR);
+                    $stmt->execute();
+                    $res = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                } catch (\PDOException $e) {
+                    echo $e->getMessage();
+                }
+                die(\json_encode($res, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+            case 'getRPDData':
                 $pdo = Postgres::getInstance()->connect('pgsql:host=172.16.10.59;port=5432;dbname=Syllabuses_test;', 'umd-web', 'klopik463');
                 $params = $request->getQueryList()->toArray();
                 $params = \json_decode($params['params'],true);
@@ -66,11 +94,10 @@ switch ($method) {
     }
     case 'POST' :
     {
-        //axios использует поток 'php://input' вместо POST'а
+        //для получения json'a используем поток 'php://input'
         $request = \json_decode(\file_get_contents('php://input'), true);
         switch ($request['action']) {
             case 'setData':
-
                 $data = \json_encode($request['data'], JSON_PRETTY_PRINT || JSON_UNESCAPED_UNICODE);
                 $pdo = Postgres::getInstance()->connect('pgsql:host=172.16.10.59;port=5432;dbname=Syllabuses_test;', 'umd-web', 'klopik463');
                 $params = $request['params'];
@@ -97,6 +124,10 @@ switch ($method) {
                     echo $e->getMessage();
                 }
                 die(\json_encode($stmt->errorInfo));
+            case 'uploadFile':
+                die(\json_encode(123,JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
         }
+
     }
 }
+

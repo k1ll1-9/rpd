@@ -47,7 +47,7 @@ import GradesCurrent from "./../components/RPD/Grades/GradesCurrent"
 import GradesCurrentDescription from "./../components/RPD/Grades/GradesCurrentDescription";
 import Technologies from "./../components/RPD/Technologies";
 import InformResources from "./../components/RPD/InformResources";
-import {mapActions, mapMutations} from "vuex";
+import {mapState} from "vuex";
 
 export default {
   name: "RPD",
@@ -70,10 +70,18 @@ export default {
     Authors,
     InformResources
   },
-  methods: {
-    ...mapActions({
-      initData: 'rpd/initData'
+  data() {
+    return {
+      ready: false,
+    }
+  },
+  computed: {
+    ...mapState({
+      unitTitles: state => state.rpd.static.unitTitles
     })
+  },
+  async mounted() {
+    this.ready = await this.$store.dispatch('rpd/initData', this.$route.query);
   }
 }
 </script>

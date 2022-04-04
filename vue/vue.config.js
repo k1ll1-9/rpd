@@ -14,7 +14,7 @@ module.exports = {
   },
   filenameHashing: false,
   outputDir: '../dist',
-  publicPath: process.env.NODE_ENV === 'production' ? '/local/components/syllabuses/RPD.single/templates/.default/' : '/',
+  publicPath: process.env.NODE_ENV === 'production' ? '/local/components/syllabuses/main/templates/.default/' : '/',
   chainWebpack: config => {
     config.plugin('copy').tap(([options]) => {
       options[0].ignore.push('RPD Form - dev_files/**')
@@ -28,7 +28,7 @@ if (process.env.NODE_ENV === 'development') {
     proxy: {
       '/api':
         {
-          target: 'https://lk.vavt.ru/local/components/syllabuses-test/RPD.single/templates/.default/api/index.php'
+          target: 'https://lk.vavt.ru/local/components/syllabuses-test/main/templates/.default/api/index.php'
         }
     }
   }

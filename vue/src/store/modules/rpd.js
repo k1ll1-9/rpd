@@ -1,22 +1,11 @@
+import router from '@/router/router'
+
 export const rpd = {
   state: () => ({
     managed: {}
   }),
   getters: {},
   mutations: {
-    SET_API_URL(state, url) {
-      state.APIurl = url
-    },
-    SET_PARAMS(state) {
-      const searchParams = new URLSearchParams(window.location.search)
-
-      state.params = {
-        profile: searchParams.get('profile'),
-        special: searchParams.get('special'),
-        year: searchParams.get('year'),
-        name: searchParams.get('name')
-      }
-    },
     UPDATE_RPD_ITEM(state, payload) {
       payload.identity.reduce((acc, c, i, arr) => acc[c] = (arr.length === ++i) ? payload.value : acc[c] || {}, state)
     },
@@ -34,12 +23,12 @@ export const rpd = {
     }
   },
   actions: {
-    async initData({state}) {
-      const res = await this.axios.get(state.APIurl,
+    async initData({state, rootState}, params) {
+      const res = await this.axios.get(rootState.APIurl,
         {
           params: {
-            action: "getData",
-            params: state.params
+            action: "getRPDData",
+            params: params
           }
         });
 
@@ -48,17 +37,16 @@ export const rpd = {
 
       return true;
     },
-    async updateData({commit, state}, payload) {
+    async updateData({commit, state, rootState}, payload) {
       commit(payload.updateType, payload)
-
-      await this.axios.post(state.APIurl,
+      await this.axios.post(rootState.APIurl,
         {
           action: "setData",
           data: state.managed,
-          params: state.params
+          params: router.currentRoute.value.query
         });
     },
-    async initPDF({state}){
+    async initPDF({state}) {
       const res = await this.axios.post('https://lk.vavt.ru/oplyuyko_test/printFormRPD.php',
         {
           action: "getPDF",

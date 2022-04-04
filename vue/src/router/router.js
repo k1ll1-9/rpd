@@ -1,5 +1,6 @@
 import SyllabusesList from "../pages/SyllabusesList";
 import RPDList from "../pages/RPDList";
+import RPD from "../pages/RPD";
 import {createRouter, createWebHistory} from "vue-router";
 
 const routes = [
@@ -10,12 +11,16 @@ const routes = [
   {
     path: '/list',
     component: RPDList
+  },
+  {
+    path: '/rpd',
+    component: RPD
   }
 ]
-
+const base = (process.env.NODE_ENV === 'development') ? '' : '/vavt-web/syllabuses/'
 const router = createRouter({
   routes,
-  history: createWebHistory()
+  history: createWebHistory(base)
 })
 
 export default router

@@ -4,5 +4,9 @@ export const syllabuses = {
   }),
   mutations: {
 
-  }
+  },
+  actions: {
+
+  },
+  namespaced : true
 }

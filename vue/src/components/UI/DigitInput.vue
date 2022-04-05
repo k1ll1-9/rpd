@@ -21,7 +21,7 @@ export default {
     updateState(e) {
       this.$store.dispatch('rpd/updateData', {
         identity: this.identity,
-        value: parseInt(e.target.value.trim()),
+        value: parseInt(e.target.value.trim()) || null,
         updateType: 'UPDATE_RPD_ITEM'
       });
     },

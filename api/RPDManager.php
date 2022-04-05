@@ -1,29 +1,15 @@
 <?php
 declare(strict_types=1);
 
+use VAVT\Services\Postgres;
+
 class RPDManager
 {
-    public $data;
 
-    public function __construct($data)
+    public static function getDisciplineStructure(&$data)
     {
-        $this->data = $data;
-        self::getDisciplineStructure();
-        self::getCompetencies();
-
-        if ($this->data['managed']['informationalResources'] === null){
-            $this->data['managed']['informationalResources'] = [
-                0 => [
-                    'value' => ''
-                ]
-            ];
-        }
-    }
-
-    public function getDisciplineStructure()
-    {
-        if (null === $this->data['managed']['disciplineStructure']) {
-            $this->data['managed']['disciplineStructure'] = [
+        if (null === $data['managed']['disciplineStructure']) {
+            $data['managed']['disciplineStructure'] = [
                 0 => [
                     'title' => null,
                     'semester' => null,
@@ -43,31 +29,31 @@ class RPDManager
         }
     }
 
-    public function getCompetencies()
+    public static function getCompetencies(&$data)
     {
 
-        $this->data['managed']['competencies'] = $this->data['managed']['competencies'] ?? [];
+        $data['managed']['competencies'] = $data['managed']['competencies'] ?? [];
 
-        foreach ($this->data['static']['competencies'] as $competency) {
+        foreach ($data['static']['competencies'] as $competency) {
 
             $compID = $competency['competenceCipher'];
 
-            if (!isset($this->data['managed']['competencies'][$compID])) {
-                $this->data['managed']['competencies'][$compID] = $competency;
-                $this->data['managed']['competencies'][$compID]['nextLvl'] = [];
+            if (!isset($data['managed']['competencies'][$compID])) {
+                $data['managed']['competencies'][$compID] = $competency;
+                $data['managed']['competencies'][$compID]['nextLvl'] = [];
             }
 
             foreach ($competency['nextLvl'] as $indicator) {
 
                 $indID = $indicator['competenceCipher'];
 
-                if (!isset($this->data['managed']['competencies'][$compID]['nextLvl'][$indID])) {
-                    $this->data['managed']['competencies'][$compID]['nextLvl'][$indID] = $indicator;
+                if (!isset($data['managed']['competencies'][$compID]['nextLvl'][$indID])) {
+                    $data['managed']['competencies'][$compID]['nextLvl'][$indID] = $indicator;
                 }
 
-                if (!isset($this->data['managed']['competencies'][$compID]['nextLvl'][$indID]['results'])) {
+                if (!isset($data['managed']['competencies'][$compID]['nextLvl'][$indID]['results'])) {
 
-                    $this->data['managed']['competencies'][$compID]['nextLvl'][$indID]['results'] = [
+                    $data['managed']['competencies'][$compID]['nextLvl'][$indID]['results'] = [
                         'know' => [
                             0 => [
                                 'value' => ''
@@ -88,9 +74,115 @@ class RPDManager
             }
         }
 
-        foreach ($this->data['managed']['competencies'] as &$competency) {
+        foreach ($data['managed']['competencies'] as &$competency) {
             \ksort($competency['nextLvl']);
         }
     }
 
+    public static function getRPDFromDB($params)
+    {
+        $pdo = Postgres::getInstance()->connect('pgsql:host=172.16.10.59;port=5432;dbname=Syllabuses_test;', 'umd-web', 'klopik463');
+
+        try {
+            $sql = 'SELECT json FROM  disciplines 
+                            WHERE (profile,special,entrance_year,name) = (:profile,:special,:entrance_year,:name) ';
+            $stmt = $pdo->prepare($sql);
+            $stmt->bindParam(':profile', $params['profile'], PDO::PARAM_STR);
+            $stmt->bindParam(':special', $params['special'], PDO::PARAM_STR);
+            $stmt->bindParam(':entrance_year', $params['year'], PDO::PARAM_STR);
+            $stmt->bindParam(':name', $params['name'], PDO::PARAM_STR);
+            $stmt->execute();
+            $res = $stmt->fetchColumn();
+            if ($res) {
+                $data['static'] = \json_decode($res, true);
+            }
+        } catch (\PDOException $e) {
+            echo $e->getMessage();
+        }
+
+        try {
+            $sql = 'SELECT json FROM  disciplines_history
+                            WHERE (profile,special,entrance_year,name) = (:profile,:special,:entrance_year,:name) 
+                            ORDER  BY last_change DESC NULLS 
+                            LAST LIMIT 1 ';
+            $stmt = $pdo->prepare($sql);
+            $stmt->bindParam(':profile', $params['profile'], PDO::PARAM_STR);
+            $stmt->bindParam(':special', $params['special'], PDO::PARAM_STR);
+            $stmt->bindParam(':entrance_year', $params['year'], PDO::PARAM_STR);
+            $stmt->bindParam(':name', $params['name'], PDO::PARAM_STR);
+            $stmt->execute();
+            $res = $stmt->fetchColumn();
+            if ($res) {
+                $data['managed'] = \json_decode($res, true);
+            }
+        } catch (\PDOException $e) {
+            echo $e->getMessage();
+        }
+
+        RPDManager::getDisciplineStructure($data);
+        RPDManager::getCompetencies($data);
+
+        return $data;
+    }
+
+    public static function getRPDList($params)
+    {
+        $pdo = Postgres::getInstance()->connect('pgsql:host=172.16.10.59;port=5432;dbname=Syllabuses_test;', 'umd-web', 'klopik463');
+
+        try {
+            $sql = 'SELECT json FROM  disciplines 
+                            WHERE (profile,special,entrance_year) = (:profile,:special,:entrance_year) ';
+            $stmt = $pdo->prepare($sql);
+            $stmt->bindParam(':profile', $params['profile'], PDO::PARAM_STR);
+            $stmt->bindParam(':special', $params['special'], PDO::PARAM_STR);
+            $stmt->bindParam(':entrance_year', $params['year'], PDO::PARAM_STR);
+            $stmt->execute();
+            $res = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (\PDOException $e) {
+            echo $e->getMessage();
+        }
+        return $res;
+    }
+
+    public static function getSyllabusesList()
+    {
+        try {
+            $pdo = Postgres::getInstance()->connect('pgsql:host=172.16.10.59;port=5432;dbname=Syllabuses_test;', 'umd-web', 'klopik463');
+            $res = $pdo->query('SELECT * FROM syllabuses')->fetchAll(PDO::FETCH_ASSOC);
+        } catch (\PDOException $e) {
+            echo $e->getMessage();
+        }
+        return $res;
+    }
+
+    public static function setRPDData($request)
+    {
+        $data = \json_encode($request['data'], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+        $pdo = Postgres::getInstance()->connect('pgsql:host=172.16.10.59;port=5432;dbname=Syllabuses_test;', 'umd-web', 'klopik463');
+        $params = $request['params'];
+
+        try {
+            $sql = 'INSERT INTO disciplines_history as dh (profile,special,entrance_year,name,last_change,json)
+                            VALUES (:profile,:special,:entrance_year,:name, current_timestamp,:data)
+                            ON CONFLICT (profile,special,entrance_year,name)
+                            DO UPDATE
+                            SET json = :data, last_change = current_timestamp
+                            WHERE dh.profile = :profile
+                                AND dh.special = :special
+                                AND dh.entrance_year = :entrance_year
+                                AND dh.name = :name';
+            $stmt = $pdo->prepare($sql);
+            $stmt->bindParam(':profile', $params['profile'], PDO::PARAM_STR);
+            $stmt->bindParam(':special', $params['special'], PDO::PARAM_STR);
+            $stmt->bindParam(':entrance_year', $params['year'], PDO::PARAM_STR);
+            $stmt->bindParam(':name', $params['name'], PDO::PARAM_STR);
+            $stmt->bindParam(':data', $data, PDO::PARAM_STR);
+            $stmt->execute();
+            $res = ['success' => true];
+
+        } catch (\PDOException $e) {
+            $res = ['error' => $e->getMessage()];
+        }
+        return $res;
+    }
 }

@@ -1,4 +1,5 @@
 <?php
+/** @global $USER */
 
 use Bitrix\Main\Context;
 use VAVT\Services\Postgres;
@@ -11,7 +12,6 @@ define('NOT_CHECK_PERMISSIONS', true);
 
 require $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_before.php";
 require __DIR__ .'/RPDManager.php';
-require __DIR__ .'/SyllabusManager.php';
 
 $request = Context::getCurrent()->getRequest();
 $method = $request->getRequestMethod();
@@ -21,74 +21,27 @@ switch ($method) {
     {
         switch ($request->getQuery('action')) {
             case 'getSyllabusesList':
-                $pdo = Postgres::getInstance()->connect('pgsql:host=172.16.10.59;port=5432;dbname=Syllabuses_test;', 'umd-web', 'klopik463');
-                try {
-                    $res = $pdo->query('SELECT * FROM syllabuses')->fetchAll(PDO::FETCH_ASSOC);
-                } catch (\PDOException $e) {
-                    echo $e->getMessage();
-                }
+
+                $res = RPDManager::getSyllabusesList();
+
                 die(\json_encode($res, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+
             case 'getRPDList':
-                $pdo = Postgres::getInstance()->connect('pgsql:host=172.16.10.59;port=5432;dbname=Syllabuses_test;', 'umd-web', 'klopik463');
+
                 $params = $request->getQueryList()->toArray();
                 $params = \json_decode($params['params'],true);
 
-                try {
-                    $sql = 'SELECT json FROM  disciplines 
-                            WHERE (profile,special,entrance_year) = (:profile,:special,:entrance_year) ';
-                    $stmt = $pdo->prepare($sql);
-                    $stmt->bindParam(':profile', $params['profile'], PDO::PARAM_STR);
-                    $stmt->bindParam(':special', $params['special'], PDO::PARAM_STR);
-                    $stmt->bindParam(':entrance_year', $params['year'], PDO::PARAM_STR);
-                    $stmt->execute();
-                    $res = $stmt->fetchAll(PDO::FETCH_ASSOC);
-                } catch (\PDOException $e) {
-                    echo $e->getMessage();
-                }
+                $res = RPDManager::getRPDList($params);
+
                 die(\json_encode($res, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+
             case 'getRPDData':
-                $pdo = Postgres::getInstance()->connect('pgsql:host=172.16.10.59;port=5432;dbname=Syllabuses_test;', 'umd-web', 'klopik463');
                 $params = $request->getQueryList()->toArray();
                 $params = \json_decode($params['params'],true);
 
-                try {
-                    $sql = 'SELECT json FROM  disciplines 
-                            WHERE (profile,special,entrance_year,name) = (:profile,:special,:entrance_year,:name) ';
-                    $stmt = $pdo->prepare($sql);
-                    $stmt->bindParam(':profile', $params['profile'], PDO::PARAM_STR);
-                    $stmt->bindParam(':special', $params['special'], PDO::PARAM_STR);
-                    $stmt->bindParam(':entrance_year', $params['year'], PDO::PARAM_STR);
-                    $stmt->bindParam(':name', $params['name'], PDO::PARAM_STR);
-                    $stmt->execute();
-                    $res = $stmt->fetchColumn();
-                    $staticData = \json_decode($res, true);
-                } catch (\PDOException $e) {
-                    echo $e->getMessage();
-                }
+                $res = RPDManager::getRPDFromDB($params);
 
-                try {
-                    $sql = 'SELECT json FROM  disciplines_history
-                            WHERE (profile,special,entrance_year,name) = (:profile,:special,:entrance_year,:name) 
-                            ORDER  BY last_change DESC NULLS 
-                            LAST LIMIT 1 ';
-                    $stmt = $pdo->prepare($sql);
-                    $stmt->bindParam(':profile', $params['profile'], PDO::PARAM_STR);
-                    $stmt->bindParam(':special', $params['special'], PDO::PARAM_STR);
-                    $stmt->bindParam(':entrance_year', $params['year'], PDO::PARAM_STR);
-                    $stmt->bindParam(':name', $params['name'], PDO::PARAM_STR);
-                    $stmt->execute();
-                    $res = $stmt->fetchColumn();
-                    $managedData = \json_decode($res, true);
-                } catch (\PDOException $e) {
-                    echo $e->getMessage();
-                }
-
-                $data['static'] = $staticData;
-                $data['managed'] = $managedData;
-
-                $RPD = new RPDManager($data);
-
-                die(\json_encode($RPD->data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+                die(\json_encode($res, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
         }
         break;
     }
@@ -98,34 +51,14 @@ switch ($method) {
         $request = \json_decode(\file_get_contents('php://input'), true);
         switch ($request['action']) {
             case 'setData':
-                $data = \json_encode($request['data'], JSON_PRETTY_PRINT || JSON_UNESCAPED_UNICODE);
-                $pdo = Postgres::getInstance()->connect('pgsql:host=172.16.10.59;port=5432;dbname=Syllabuses_test;', 'umd-web', 'klopik463');
-                $params = $request['params'];
+                $res = RPDManager::setRPDData($request);
 
-                try {
-                    $sql = 'INSERT INTO disciplines_history as dh (profile,special,entrance_year,name,last_change,json)
-                            VALUES (:profile,:special,:entrance_year,:name, current_timestamp,:data)
-                            ON CONFLICT (profile,special,entrance_year,name)
-                            DO UPDATE
-                            SET json = :data, last_change = current_timestamp
-                            WHERE dh.profile = :profile
-                                AND dh.special = :special
-                                AND dh.entrance_year = :entrance_year
-                                AND dh.name = :name';
-                    $stmt = $pdo->prepare($sql);
-                    $stmt->bindParam(':profile', $params['profile'], PDO::PARAM_STR);
-                    $stmt->bindParam(':special', $params['special'], PDO::PARAM_STR);
-                    $stmt->bindParam(':entrance_year', $params['year'], PDO::PARAM_STR);
-                    $stmt->bindParam(':name', $params['name'], PDO::PARAM_STR);
-                    $stmt->bindParam(':data', $data, PDO::PARAM_STR);
-                    $stmt->execute();
+                die(\json_encode($res,JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
 
-                } catch (\PDOException $e) {
-                    echo $e->getMessage();
-                }
-                die(\json_encode($stmt->errorInfo));
             case 'uploadFile':
                 die(\json_encode(123,JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+            case 'test':
+                die(json_encode(['id' => $USER->GetID()]));
         }
 
     }

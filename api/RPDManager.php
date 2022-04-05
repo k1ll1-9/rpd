@@ -185,4 +185,35 @@ class RPDManager
         }
         return $res;
     }
+
+    public static function getUserInfo()
+    {
+        global $USER;
+        $user['ID'] = $USER->GetID();
+
+        $res = CUser::GetByID(13825)->fetch();
+        $res = \Bitrix\Iblock\SectionTable::getList(
+            [
+                'filter' => [
+                    'ACTIVE' => 'Y',
+                    'ID' => $res['UF_DEPARTMENT']
+                ],
+                'select' => ['NAME']
+            ]
+        )->fetchAll();
+
+        $res = \array_map(function ($el) {
+            return $el['NAME'];
+        }, $res);
+
+        $user['departmentString']  = \join('', $res);
+
+        if (CSite::InGroup(1)){
+            $user['role'] = 'admin';
+        } else {
+            $user['role'] = 'user';
+        }
+
+        return $user;
+    }
 }

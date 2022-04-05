@@ -11,7 +11,7 @@ if (!$_SERVER['DOCUMENT_ROOT']) {
 define('NOT_CHECK_PERMISSIONS', true);
 
 require $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_before.php";
-require __DIR__ .'/RPDManager.php';
+require __DIR__ . '/RPDManager.php';
 
 $request = Context::getCurrent()->getRequest();
 $method = $request->getRequestMethod();
@@ -20,6 +20,12 @@ switch ($method) {
     case 'GET':
     {
         switch ($request->getQuery('action')) {
+            case 'initApp':{
+
+                $data['user'] = RPDManager::getUserInfo();
+
+                die(\json_encode($data,JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+            }
             case 'getSyllabusesList':
 
                 $res = RPDManager::getSyllabusesList();
@@ -29,7 +35,7 @@ switch ($method) {
             case 'getRPDList':
 
                 $params = $request->getQueryList()->toArray();
-                $params = \json_decode($params['params'],true);
+                $params = \json_decode($params['params'], true);
 
                 $res = RPDManager::getRPDList($params);
 
@@ -37,7 +43,7 @@ switch ($method) {
 
             case 'getRPDData':
                 $params = $request->getQueryList()->toArray();
-                $params = \json_decode($params['params'],true);
+                $params = \json_decode($params['params'], true);
 
                 $res = RPDManager::getRPDFromDB($params);
 
@@ -53,12 +59,11 @@ switch ($method) {
             case 'setData':
                 $res = RPDManager::setRPDData($request);
 
-                die(\json_encode($res,JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+                die(\json_encode($res));
 
             case 'uploadFile':
-                die(\json_encode(123,JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
-            case 'test':
-                die(json_encode(['id' => $USER->GetID()]));
+                die(\json_encode(123, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+
         }
 
     }

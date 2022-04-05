@@ -1,7 +1,8 @@
 <template>
   <div class="container-fluid">
     <h2 class="my-2">Учебный план</h2>
-    <h2 class="my-4">{{$route.query.special}} - {{ $route.query.profile}} - {{ (new Date($route.query.year)).getFullYear()}}</h2>
+    <h2 class="my-4">{{ $route.query.special }} - {{ $route.query.profile }} -
+      {{ (new Date($route.query.year)).getFullYear() }}</h2>
     <SyllabusFiles/>
     <table class="table my-5" v-if="RPDList">
       <thead>
@@ -20,7 +21,8 @@
         <td>{{ rpd.name }}</td>
         <td>{{ rpd.kafedra }}</td>
         <td>
-          <router-link :to="{path : '/rpd', query : rpd.query}" class="btn btn-primary">
+          <router-link :to="{path : '/rpd', query : rpd.query}" class="btn btn-primary"
+                       :class="{disabled: !rpd.editable}">
             Редактировать РПД
           </router-link>
         </td>
@@ -59,6 +61,7 @@ export default {
       const json = JSON.parse(el.json)
       return {
         ...json,
+        editable: this.$store.state.user.departmentString.includes(json.kafedra) || this.$store.state.user.role === 'admin',
         query: {
           special: json.syllabusData.special,
           profile: json.syllabusData.profile,

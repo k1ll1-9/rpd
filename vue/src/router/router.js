@@ -17,7 +17,7 @@ const routes = [
     component: RPD
   }
 ]
-const base = (process.env.NODE_ENV === 'development') ? '' : '/vavt-web/syllabuses-test/'
+const base = (process.env.NODE_ENV === 'development') ? '' : '/vavt-web/syllabuses/'
 const router = createRouter({
   routes,
   history: createWebHistory(base)

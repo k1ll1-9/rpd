@@ -45,7 +45,7 @@ export default {
             if (el.semester !== null) {
               seminars[el.title][el.semester] = {
                 'seminars': el.seminars || [],
-                'count': Math.ceil(el.load?.seminars / 2),
+                'count': Math.ceil(el.load?.seminars / 2) || 0,
                 'identity': ['managed', 'disciplineStructure', i, 'seminars']
               }
             }

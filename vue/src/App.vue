@@ -10,10 +10,10 @@ export default {
     templatePath: String
   },
   computed: {},
-  async mounted() {
-    const url = (process.env.NODE_ENV === 'development') ? process.env.VUE_APP_API_PROXY : `https://lk.vavt.ru${this.templatePath}/api/index.php`
-    this.$store.commit('SET_API_URL',url)
+  mounted() {
+    this.$store.dispatch('init')
   }
+
 }
 </script>
 

@@ -1,5 +1,6 @@
 <template>
   <div class="container-fluid">
+    <button class="btn btn-success" @click="test()">test</button>
     <h2 class="my-2">Список учебных планов</h2>
     <table class="table my-5" v-if="syllabuses">
       <thead>
@@ -41,6 +42,12 @@ export default {
     return {
       syllabuses: null,
     }
+  },
+  methods: {
+/*    async test(){
+      const res = await this.axios.post(this.$store.state.APIurl,{action: 'test'});
+      console.log(res)
+    }*/
   },
   async mounted() {
     const res = await this.axios.get(this.$store.state.APIurl,

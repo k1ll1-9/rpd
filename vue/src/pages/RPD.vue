@@ -45,7 +45,7 @@ import PDFButton from "./../components/RPD/PDFButton";
 import Preloader from "./../components/Misc/Preloader";
 import GradesCurrent from "./../components/RPD/Grades/GradesCurrent"
 import GradesCurrentDescription from "./../components/RPD/Grades/GradesCurrentDescription";
-import Technologies from "./../components/RPD/Technologies";
+import Technologies from "../components/RPD/EducationTechnologies";
 import InformResources from "./../components/RPD/InformResources";
 import {mapState} from "vuex";
 

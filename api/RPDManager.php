@@ -79,6 +79,18 @@ class RPDManager
         }
     }
 
+    public static function getInformResources(&$data)
+    {
+        if (null === $data['managed']['informationalResources']) {
+            $data['managed']['informationalResources'] = [
+                0 => [
+                    'value' => ''
+                ]
+            ];
+        }
+
+    }
+
     public static function getRPDFromDB($params)
     {
         $pdo = Postgres::getInstance()->connect('pgsql:host=172.16.10.59;port=5432;dbname=Syllabuses_test;', 'umd-web', 'klopik463');
@@ -121,7 +133,7 @@ class RPDManager
 
         RPDManager::getDisciplineStructure($data);
         RPDManager::getCompetencies($data);
-
+        RPDManager::getInformResources($data);
         return $data;
     }
 
@@ -141,6 +153,7 @@ class RPDManager
         } catch (\PDOException $e) {
             echo $e->getMessage();
         }
+
         return $res;
     }
 
@@ -148,10 +161,80 @@ class RPDManager
     {
         try {
             $pdo = Postgres::getInstance()->connect('pgsql:host=172.16.10.59;port=5432;dbname=Syllabuses_test;', 'umd-web', 'klopik463');
-            $res = $pdo->query('SELECT * FROM syllabuses')->fetchAll(PDO::FETCH_ASSOC);
+            $res = $pdo->query('SELECT profile,special,entrance_year,syllabus_year,qualification FROM syllabuses')->fetchAll(PDO::FETCH_ASSOC);
         } catch (\PDOException $e) {
             echo $e->getMessage();
         }
+        return $res;
+    }
+
+    public static function getSyllabusFiles($params)
+    {
+        $pdo = Postgres::getInstance()->connect('pgsql:host=172.16.10.59;port=5432;dbname=Syllabuses_test;', 'umd-web', 'klopik463');
+
+        try {
+            $sql = 'SELECT array_to_json(pdf_f) as pdf_f,
+                           array_to_json(competencies_f) as competencies_f,
+                           array_to_json(schedule_f) as schedule_f,
+                           array_to_json(practice_f) as practice_f,
+                           array_to_json(oop_f) as oop_f,
+                           array_to_json(methodical_f) as methodical_f,
+                           array_to_json(distant_f) as distant_f
+                    FROM  syllabuses 
+                    WHERE (profile,special,entrance_year) = (:profile,:special,:entrance_year) ';
+            $stmt = $pdo->prepare($sql);
+            $stmt->bindParam(':profile', $params['profile'], PDO::PARAM_STR);
+            $stmt->bindParam(':special', $params['special'], PDO::PARAM_STR);
+            $stmt->bindParam(':entrance_year', $params['year'], PDO::PARAM_STR);
+            $stmt->execute();
+            $res = $stmt->fetch(PDO::FETCH_ASSOC);
+        } catch (\PDOException $e) {
+            echo $e->getMessage();
+        }
+
+        $res = [
+            [
+                'colName' => 'pdf_f',
+                'arFiles' => self::getArFiles($res['pdf_f']),
+                'title' => 'Загрузить PDF'
+            ],
+            [
+                'colName' => 'competencies_f',
+                'arFiles' => self::getArFiles($res['competencies_f']),
+                'title' => 'Загрузить Компетенцию'
+            ],
+            [
+                'colName' => 'schedule_f',
+                'arFiles' => self::getArFiles($res['schedule_f']),
+                'title' => 'Загрузить График'
+            ],
+            [
+                'colName' => 'gia_f',
+                'arFiles' => self::getArFiles($res['gia_f']),
+                'title' => 'Загрузить График'
+            ],
+            [
+                'colName' => 'practice_f',
+                'arFiles' => self::getArFiles($res['practice_f']),
+                'title' => 'Загрузить Практику'
+            ],
+            [
+                'colName' => 'oop_f',
+                'arFiles' => self::getArFiles($res['oop_f']),
+                'title' => 'Загрузить ООП'
+            ],
+            [
+                'colName' => 'methodical_f',
+                'arFiles' => self::getArFiles($res['methodical_f']),
+                'title' => 'Загрузить Методический Документ'
+            ],
+            [
+                'colName' => 'distant_f',
+                'arFiles' => self::getArFiles($res['distant_f']),
+                'title' => 'Загрузить Дистант и ЭО'
+            ]
+        ];
+
         return $res;
     }
 
@@ -191,7 +274,7 @@ class RPDManager
         global $USER;
         $user['ID'] = $USER->GetID();
 
-        $res = CUser::GetByID(13825)->fetch();
+        $res = CUser::GetByID($user['ID'])->fetch();
         $res = \Bitrix\Iblock\SectionTable::getList(
             [
                 'filter' => [
@@ -206,9 +289,9 @@ class RPDManager
             return $el['NAME'];
         }, $res);
 
-        $user['departmentString']  = \join('', $res);
+        $user['departmentString'] = \join('', $res);
 
-        if (CSite::InGroup(1)){
+        if (CSite::InGroup([1])) {
             $user['role'] = 'admin';
         } else {
             $user['role'] = 'user';
@@ -216,4 +299,25 @@ class RPDManager
 
         return $user;
     }
+
+    public static function getArFiles(?string $JSONpath)
+    {
+        if ($JSONpath === null) {
+            return null;
+        }
+
+        $arFiles = [];
+
+        $arPath = \json_decode($JSONpath, true);
+
+        foreach ($arPath as $key => $path) {
+            $exp = \explode('/', $path);
+            $arFiles[$key]['name'] = $exp[\count($exp) - 1];
+            $arFiles[$key]['path'] = $path;
+        }
+
+        return $arFiles;
+    }
+
+
 }

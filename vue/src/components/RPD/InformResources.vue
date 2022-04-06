@@ -1,16 +1,18 @@
 <template>
   <div class="my-5">
-    <h3 class="my-4" :id="$store.state.rpd.static.unitTitles[8].code">8. {{ $store.state.rpd.static.unitTitles[8].title }}</h3>
+    <h3 class="my-4" :id="$store.state.rpd.static.unitTitles[8].code">8. {{
+        $store.state.rpd.static.unitTitles[8].title
+      }}</h3>
     <div class="d-flex flex-column align-items-center p-1">
       <div class="d-flex align-items-center w-100"
-           v-for="(link,index) in $store.state.rpd.managed.informationalResources"
+           v-for="(link,index) in informationalResources"
            :key="index">
         <div class="number">
           {{ index + 1 }}.
         </div>
         <TextArea class="my-2" rows="2" :identity="['managed','informationalResources',index,'value']"/>
         <button type="button"
-                v-if="$store.state.rpd.managed.informationalResources.length > 1"
+                v-if="informationalResources.length > 1"
                 @click="removeResult(['managed','informationalResources'],index)"
                 class="btn btn-danger m-2">
           <BIconX-octagon class="cross"/>
@@ -28,7 +30,7 @@
 <script>
 
 import TextArea from "../UI/TextArea";
-import {mapActions} from "vuex";
+import {mapActions, mapState} from "vuex";
 
 export default {
   components: {TextArea},
@@ -36,19 +38,24 @@ export default {
   data() {
     return {}
   },
-  computed: {},
+  computed:
+      mapState({
+        informationalResources: state => {
+          return state.rpd.managed.informationalResources
+        }
+      }),
   methods: {
     ...mapActions({
       updateData: 'rpd/updateData'
     }),
     addResult(identity) {
-      this.updateData( {
+      this.updateData({
         identity: identity,
         updateType: 'PUSH_RPD_ITEM'
       })
     },
     removeResult(identity, index) {
-      this.updateData(  {
+      this.updateData({
         identity: identity,
         index: index,
         updateType: 'SPLICE_RPD_ITEM'
@@ -59,7 +66,7 @@ export default {
 </script>
 
 <style scoped>
-.number{
+.number {
   margin-right: 10px;
   font-weight: 600;
   font-size: 18px;

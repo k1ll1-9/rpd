@@ -1,21 +1,49 @@
 <template>
-  <div class="row">
-    <div class="col">
-      <FileInput/>
+  <div class="row mt-5">
+    <div v-for="(file,index) in files" :key="index" class="col-3" style="min-height: 100px">
+      <FileButtonInput
+          @uploaded="pushFileList($event,index)"
+          :label="file.title"
+          :options="{action: 'uploadSyllabusFile', params : {...syllabus, colName : file.colName}}"/>
+      <div v-for="(link,i) in file.arFiles" :key="i" class="my-2">
+        <a :href="'https://lk.vavt.ru/helpers/getFile.php?file64='+encodeURIComponent(link.path)" target="_blank">
+          {{ link.name }} </a>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-import FileInput from "@/components/UI/FileInput";
+import FileButtonInput from "@/components/UI/FileButtonInput";
 
 export default {
   name: "SyllabusFiles",
-  components: {FileInput}
-
+  props: ['files', 'syllabus'],
+  components: {FileButtonInput},
+  data() {
+    return {
+      filesList: this.files
+    }
+  },
+  methods: {
+    pushFileList(e, index) {
+      //TODO исправить баг при загрузке первого файла
+      this.filesList.map((el, i) => (i === index) ? el?.arFiles.push(e) || (el.arFiles = e) : el)
+    }
+  }
 }
 </script>
 
 <style scoped>
+label {
+  width: 100%;
+}
 
+a {
+  text-decoration: none;
+}
+
+a:hover {
+  color: #0d6efd;
+}
 </style>

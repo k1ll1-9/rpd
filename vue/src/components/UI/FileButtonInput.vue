@@ -1,18 +1,20 @@
 <template>
-  <label class="btn btn-primary">Загрузить PDF
+  <label class="btn btn-primary">{{ label }}
     <input type="file" @change="upload" hidden>
   </label>
 </template>
 
 <script>
 export default {
-  name: "FileInput",
+  name: "FileButtonInput",
+  props: ['options', 'label'],
   methods: {
     async upload(e) {
       const formData = new FormData();
 
       formData.append('file', e.target.files[0]);
-      formData.append('action', 'uploadFile');
+      formData.append('action', this.options.action);
+      formData.append('params', JSON.stringify(this.options.params));
 
       const res = await this.axios.post( this.$store.state.APIurl,
           formData,
@@ -22,7 +24,7 @@ export default {
             }
           }
       )
-      console.log(res)
+      this.$emit('uploaded',res.data)
     }
   }
 }

@@ -51,11 +51,11 @@ export default {
             action: "getSyllabusesList",
           }
         });
-
+//TODO пофиксить дату для сафари
     this.syllabuses = res.data.map((el) => {
       return {
         ...el,
-        entrance_year : (new Date(el.entrance_year)).getFullYear(),
+        entrance_year : 2021/*(new Date(el.entrance_year)).getFullYear()*/,
         query : {
           special: el.special,
           profile: el.profile,

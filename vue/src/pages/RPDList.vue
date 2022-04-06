@@ -1,9 +1,9 @@
 <template>
-  <div class="container-fluid">
+  <div v-if="ready" class="container-fluid">
     <h2 class="my-2">Учебный план</h2>
-    <h2 class="my-4">{{ $route.query.special }} - {{ $route.query.profile }} -
-      {{ (new Date($route.query.year)).getFullYear() }}</h2>
-    <SyllabusFiles/>
+    <h2 class="my-4">{{ syllabus.special }} - {{ syllabus.profile }} -
+      {{ (new Date(syllabus.year)).getFullYear() }}</h2>
+    <SyllabusFiles :files="files" :syllabus="syllabus"/>
     <table class="table my-5" v-if="RPDList">
       <thead>
       <tr>
@@ -45,7 +45,10 @@ export default {
   },
   data() {
     return {
+      ready: false,
       RPDList: null,
+      files: null,
+      syllabus: null
     }
   },
   async mounted() {
@@ -57,11 +60,16 @@ export default {
           }
         });
 
-    this.RPDList = res.data.map((el) => {
+    this.ready = true
+    this.files = res.data.syllabusFiles
+
+    this.RPDList = res.data.list.map((el) => {
       const json = JSON.parse(el.json)
       return {
         ...json,
-        editable: this.$store.state.user.departmentString.includes(json.kafedra) || this.$store.state.user.role === 'admin',
+        editable: this.$store.state.user.departmentString.includes(json.kafedra)
+            || this.$store.state.user.role === 'admin'
+            || process.env.NODE_ENV === 'development',
         query: {
           special: json.syllabusData.special,
           profile: json.syllabusData.profile,
@@ -70,6 +78,12 @@ export default {
         }
       }
     })
+
+    this.syllabus = {
+      special: this.RPDList[0].syllabusData.special,
+      profile: this.RPDList[0].syllabusData.profile,
+      year: this.RPDList[0].syllabusData.year,
+    }
   }
 }
 </script>

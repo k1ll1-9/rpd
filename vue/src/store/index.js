@@ -9,7 +9,7 @@ export default createStore({
   actions: {
     async init({state}) {
 
-      state.APIurl = (process.env.NODE_ENV === 'development') ? process.env.VUE_APP_API_PROXY : `https://lk.vavt.ru/local/components/syllabuses/main/templates/.default/api/index.php`
+      state.APIurl = process.env.VUE_APP_API_PROXY
 
       const res = await this.axios.get(state.APIurl, {
         params: {

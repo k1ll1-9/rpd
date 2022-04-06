@@ -1,7 +1,7 @@
 <template>
   <div class="my-5">
     <h3 class="my-4" :id="$store.state.rpd.static.unitTitles[6].code">6. {{ $store.state.rpd.static.unitTitles[6].title }}</h3>
-    <VisualEditor :identity="['managed','Technologies']"/>
+    <VisualEditor :identity="['managed','educationTechnologies']"/>
   </div>
 </template>
 

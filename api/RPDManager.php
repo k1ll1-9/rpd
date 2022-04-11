@@ -192,6 +192,12 @@ class RPDManager
             echo $e->getMessage();
         }
 
+        /**собираем массив данных по файлам:
+         * - colName - название поля в postgres
+         * - arFiles - массив описания файлов в файловой системе
+         * - title - название в родительном падеже для лэйбла на кнопке вида 'Загрузить/Добавить #title#'
+         **/
+
         $res = [
             [
                 'colName' => 'pdf_f',
@@ -211,7 +217,7 @@ class RPDManager
             [
                 'colName' => 'gia_f',
                 'arFiles' => self::getArFiles($res['gia_f']),
-                'title' => 'График'
+                'title' => 'ГИА'
             ],
             [
                 'colName' => 'practice_f',
@@ -237,6 +243,49 @@ class RPDManager
 
         return $res;
     }
+
+    public static function uploadSyllabusFile($params,$file)
+    {
+        $originalYear = $params['year'];
+        $params['year'] = \date('d-m-Y', \strtotime($params['year']));
+        $fp = '/mnt/synology_nfs/syllabuses/' . \join('/', $params);
+        \mkdir($fp, 0775, true);
+        $fn = '/' . $file['name'];
+        $path = $fp . $fn;
+        \move_uploaded_file($file['tmp_name'], $path);
+
+        try {
+            $pdo = Postgres::getInstance()->connect('pgsql:host='.DB_HOST.';port=5432;dbname='.DB_NAME.';', DB_USER, DB_PASSWORD);
+            $sql = "UPDATE syllabuses 
+                            SET {$params['colName']} = array_append({$params['colName']}, :path)
+                            WHERE profile = :profile
+                                AND special = :special
+                                AND entrance_year = :entrance_year
+                                AND (:path <> ALL ({$params['colName']}) OR {$params['colName']} IS NULL)";
+            $stmt = $pdo->prepare($sql);
+            $stmt->bindParam(':profile', $params['profile'], PDO::PARAM_STR);
+            $stmt->bindParam(':special', $params['special'], PDO::PARAM_STR);
+            $stmt->bindParam(':entrance_year', $originalYear, PDO::PARAM_STR);
+            $stmt->bindParam(':path', $path, PDO::PARAM_STR);
+            $result = $stmt->execute();
+        } catch (\PDOException $e) {
+            $result = $e->getMessage();
+        }
+
+        if ($result === true){
+            $res = [
+                'name' => $file['name'],
+                'path' => $path
+            ];
+        } else {
+            $res = [
+                'error' => $result
+            ];
+        }
+
+        return $res;
+    }
+
 
     public static function setRPDData($request)
     {

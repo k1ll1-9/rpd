@@ -68,36 +68,8 @@ switch ($method) {
                 case 'uploadSyllabusFile':
                     $params = \json_decode($request->getPost('params'), true);
                     $file = $request->getFile('file');
-
-                    $originalYear = $params['year'];
-                    $params['year'] = \date('d-m-Y', \strtotime($params['year']));
-                    $fp = '/mnt/synology_nfs/syllabuses/' . \join('/', $params);
-                    \mkdir($fp, 0775, true);
-                    $fn = '/' . $file['name'];
-                    $path = $fp . $fn;
-                    \move_uploaded_file($file['tmp_name'], $path);
-
-                    try {
-                        $pdo = Postgres::getInstance()->connect('pgsql:host=172.16.10.59;port=5432;dbname=Syllabuses_test;', 'umd-web', 'klopik463');
-                        $sql = "UPDATE syllabuses 
-                            SET {$params['colName']} = array_append({$params['colName']}, :path)
-                            WHERE profile = :profile
-                                AND special = :special
-                                AND entrance_year = :entrance_year
-                                AND (:path <> ALL ({$params['colName']}) OR {$params['colName']} IS NULL)";
-                        $stmt = $pdo->prepare($sql);
-                        $stmt->bindParam(':profile', $params['profile'], PDO::PARAM_STR);
-                        $stmt->bindParam(':special', $params['special'], PDO::PARAM_STR);
-                        $stmt->bindParam(':entrance_year', $originalYear, PDO::PARAM_STR);
-                        $stmt->bindParam(':path', $path, PDO::PARAM_STR);
-                        $stmt->execute();
-                    } catch (\PDOException $e) {
-                        echo $e->getMessage();
-                    }
-                    die(\json_encode([
-                        'name' => $file['name'],
-                        'path' => $path
-                    ], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+                    $res = RPDManager::uploadSyllabusFile($params,$file);
+                    die(\json_encode($res, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
             }
             break;
         }

@@ -27,8 +27,7 @@ export default {
   },
   methods: {
     pushFileList(e, index) {
-      //TODO исправить баг при загрузке первого файла
-      this.filesList.map((el, i) => (i === index) ? el?.arFiles.push(e) || (el.arFiles = e) : el)
+      this.filesList.map((el, i) => (i === index) ? el.arFiles?.push(e) || (el.arFiles = []).push(e) : el)
     }
   }
 }

@@ -196,42 +196,42 @@ class RPDManager
             [
                 'colName' => 'pdf_f',
                 'arFiles' => self::getArFiles($res['pdf_f']),
-                'title' => 'Загрузить PDF'
+                'title' => 'PDF'
             ],
             [
                 'colName' => 'competencies_f',
                 'arFiles' => self::getArFiles($res['competencies_f']),
-                'title' => 'Загрузить Компетенцию'
+                'title' => 'Компетенцию'
             ],
             [
                 'colName' => 'schedule_f',
                 'arFiles' => self::getArFiles($res['schedule_f']),
-                'title' => 'Загрузить График'
+                'title' => 'График'
             ],
             [
                 'colName' => 'gia_f',
                 'arFiles' => self::getArFiles($res['gia_f']),
-                'title' => 'Загрузить График'
+                'title' => 'График'
             ],
             [
                 'colName' => 'practice_f',
                 'arFiles' => self::getArFiles($res['practice_f']),
-                'title' => 'Загрузить Практику'
+                'title' => 'Практику'
             ],
             [
                 'colName' => 'oop_f',
                 'arFiles' => self::getArFiles($res['oop_f']),
-                'title' => 'Загрузить ООП'
+                'title' => 'ООП'
             ],
             [
                 'colName' => 'methodical_f',
                 'arFiles' => self::getArFiles($res['methodical_f']),
-                'title' => 'Загрузить Методический Документ'
+                'title' => 'Методический Документ'
             ],
             [
                 'colName' => 'distant_f',
                 'arFiles' => self::getArFiles($res['distant_f']),
-                'title' => 'Загрузить Дистант и ЭО'
+                'title' => 'Дистант и ЭО'
             ]
         ];
 

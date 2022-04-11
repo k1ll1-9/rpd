@@ -1,9 +1,9 @@
 <template>
   <div class="row mt-5">
-    <div v-for="(file,index) in files" :key="index" class="col-3" style="min-height: 100px">
+    <div v-for="(file,index) in files" :key="index" class="col-3 mb-2">
       <FileButtonInput
           @uploaded="pushFileList($event,index)"
-          :label="file.title"
+          :label="(file?.arFiles?.length > 0 ? 'Добавить ' : 'Загрузить ') + file.title"
           :options="{action: 'uploadSyllabusFile', params : {...syllabus, colName : file.colName}}"/>
       <div v-for="(link,i) in file.arFiles" :key="i" class="my-2">
         <a :href="'https://lk.vavt.ru/helpers/getFile.php?file64='+encodeURIComponent(link.path)" target="_blank">

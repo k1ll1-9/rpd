@@ -17,8 +17,8 @@ const routes = [
     component: RPD
   }
 ]
-//TODO разобраться с перемнными среды
-const base = '/vavt-web/syllabuses/'
+
+const base = process.env.VUE_APP_BASE_ROUTER_URL
 const router = createRouter({
   routes,
   history: createWebHistory(base)

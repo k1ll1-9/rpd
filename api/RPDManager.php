@@ -81,10 +81,18 @@ class RPDManager
 
     public static function getInformResources(&$data)
     {
+
+        $data['static']['informationalResources'] = [
+            'Основная литература',
+            'Дополнительная литература',
+            '�?нформационные справочные системы и базы данных'
+        ];
+
         if (null === $data['managed']['informationalResources']) {
             $data['managed']['informationalResources'] = [
                 0 => [
-                    'value' => ''
+                    'value' => '',
+                    'type' => null
                 ]
             ];
         }
@@ -131,9 +139,12 @@ class RPDManager
             echo $e->getMessage();
         }
 
-        RPDManager::getDisciplineStructure($data);
-        RPDManager::getCompetencies($data);
-        RPDManager::getInformResources($data);
+        self::getDisciplineStructure($data);
+        self::getCompetencies($data);
+        self::getInformResources($data);
+        self::getUnitTitles($data);
+
+
         return $data;
     }
 
@@ -217,7 +228,7 @@ class RPDManager
             [
                 'colName' => 'gia_f',
                 'arFiles' => self::getArFiles($res['gia_f']),
-                'title' => 'ГИА'
+                'title' => 'Г�?А'
             ],
             [
                 'colName' => 'practice_f',
@@ -368,5 +379,58 @@ class RPDManager
         return $arFiles;
     }
 
+    public static function getUnitTitles(&$data)
+    {
+        $data['static']['unitTitles'] = [
+            1 => [
+                'title' => 'Цель освоения дисциплины',
+                'code' => 'disciplineTarget'
+            ],
+            2 => [
+                'title' => 'Место дисциплины в структуре ООП',
+                'code' => 'disciplinePlace'
+            ],
+            3 => [
+                'title' => 'Компетенции обучающихся, формируемые в результате освоения дисциплины',
+                'code' => 'competencies'
+            ],
+            4 => [
+                'title' => 'Структура дисциплины',
+                'code' => 'disciplineStructure'
+            ],
+            5 => [
+                'title' => 'Содержание дисциплины',
+                'code' => 'disciplineModules',
+                'subUnits' => [
+                    1 => [
+                        'title' => 'Темы и их аннотации',
+                        'code' => 'modulesThemes'
+                    ],
+                    2 => [
+                        'title' =>
+                            'Планы семинарских / практических занятий (если предусмотрены учебным планом)',
+                        'code' => 'modulesSeminars'
+                    ],
+                    3 => [
+                        'title' =>
+                            'Программа самостоятельной работы студентов',
+                        'code' => 'modulesSRS'
+                    ],
+                ]
+            ],
+            6 => [
+                'title' => 'Образовательные технологии',
+                'code' => 'educationTechnologies'
+            ],
+            7 => [
+                'title' => 'Оценочные средства',
+                'code' => 'gradeResources'
+            ],
+            8 => [
+                'title' => 'Учебно-методическое и информационное обеспечение дисциплины',
+                'code' => 'informationalResources'
+            ]
+        ];
+    }
 
 }

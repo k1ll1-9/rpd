@@ -82,19 +82,35 @@ class RPDManager
     public static function getInformResources(&$data)
     {
 
+        /*        $data['static']['informationalResources'] = [
+                    0 => [
+                        'value' => 'Основная литература',
+                    ],
+                    1 => [
+                        'value' => 'Дополнительная литература'
+                    ],
+                    2 => [
+                        'value' => 'Информационные справочные системы и базы данных'
+                    ],
+                ];*/
+
         $data['static']['informationalResources'] = [
             'Основная литература',
             'Дополнительная литература',
-            'Информационные справочные системы и базы данных'
+            'Информационные справочные системы и базы данных',
+            'Перечень программного обеспечения'
         ];
 
         if (null === $data['managed']['informationalResources']) {
-            $data['managed']['informationalResources'] = [
-                0 => [
-                    'value' => '',
-                    'type' => null
-                ]
-            ];
+            foreach ($data['static']['informationalResources'] as $item) {
+                if (null === $data['managed']['disciplineStructure'][$item]) {
+                    $data['managed']['informationalResources'][$item] = [
+                        0 => [
+                            'value' => ''
+                        ]
+                    ];
+                }
+            }
         }
 
     }
@@ -255,7 +271,7 @@ class RPDManager
         return $res;
     }
 
-    public static function uploadSyllabusFile($params,$file)
+    public static function uploadSyllabusFile($params, $file)
     {
         $originalYear = $params['year'];
         $params['year'] = \date('d-m-Y', \strtotime($params['year']));
@@ -283,7 +299,7 @@ class RPDManager
             $result = $e->getMessage();
         }
 
-        if ($result === true){
+        if ($result === true) {
             $res = [
                 'name' => $file['name'],
                 'path' => $path

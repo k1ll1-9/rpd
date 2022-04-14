@@ -84,6 +84,18 @@ class RPDManager
     public static function getInformResources(&$data)
     {
 
+        /*        $data['static']['informationalResources'] = [
+                    0 => [
+                        'value' => 'Основная литература',
+                    ],
+                    1 => [
+                        'value' => 'Дополнительная литература'
+                    ],
+                    2 => [
+                        'value' => 'Информационные справочные системы и базы данных'
+                    ],
+                ];*/
+
         $data['static']['informationalResources'] = [
             'Основная литература',
             'Дополнительная литература',

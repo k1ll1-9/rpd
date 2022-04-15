@@ -24,6 +24,7 @@
       <GradesCurrentDescription/>
     </div>
     <InformResources/>
+    <Annotation/>
     <PDFButton/>
   </div>
   <Preloader v-else style="margin-top: 200px"/>
@@ -47,11 +48,13 @@ import GradesCurrent from "./../components/RPD/Grades/GradesCurrent"
 import GradesCurrentDescription from "./../components/RPD/Grades/GradesCurrentDescription";
 import Technologies from "../components/RPD/EducationTechnologies";
 import InformResources from "./../components/RPD/InformResources";
+import Annotation from "@/components/RPD/Annotation";
 import {mapState} from "vuex";
 
 export default {
   name: "RPD",
   components: {
+    Annotation,
     Technologies,
     Place,
     Preloader,

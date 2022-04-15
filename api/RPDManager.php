@@ -82,18 +82,6 @@ class RPDManager
     public static function getInformResources(&$data)
     {
 
-        /*        $data['static']['informationalResources'] = [
-                    0 => [
-                        'value' => 'Основная литература',
-                    ],
-                    1 => [
-                        'value' => 'Дополнительная литература'
-                    ],
-                    2 => [
-                        'value' => 'Информационные справочные системы и базы данных'
-                    ],
-                ];*/
-
         $data['static']['informationalResources'] = [
             'Основная литература',
             'Дополнительная литература',
@@ -313,6 +301,31 @@ class RPDManager
         return $res;
     }
 
+    public static function deleteSyllabusFile($params)
+    {
+        try {
+            $pdo = Postgres::getInstance()->connect('pgsql:host=172.16.10.59;port=5432;dbname=Syllabuses_test;', 'umd-web', 'klopik463');
+            $sql = "UPDATE syllabuses 
+                            SET {$params['colName']} = array_remove({$params['colName']},:path)
+                            WHERE profile = :profile
+                                AND special = :special
+                                AND entrance_year = :entrance_year";
+            $stmt = $pdo->prepare($sql);
+            $stmt->bindParam(':profile', $params['profile'], PDO::PARAM_STR);
+            $stmt->bindParam(':special', $params['special'], PDO::PARAM_STR);
+            $stmt->bindParam(':entrance_year', $params['year'], PDO::PARAM_STR);
+            $stmt->bindParam(':path', $params['link'], PDO::PARAM_STR);
+            $result = $stmt->execute();
+        } catch (\PDOException $e) {
+            return ['error' => $e->getMessage()];
+        }
+
+        if ($result === true) {
+            $result = \unlink($params['link']);
+        }
+
+        return $result ? ['success' => true] : ['error' => 'file system error'];
+    }
 
     public static function setRPDData($request)
     {

@@ -53,14 +53,6 @@ export const rpd = {
 
       await this.axios.post(rootState.APIurl, data);
     },
-/*    async pushState({state, rootState}) {
-      await this.axios.post(rootState.APIurl,
-        {
-          action: "setData",
-          data: state.managed,
-          params: router.currentRoute.value.query
-        });
-    },*/
     async initPDF({state}) {
       const res = await this.axios.post('https://lk.vavt.ru/oplyuyko_test/printFormRPD.php',
         {

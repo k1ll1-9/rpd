@@ -62,6 +62,9 @@ switch ($method) {
                     $res = RPDManager::setRPDData($data);
                     die(\json_encode($res));
                     break;
+                case 'deleteSyllabusFile':
+                    $res = RPDManager::deleteSyllabusFile($data['params']);
+                    die(\json_encode($res, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
             }
         } else {
             switch ($request['action']) {
@@ -71,7 +74,6 @@ switch ($method) {
                     $res = RPDManager::uploadSyllabusFile($params,$file);
                     die(\json_encode($res, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
             }
-            break;
         }
     }
 }

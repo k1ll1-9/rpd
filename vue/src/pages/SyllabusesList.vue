@@ -5,6 +5,7 @@
       <thead>
       <tr>
         <th>Уровень подготовки</th>
+        <th>Форма обучения</th>
         <th>Направление</th>
         <th>Профиль</th>
         <th>Год</th>
@@ -14,6 +15,7 @@
       <tbody>
       <tr v-for="(syllabus, index) in syllabuses" :key="index">
         <td>{{ syllabus.qualification }}</td>
+        <td>{{ syllabus.education_form }}</td>
         <td>{{ syllabus.special }}</td>
         <td>{{ syllabus.profile }}</td>
         <td>{{ syllabus.entrance_year }}</td>

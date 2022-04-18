@@ -4,12 +4,14 @@
       <FileButtonInput
           @uploaded="pushFileList($event,index)"
           :label="(file?.arFiles?.length > 0 ? 'Добавить ' : 'Загрузить ') + file.title"
-          :options="{action: 'uploadSyllabusFile', params : {...syllabus, colName : file.colName}}"/>
+          :options="{action: 'uploadSyllabusFile', params : {...syllabus, colName : file.colName} ,disabled: !isEditor}"/>
       <div v-for="(link,i) in file.arFiles" :key="i" class="my-2">
         <a :href="'https://lk.vavt.ru/helpers/getFile.php?file64='+encodeURIComponent(link.path)" target="_blank">
           {{ link.name }}
         </a>
-        <BIconX-octagon class="cross ms-1" @click="removeFile(syllabus,link,i)"/>
+        <BIconX-octagon v-if="isEditor"
+                        class="cross ms-1"
+                        @click="removeFile(syllabus,link,i)"/>
       </div>
     </div>
   </div>
@@ -24,6 +26,9 @@ export default {
   components: {FileButtonInput},
   data() {
     return {
+      isEditor: this.$store.state.user.role === 'editor'
+          || this.$store.state.user.role === 'admin'
+          || process.env.NODE_ENV === 'development',
       filesList: this.files
     }
   },
@@ -35,10 +40,10 @@ export default {
 
       const exp = link.path.split('/')
       const colName = exp[exp.length - 2]
-      const res = await this.axios.post( this.$store.state.APIurl,
+      const res = await this.axios.post(this.$store.state.APIurl,
           {
             action: 'deleteSyllabusFile',
-            params : {
+            params: {
               ...syllabus,
               link: link.path,
               colName: colName,
@@ -46,11 +51,11 @@ export default {
           }
       )
 
-      if (res.data.success === true){
+      if (res.data.success === true) {
         this.filesList.forEach((el) => {
-          if (el.colName === colName){
+          if (el.colName === colName) {
             console.log(el)
-            el.arFiles = el.arFiles.filter((el,i) => i !== index )
+            el.arFiles = el.arFiles.filter((el, i) => i !== index)
           }
         })
 

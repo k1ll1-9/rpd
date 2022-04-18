@@ -25,7 +25,7 @@
     </div>
     <InformResources/>
     <Annotation/>
-    <PDFButton/>
+    <PDFButton v-if="$store.state.user.role === 'admin'"/>
   </div>
   <Preloader v-else style="margin-top: 200px"/>
 </template>

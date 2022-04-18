@@ -147,7 +147,7 @@ class RPDManager
         self::getCompetencies($data);
         self::getInformResources($data);
         self::getUnitTitles($data);
-
+        $data['version'] = '2022041501';
 
         return $data;
     }
@@ -176,7 +176,13 @@ class RPDManager
     {
         try {
             $pdo = Postgres::getInstance()->connect('pgsql:host=172.16.10.59;port=5432;dbname=Syllabuses_test;', 'umd-web', 'klopik463');
-            $res = $pdo->query('SELECT profile,special,entrance_year,syllabus_year,qualification FROM syllabuses')->fetchAll(PDO::FETCH_ASSOC);
+            $sql = 'SELECT profile,special,entrance_year,syllabus_year,qualification,education_form 
+                           FROM syllabuses
+                           ORDER BY qualification ASC,
+                                    education_form ASC,
+                                    special ASC,
+                                    profile ASC';
+            $res = $pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
         } catch (\PDOException $e) {
             echo $e->getMessage();
         }
@@ -382,6 +388,8 @@ class RPDManager
 
         if (CSite::InGroup([1])) {
             $user['role'] = 'admin';
+        } else if (CSite::InGroup([85])) {
+            $user['role'] = 'editor';
         } else {
             $user['role'] = 'user';
         }

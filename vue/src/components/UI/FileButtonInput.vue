@@ -1,5 +1,5 @@
 <template>
-  <label class="btn btn-primary">{{ label }}
+  <label class="btn btn-primary" :class="{disabled : options.disabled}">{{ label }}
     <input type="file" @change="upload" hidden>
   </label>
 </template>
@@ -7,7 +7,7 @@
 <script>
 export default {
   name: "FileButtonInput",
-  props: ['options', 'label'],
+  props: ['options', 'label','disabled'],
   methods: {
     async upload(e) {
       const formData = new FormData();

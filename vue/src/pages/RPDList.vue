@@ -69,6 +69,7 @@ export default {
         ...json,
         editable: this.$store.state.user.departmentString.includes(json.kafedra)
             || this.$store.state.user.role === 'admin'
+            || this.$store.state.user.role === 'editor'
             || process.env.NODE_ENV === 'development',
         query: {
           special: json.syllabusData.special,

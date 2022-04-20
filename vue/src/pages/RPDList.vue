@@ -3,6 +3,8 @@
     <h2 class="my-2">Учебный план</h2>
     <h2 class="my-4">{{ syllabus.special }} - {{ syllabus.profile }} -
       {{ (new Date(syllabus.year)).getFullYear() }}</h2>
+    <h2 class="my-4">Уровень подготовки: {{syllabus.level}}</h2>
+    <h2 class="my-4">Форма обучения: {{syllabus.form}}</h2>
     <SyllabusFiles :files="files" :syllabus="syllabus"/>
     <table class="table my-5" v-if="RPDList">
       <thead>
@@ -85,6 +87,8 @@ export default {
       special: this.RPDList[0].syllabusData.special,
       profile: this.RPDList[0].syllabusData.profile,
       year: this.RPDList[0].syllabusData.year,
+      form: this.RPDList[0].syllabusData.formOfTraining,
+      level: this.RPDList[0].syllabusData.educationLevel
     }
   }
 }

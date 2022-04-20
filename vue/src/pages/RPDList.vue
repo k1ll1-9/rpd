@@ -15,14 +15,14 @@
       </tr>
       </thead>
       <tbody>
-      <tr v-for="(rpd, index) in RPDList" :key="index">
+      <tr v-for="(rpd, index) in RPDList" :key="index"  :class="{ outdated : !rpd.actual }">
         <td>{{ index + 1 }}</td>
         <td>{{ rpd.disciplineIndex }}</td>
         <td>{{ rpd.name }}</td>
         <td>{{ rpd.kafedra }}</td>
         <td>
           <router-link :to="{path : '/rpd', query : rpd.query}" class="btn btn-primary"
-                       :class="{disabled: !rpd.editable}">
+                       :class="{disabled: !rpd.editable }">
             Редактировать РПД
           </router-link>
         </td>
@@ -71,6 +71,7 @@ export default {
             || this.$store.state.user.role === 'admin'
             || this.$store.state.user.role === 'editor'
             || process.env.NODE_ENV === 'development',
+        actual: el.actual,
         query: {
           special: json.syllabusData.special,
           profile: json.syllabusData.profile,
@@ -92,6 +93,9 @@ export default {
 <style scoped>
 td {
   vertical-align: middle;
+}
+.outdated{
+  text-decoration:line-through;
 }
 </style>
 

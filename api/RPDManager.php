@@ -157,8 +157,9 @@ class RPDManager
         $pdo = Postgres::getInstance()->connect('pgsql:host='.DB_HOST.';port=5432;dbname='.DB_NAME.';', DB_USER, DB_PASSWORD);
 
         try {
-            $sql = 'SELECT json FROM  disciplines 
-                            WHERE (profile,special,entrance_year) = (:profile,:special,:entrance_year) ';
+            $sql = 'SELECT json,actual FROM  disciplines 
+                            WHERE (profile,special,entrance_year) = (:profile,:special,:entrance_year) 
+                            ORDER BY actual DESC';
             $stmt = $pdo->prepare($sql);
             $stmt->bindParam(':profile', $params['profile'], PDO::PARAM_STR);
             $stmt->bindParam(':special', $params['special'], PDO::PARAM_STR);

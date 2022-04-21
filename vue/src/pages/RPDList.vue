@@ -23,9 +23,9 @@
         <td>{{ rpd.name }}</td>
         <td>{{ rpd.kafedra }}</td>
         <td>
-          <router-link :to="{path : '/rpd', query : rpd.query}" class="btn btn-primary"
+          <router-link :to="{path : '/rpd', query : rpd.query}" class="btn btn-primary d-flex align-items-center justify-content-center"
                        :class="{disabled: !rpd.editable }">
-            Редактировать РПД
+            {{ (rpd.status === 'blank') ? 'Создать' : 'Редактировать' }} РПД
           </router-link>
         </td>
       </tr>
@@ -74,11 +74,13 @@ export default {
             || this.$store.state.user.role === 'editor'
             || process.env.NODE_ENV === 'development',
         actual: el.actual,
+        status: el.status,
         query: {
           special: json.syllabusData.special,
           profile: json.syllabusData.profile,
           year: json.syllabusData.year,
-          name: json.name
+          name: json.name,
+          kafedra: json.kafedra,
         }
       }
     })
@@ -100,6 +102,10 @@ td {
 }
 .outdated{
   text-decoration:line-through;
+}
+.btn-primary{
+  height: 60px;
+  width: 145px;
 }
 </style>
 

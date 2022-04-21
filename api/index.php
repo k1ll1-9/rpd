@@ -46,9 +46,8 @@ switch ($method) {
                 $params = $request->getQueryList()->toArray();
                 $params = \json_decode($params['params'], true);
 
-                $res = RPDManager::getRPDFromDB($params);
-
-                die(\json_encode($res, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+                $RPD = RPDManager::getRPDFromDB($params);
+                die(\json_encode($RPD, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
         }
         break;
     }

@@ -35,7 +35,7 @@
         <button type="button"
                 @click="addResult(['managed','informationalResources',type])"
                 class="btn btn-primary mt-2">
-          Добавить ссылку
+          Добавить ссылку(книгу)
         </button>
       </div>
     </div>

@@ -8,7 +8,7 @@
         <th>Форма обучения</th>
         <th>Направление</th>
         <th>Профиль</th>
-        <th>Год</th>
+        <th>Дата начала обучения</th>
         <th>Список дисциплин</th>
       </tr>
       </thead>
@@ -57,7 +57,7 @@ export default {
     this.syllabuses = res.data.map((el) => {
       return {
         ...el,
-        entrance_year : (new Date(el.entrance_year.replace(/-/g, "/"))).getFullYear(),
+        entrance_year : this.$dayjs((new Date(el.entrance_year.replace(/-/g, "/")))).format('DD.MM.YYYY'),
         query : {
           special: el.special,
           profile: el.profile,

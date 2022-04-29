@@ -8,6 +8,8 @@ import axios from 'axios'
 import store from './store'
 import { BootstrapIconsPlugin } from 'bootstrap-icons-vue';
 import router from './router/router'
+import dayjs from 'dayjs'
+
 //import SockJS from "sockjs-client";
 //import Stomp from "webstomp-client";
 
@@ -21,10 +23,9 @@ import router from './router/router'
   }
 }*/
 
-
 store.axios = axios
 
-createApp(
+const app = createApp(
   App,
   {
     templatePath : document.querySelector('#app').dataset.templatePath
@@ -33,5 +34,7 @@ createApp(
   .use(router)
   .use(store)
   .use(BootstrapIconsPlugin)
-  .mount('#app')
 
+app.config.globalProperties.$dayjs = dayjs
+
+app.mount('#app')

@@ -10,6 +10,7 @@ if (!$_SERVER['DOCUMENT_ROOT']) {
 
 define('NOT_CHECK_PERMISSIONS', true);
 
+
 require $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_before.php";
 require __DIR__ . '/RPDManager.php';
 
@@ -46,9 +47,8 @@ switch ($method) {
                 $params = $request->getQueryList()->toArray();
                 $params = \json_decode($params['params'], true);
 
-                $res = RPDManager::getRPDFromDB($params);
-
-                die(\json_encode($res, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+                $RPD = RPDManager::getRPDFromDB($params);
+                die(\json_encode($RPD, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
         }
         break;
     }

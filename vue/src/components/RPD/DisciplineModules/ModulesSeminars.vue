@@ -4,7 +4,7 @@
       5.2 {{ unitTitles[5].subUnits[2].title }}
     </h3>
     <div v-for="(modules,title,index) in seminars" :key="index" class="my-4">
-      <h3>Тема {{ title }}</h3>
+      <h3>Тема {{index +1 }}. {{ title }}</h3>
       <div v-for="(semester,number) in modules" :key="number" class="my-4">
         <h3>Семестр {{ number }}</h3>
         <div v-for="(seminarIndex) in semester.count" :key="seminarIndex" class="my-5">

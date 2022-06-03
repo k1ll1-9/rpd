@@ -34,17 +34,24 @@ export const rpd = {
 
       state.static = res.data.static
       state.managed = res.data.managed
+      state.status = res.data.status
 
       return true;
     },
     async updateData({commit, state, rootState}, payload) {
       commit(payload.updateType, payload)
-      await this.axios.post(rootState.APIurl,
-        {
-          action: "setData",
-          data: state.managed,
-          params: router.currentRoute.value.query
-        });
+
+      const data = {
+        action: "setData",
+        data: state.managed,
+        params: router.currentRoute.value.query
+      }
+
+      if (state.status === 'blank') {
+        data.status = 'progress';
+      }
+
+      await this.axios.post(rootState.APIurl, data);
     },
     async initPDF({state}) {
       const res = await this.axios.post('https://lk.vavt.ru/oplyuyko_test/printFormRPD.php',

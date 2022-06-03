@@ -28,7 +28,7 @@ if (process.env.NODE_ENV === 'development') {
     proxy: {
       '/api':
         {
-          target: 'https://lk.vavt.ru/local/components/syllabuses-test/main/templates/.default/api/index.php'
+          target: process.env.VUE_APP_API_TARGET
         }
     }
   }

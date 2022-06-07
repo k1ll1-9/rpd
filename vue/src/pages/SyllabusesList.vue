@@ -62,7 +62,8 @@ export default {
           special: el.special,
           profile: el.profile,
           year: el.entrance_year,
-          qualification: el.qualification
+          qualification: el.qualification,
+          educationForm: el.education_form
         }
       }
     })

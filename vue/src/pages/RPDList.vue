@@ -81,7 +81,8 @@ export default {
           year: json.syllabusData.year,
           name: json.name,
           kafedra: json.kafedra,
-          qualification: el.qualification
+          qualification: el.qualification,
+          educationForm: el.education_form
         }
       }
     })
@@ -90,7 +91,7 @@ export default {
       special: this.RPDList[0].syllabusData.special,
       profile: this.RPDList[0].syllabusData.profile,
       year: this.RPDList[0].syllabusData.year,
-      form: this.RPDList[0].syllabusData.formOfTraining,
+      educationForm: this.RPDList[0].syllabusData.formOfTraining,
       qualification: this.RPDList[0].syllabusData.educationLevel
     }
   }

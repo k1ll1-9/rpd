@@ -123,13 +123,14 @@ class RPDManager
 
         try {
             $sql = 'SELECT json,status FROM  disciplines 
-                            WHERE (profile,special,entrance_year,name,kafedra,qualification) = (:profile,:special,:entrance_year,:name,:kafedra,:qualification)';
+                            WHERE (profile,special,entrance_year,name,kafedra,qualification,education_form) = (:profile,:special,:entrance_year,:name,:kafedra,:qualification,:education_form)';
             $stmt = $pdo->prepare($sql);
             $stmt->bindParam(':profile', $params['profile'], PDO::PARAM_STR);
             $stmt->bindParam(':special', $params['special'], PDO::PARAM_STR);
             $stmt->bindParam(':entrance_year', $params['year'], PDO::PARAM_STR);
             $stmt->bindParam(':name', $params['name'], PDO::PARAM_STR);
             $stmt->bindParam(':kafedra', $params['kafedra'], PDO::PARAM_STR);
+            $stmt->bindParam(':education_form', $params['educationForm'], PDO::PARAM_STR);
             $stmt->bindParam(':qualification', $params['qualification'], PDO::PARAM_STR);
             $stmt->execute();
             $res = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -143,7 +144,7 @@ class RPDManager
 
         try {
             $sql = 'SELECT json FROM  disciplines_history
-                            WHERE (profile,special,entrance_year,name,kafedra,qualification) = (:profile,:special,:entrance_year,:name,:kafedra,:qualification) 
+                            WHERE (profile,special,entrance_year,name,kafedra,qualification,education_form) = (:profile,:special,:entrance_year,:name,:kafedra,:qualification,:education_form) 
                             ORDER  BY last_change DESC NULLS 
                             LAST LIMIT 1 ';
             $stmt = $pdo->prepare($sql);
@@ -152,6 +153,7 @@ class RPDManager
             $stmt->bindParam(':entrance_year', $params['year'], PDO::PARAM_STR);
             $stmt->bindParam(':name', $params['name'], PDO::PARAM_STR);
             $stmt->bindParam(':kafedra', $params['kafedra'], PDO::PARAM_STR);
+            $stmt->bindParam(':education_form', $params['educationForm'], PDO::PARAM_STR);
             $stmt->bindParam(':qualification', $params['qualification'], PDO::PARAM_STR);
             $stmt->execute();
             $res = $stmt->fetchColumn();
@@ -176,14 +178,15 @@ class RPDManager
         $pdo = Postgres::getInstance()->connect('pgsql:host='.DB_HOST.';port=5432;dbname='.DB_NAME.';', DB_USER, DB_PASSWORD);
 
         try {
-            $sql = "SELECT json,actual,status,kafedra,qualification FROM  disciplines 
-                            WHERE (profile,special,entrance_year) = (:profile,:special,:entrance_year) 
+            $sql = "SELECT json,actual,status,kafedra,qualification,education_form FROM  disciplines 
+                            WHERE (profile,special,entrance_year,qualification,education_form) = (:profile,:special,:entrance_year,:qualification,:education_form) 
                             ORDER BY actual DESC, json->>'name' ASC";
             $stmt = $pdo->prepare($sql);
             $stmt->bindParam(':profile', $params['profile'], PDO::PARAM_STR);
             $stmt->bindParam(':special', $params['special'], PDO::PARAM_STR);
             $stmt->bindParam(':entrance_year', $params['year'], PDO::PARAM_STR);
             $stmt->bindParam(':qualification', $params['qualification'], PDO::PARAM_STR);
+            $stmt->bindParam(':education_form', $params['educationForm'], PDO::PARAM_STR);
             $stmt->execute();
             $res = $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (\PDOException $e) {
@@ -223,12 +226,13 @@ class RPDManager
                            array_to_json(methodical_f) as methodical_f,
                            array_to_json(distant_f) as distant_f
                     FROM  syllabuses 
-                    WHERE (profile,special,entrance_year) = (:profile,:special,:entrance_year) ';
+                    WHERE (profile,special,entrance_year,qualification,education_form) = (:profile,:special,:entrance_year,:qualification,:education_form) ';
             $stmt = $pdo->prepare($sql);
             $stmt->bindParam(':profile', $params['profile'], PDO::PARAM_STR);
             $stmt->bindParam(':special', $params['special'], PDO::PARAM_STR);
             $stmt->bindParam(':entrance_year', $params['year'], PDO::PARAM_STR);
             $stmt->bindParam(':qualification', $params['qualification'], PDO::PARAM_STR);
+            $stmt->bindParam(':education_form', $params['educationForm'], PDO::PARAM_STR);
             $stmt->execute();
             $res = $stmt->fetch(PDO::FETCH_ASSOC);
         } catch (\PDOException $e) {
@@ -303,7 +307,8 @@ class RPDManager
                             SET {$params['colName']} = array_append({$params['colName']}, :path)
                             WHERE profile = :profile
                                 AND special = :special
-                                AND qualification = :qualification,
+                                AND qualification = :qualification
+                                AND education_form = :education_form
                                 AND entrance_year = :entrance_year
                                 AND (:path <> ALL ({$params['colName']}) OR {$params['colName']} IS NULL)";
             $stmt = $pdo->prepare($sql);
@@ -311,6 +316,7 @@ class RPDManager
             $stmt->bindParam(':special', $params['special'], PDO::PARAM_STR);
             $stmt->bindParam(':entrance_year', $originalYear, PDO::PARAM_STR);
             $stmt->bindParam(':qualification', $params['qualification'], PDO::PARAM_STR);
+            $stmt->bindParam(':education_form', $params['educationForm'], PDO::PARAM_STR);
             $stmt->bindParam(':path', $path, PDO::PARAM_STR);
             $result = $stmt->execute();
         } catch (\PDOException $e) {
@@ -339,11 +345,13 @@ class RPDManager
                             SET {$params['colName']} = array_remove({$params['colName']},:path)
                             WHERE profile = :profile
                                 AND special = :special
+                                AND education_form = :education_form
                                 AND entrance_year = :entrance_year";
             $stmt = $pdo->prepare($sql);
             $stmt->bindParam(':profile', $params['profile'], PDO::PARAM_STR);
             $stmt->bindParam(':special', $params['special'], PDO::PARAM_STR);
             $stmt->bindParam(':entrance_year', $params['year'], PDO::PARAM_STR);
+            $stmt->bindParam(':education_form', $params['educationForm'], PDO::PARAM_STR);
             $stmt->bindParam(':path', $params['link'], PDO::PARAM_STR);
             $result = $stmt->execute();
         } catch (\PDOException $e) {
@@ -364,14 +372,15 @@ class RPDManager
         $params = $request['params'];
 
         try {
-            $sql = 'INSERT INTO disciplines_history as dh (profile,special,entrance_year,name,last_change,json,kafedra,qualification)
-                            VALUES (:profile,:special,:entrance_year,:name, current_timestamp,:data,:kafedra,:qualification)
-                            ON CONFLICT (profile,special,entrance_year,name,kafedra,qualification)
+            $sql = 'INSERT INTO disciplines_history as dh (profile,special,entrance_year,name,last_change,json,kafedra,qualification,education_form)
+                            VALUES (:profile,:special,:entrance_year,:name, current_timestamp,:data,:kafedra,:qualification,:education_form)
+                            ON CONFLICT (profile,special,entrance_year,name,kafedra,qualification,education_form)
                             DO UPDATE
                             SET json = :data, last_change = current_timestamp
                             WHERE dh.profile = :profile
                                 AND dh.special = :special
                                 AND dh.entrance_year = :entrance_year
+                                AND dh.education_form = :education_form
                                 AND dh.name = :name
                                 AND dh.kafedra = :kafedra';
             $stmt = $pdo->prepare($sql);
@@ -381,6 +390,7 @@ class RPDManager
             $stmt->bindParam(':name', $params['name'], PDO::PARAM_STR);
             $stmt->bindParam(':kafedra', $params['kafedra'], PDO::PARAM_STR);
             $stmt->bindParam(':qualification', $params['qualification'], PDO::PARAM_STR);
+            $stmt->bindParam(':education_form', $params['educationForm'], PDO::PARAM_STR);
             $stmt->bindParam(':data', $data, PDO::PARAM_STR);
             if ($stmt->execute()){
                 if (isset($request['status'])){
@@ -518,6 +528,7 @@ class RPDManager
                                 AND name = :name
                                 AND kafedra = :kafedra
                                 AND qualification = :qualification
+                                AND education_form = :education_form
                                 AND entrance_year = :entrance_year";
             $stmt = $pdo->prepare($sql);
             $stmt->bindParam(':status', $status, PDO::PARAM_STR);
@@ -526,6 +537,7 @@ class RPDManager
             $stmt->bindParam(':entrance_year', $params['year'], PDO::PARAM_STR);
             $stmt->bindParam(':name', $params['name'], PDO::PARAM_STR);
             $stmt->bindParam(':qualification', $params['qualification'], PDO::PARAM_STR);
+            $stmt->bindParam(':education_form', $params['educationForm'], PDO::PARAM_STR);
             $stmt->bindParam(':kafedra', $params['kafedra'], PDO::PARAM_STR);
             $result = $stmt->execute();
         } catch (\PDOException $e) {

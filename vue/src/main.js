@@ -22,7 +22,7 @@ import dayjs from 'dayjs'
     }
   }
 }*/
-//test
+
 store.axios = axios
 
 const app = createApp(

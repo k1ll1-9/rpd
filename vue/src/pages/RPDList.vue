@@ -3,8 +3,8 @@
     <h2 class="my-2">Учебный план</h2>
     <h2 class="my-4">{{ syllabus.special }} - {{ syllabus.profile }} -
       {{ (new Date(syllabus.year)).getFullYear() }}</h2>
-    <h2 class="my-4">Уровень подготовки: {{syllabus.level}}</h2>
-    <h2 class="my-4">Форма обучения: {{syllabus.form}}</h2>
+    <h2 class="my-4">Уровень подготовки: {{ syllabus.qualification }}</h2>
+    <h2 class="my-4">Форма обучения: {{ syllabus.educationForm }}</h2>
     <SyllabusFiles :files="files" :syllabus="syllabus"/>
     <table class="table my-5" v-if="RPDList">
       <thead>
@@ -17,13 +17,14 @@
       </tr>
       </thead>
       <tbody>
-      <tr v-for="(rpd, index) in RPDList" :key="index"  :class="{ outdated : !rpd.actual }">
+      <tr v-for="(rpd, index) in RPDList" :key="index" :class="{ outdated : !rpd.actual }">
         <td>{{ index + 1 }}</td>
         <td>{{ rpd.disciplineIndex }}</td>
         <td>{{ rpd.name }}</td>
         <td>{{ rpd.kafedra }}</td>
         <td>
-          <router-link :to="{path : '/rpd', query : rpd.query}" class="btn btn-primary d-flex align-items-center justify-content-center"
+          <router-link :to="{path : '/rpd', query : rpd.query}"
+                       class="btn btn-primary d-flex align-items-center justify-content-center"
                        :class="{disabled: !rpd.editable }">
             {{ (rpd.status === 'blank') ? 'Создать' : 'Редактировать' }} РПД
           </router-link>
@@ -40,7 +41,7 @@ import Preloader from "../components/Misc/Preloader";
 import SyllabusFiles from "@/components/RPDList/SyllabusFiles";
 
 export default {
-  name: "SyllabusesList",
+  name: "RPDList",
   components: {
     Preloader,
     SyllabusFiles
@@ -50,7 +51,7 @@ export default {
       ready: false,
       RPDList: null,
       files: null,
-      syllabus: null
+      syllabus: null //информация УП для компонетов файла УП и заголовков
     }
   },
   async mounted() {
@@ -102,10 +103,12 @@ export default {
 td {
   vertical-align: middle;
 }
-.outdated{
-  text-decoration:line-through;
+
+.outdated {
+  text-decoration: line-through;
 }
-.btn-primary{
+
+.btn-primary {
   height: 60px;
   width: 145px;
 }

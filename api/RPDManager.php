@@ -84,18 +84,6 @@ class RPDManager
     public static function getInformResources(&$data)
     {
 
-        /*        $data['static']['informationalResources'] = [
-                    0 => [
-                        'value' => 'Основная литература',
-                    ],
-                    1 => [
-                        'value' => 'Дополнительная литература'
-                    ],
-                    2 => [
-                        'value' => 'Информационные справочные системы и базы данных'
-                    ],
-                ];*/
-
         $data['static']['informationalResources'] = [
             'Основная литература',
             'Дополнительная литература',
@@ -123,15 +111,11 @@ class RPDManager
 
         try {
             $sql = 'SELECT json,status FROM  disciplines 
-                            WHERE (profile,special,entrance_year,name,kafedra,qualification,education_form) = (:profile,:special,:entrance_year,:name,:kafedra,:qualification,:education_form)';
+                            WHERE (syllabus_id,code,kafedra) = (:syllabus_id,:code,:kafedra)';
             $stmt = $pdo->prepare($sql);
-            $stmt->bindParam(':profile', $params['profile'], PDO::PARAM_STR);
-            $stmt->bindParam(':special', $params['special'], PDO::PARAM_STR);
-            $stmt->bindParam(':entrance_year', $params['year'], PDO::PARAM_STR);
-            $stmt->bindParam(':name', $params['name'], PDO::PARAM_STR);
+            $stmt->bindParam(':syllabus_id', $params['syllabusID'], PDO::PARAM_STR);
+            $stmt->bindParam(':code', $params['code'], PDO::PARAM_STR);
             $stmt->bindParam(':kafedra', $params['kafedra'], PDO::PARAM_STR);
-            $stmt->bindParam(':education_form', $params['educationForm'], PDO::PARAM_STR);
-            $stmt->bindParam(':qualification', $params['qualification'], PDO::PARAM_STR);
             $stmt->execute();
             $res = $stmt->fetch(PDO::FETCH_ASSOC);
             if ($res) {
@@ -144,17 +128,13 @@ class RPDManager
 
         try {
             $sql = 'SELECT json FROM  disciplines_history
-                            WHERE (profile,special,entrance_year,name,kafedra,qualification,education_form) = (:profile,:special,:entrance_year,:name,:kafedra,:qualification,:education_form) 
+                            WHERE (syllabus_id,code,kafedra) = (:syllabus_id,:code,:kafedra) 
                             ORDER  BY last_change DESC NULLS 
                             LAST LIMIT 1 ';
             $stmt = $pdo->prepare($sql);
-            $stmt->bindParam(':profile', $params['profile'], PDO::PARAM_STR);
-            $stmt->bindParam(':special', $params['special'], PDO::PARAM_STR);
-            $stmt->bindParam(':entrance_year', $params['year'], PDO::PARAM_STR);
-            $stmt->bindParam(':name', $params['name'], PDO::PARAM_STR);
+            $stmt->bindParam(':syllabus_id', $params['syllabusID'], PDO::PARAM_STR);
+            $stmt->bindParam(':code', $params['code'], PDO::PARAM_STR);
             $stmt->bindParam(':kafedra', $params['kafedra'], PDO::PARAM_STR);
-            $stmt->bindParam(':education_form', $params['educationForm'], PDO::PARAM_STR);
-            $stmt->bindParam(':qualification', $params['qualification'], PDO::PARAM_STR);
             $stmt->execute();
             $res = $stmt->fetchColumn();
             if ($res) {
@@ -178,15 +158,11 @@ class RPDManager
         $pdo = Postgres::getInstance()->connect('pgsql:host='.DB_HOST.';port=5432;dbname='.DB_NAME.';', DB_USER, DB_PASSWORD);
 
         try {
-            $sql = "SELECT json,actual,status,kafedra,qualification,education_form FROM  disciplines 
-                            WHERE (profile,special,entrance_year,qualification,education_form) = (:profile,:special,:entrance_year,:qualification,:education_form) 
+            $sql = "SELECT json,actual,status,kafedra,syllabus_id FROM  disciplines 
+                            WHERE syllabus_id = :syllabus_id 
                             ORDER BY actual DESC, json->>'name' ASC";
             $stmt = $pdo->prepare($sql);
-            $stmt->bindParam(':profile', $params['profile'], PDO::PARAM_STR);
-            $stmt->bindParam(':special', $params['special'], PDO::PARAM_STR);
-            $stmt->bindParam(':entrance_year', $params['year'], PDO::PARAM_STR);
-            $stmt->bindParam(':qualification', $params['qualification'], PDO::PARAM_STR);
-            $stmt->bindParam(':education_form', $params['educationForm'], PDO::PARAM_STR);
+            $stmt->bindParam(':syllabus_id', $params['id'], PDO::PARAM_STR);
             $stmt->execute();
             $res = $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (\PDOException $e) {
@@ -200,7 +176,7 @@ class RPDManager
     {
         try {
             $pdo = Postgres::getInstance()->connect('pgsql:host='.DB_HOST.';port=5432;dbname='.DB_NAME.';', DB_USER, DB_PASSWORD);
-            $sql = 'SELECT profile,special,entrance_year,syllabus_year,qualification,education_form 
+            $sql = 'SELECT profile,special,entrance_year,syllabus_year,qualification,education_form,id 
                            FROM syllabuses
                            ORDER BY qualification ASC,
                                     education_form ASC,
@@ -226,13 +202,9 @@ class RPDManager
                            array_to_json(methodical_f) as methodical_f,
                            array_to_json(distant_f) as distant_f
                     FROM  syllabuses 
-                    WHERE (profile,special,entrance_year,qualification,education_form) = (:profile,:special,:entrance_year,:qualification,:education_form) ';
+                    WHERE id = :id';
             $stmt = $pdo->prepare($sql);
-            $stmt->bindParam(':profile', $params['profile'], PDO::PARAM_STR);
-            $stmt->bindParam(':special', $params['special'], PDO::PARAM_STR);
-            $stmt->bindParam(':entrance_year', $params['year'], PDO::PARAM_STR);
-            $stmt->bindParam(':qualification', $params['qualification'], PDO::PARAM_STR);
-            $stmt->bindParam(':education_form', $params['educationForm'], PDO::PARAM_STR);
+            $stmt->bindParam(':id', $params['id'], PDO::PARAM_STR);
             $stmt->execute();
             $res = $stmt->fetch(PDO::FETCH_ASSOC);
         } catch (\PDOException $e) {
@@ -293,9 +265,7 @@ class RPDManager
 
     public static function uploadSyllabusFile($params, $file)
     {
-        $originalYear = $params['year'];
-        $params['year'] = \date('d-m-Y', \strtotime($params['year']));
-        $fp = '/mnt/synology_nfs/syllabuses-test/' . \join('/', $params);
+        $fp = '/mnt/synology_nfs/syllabuses/' . \join('/', $params);
         \mkdir($fp, 0775, true);
         $fn = '/' . $file['name'];
         $path = $fp . $fn;
@@ -305,18 +275,10 @@ class RPDManager
             $pdo = Postgres::getInstance()->connect('pgsql:host='.DB_HOST.';port=5432;dbname='.DB_NAME.';', DB_USER, DB_PASSWORD);
             $sql = "UPDATE syllabuses 
                             SET {$params['colName']} = array_append({$params['colName']}, :path)
-                            WHERE profile = :profile
-                                AND special = :special
-                                AND qualification = :qualification
-                                AND education_form = :education_form
-                                AND entrance_year = :entrance_year
+                            WHERE id = :id
                                 AND (:path <> ALL ({$params['colName']}) OR {$params['colName']} IS NULL)";
             $stmt = $pdo->prepare($sql);
-            $stmt->bindParam(':profile', $params['profile'], PDO::PARAM_STR);
-            $stmt->bindParam(':special', $params['special'], PDO::PARAM_STR);
-            $stmt->bindParam(':entrance_year', $originalYear, PDO::PARAM_STR);
-            $stmt->bindParam(':qualification', $params['qualification'], PDO::PARAM_STR);
-            $stmt->bindParam(':education_form', $params['educationForm'], PDO::PARAM_STR);
+            $stmt->bindParam(':id', $params['id'], PDO::PARAM_STR);
             $stmt->bindParam(':path', $path, PDO::PARAM_STR);
             $result = $stmt->execute();
         } catch (\PDOException $e) {
@@ -343,15 +305,9 @@ class RPDManager
             $pdo = Postgres::getInstance()->connect('pgsql:host='.DB_HOST.';port=5432;dbname='.DB_NAME.';', DB_USER, DB_PASSWORD);
             $sql = "UPDATE syllabuses 
                             SET {$params['colName']} = array_remove({$params['colName']},:path)
-                            WHERE profile = :profile
-                                AND special = :special
-                                AND education_form = :education_form
-                                AND entrance_year = :entrance_year";
+                            WHERE id = :id";
             $stmt = $pdo->prepare($sql);
-            $stmt->bindParam(':profile', $params['profile'], PDO::PARAM_STR);
-            $stmt->bindParam(':special', $params['special'], PDO::PARAM_STR);
-            $stmt->bindParam(':entrance_year', $params['year'], PDO::PARAM_STR);
-            $stmt->bindParam(':education_form', $params['educationForm'], PDO::PARAM_STR);
+            $stmt->bindParam(':id', $params['id'], PDO::PARAM_STR);
             $stmt->bindParam(':path', $params['link'], PDO::PARAM_STR);
             $result = $stmt->execute();
         } catch (\PDOException $e) {
@@ -372,25 +328,18 @@ class RPDManager
         $params = $request['params'];
 
         try {
-            $sql = 'INSERT INTO disciplines_history as dh (profile,special,entrance_year,name,last_change,json,kafedra,qualification,education_form)
-                            VALUES (:profile,:special,:entrance_year,:name, current_timestamp,:data,:kafedra,:qualification,:education_form)
-                            ON CONFLICT (profile,special,entrance_year,name,kafedra,qualification,education_form)
+            $sql = 'INSERT INTO disciplines_history as dh (syllabus_id,code,kafedra,last_change,json)
+                            VALUES (:syllabus_id,:code,:kafedra,current_timestamp,:data)
+                            ON CONFLICT (syllabus_id,code,kafedra)
                             DO UPDATE
                             SET json = :data, last_change = current_timestamp
-                            WHERE dh.profile = :profile
-                                AND dh.special = :special
-                                AND dh.entrance_year = :entrance_year
-                                AND dh.education_form = :education_form
-                                AND dh.name = :name
+                            WHERE dh.syllabus_id = :syllabus_id
+                                AND dh.code = :code
                                 AND dh.kafedra = :kafedra';
             $stmt = $pdo->prepare($sql);
-            $stmt->bindParam(':profile', $params['profile'], PDO::PARAM_STR);
-            $stmt->bindParam(':special', $params['special'], PDO::PARAM_STR);
-            $stmt->bindParam(':entrance_year', $params['year'], PDO::PARAM_STR);
-            $stmt->bindParam(':name', $params['name'], PDO::PARAM_STR);
+            $stmt->bindParam(':syllabus_id', $params['syllabusID'], PDO::PARAM_STR);
+            $stmt->bindParam(':code', $params['code'], PDO::PARAM_STR);
             $stmt->bindParam(':kafedra', $params['kafedra'], PDO::PARAM_STR);
-            $stmt->bindParam(':qualification', $params['qualification'], PDO::PARAM_STR);
-            $stmt->bindParam(':education_form', $params['educationForm'], PDO::PARAM_STR);
             $stmt->bindParam(':data', $data, PDO::PARAM_STR);
             if ($stmt->execute()){
                 if (isset($request['status'])){
@@ -523,22 +472,14 @@ class RPDManager
             $pdo = Postgres::getInstance()->connect('pgsql:host='.DB_HOST.';port=5432;dbname='.DB_NAME.';', DB_USER, DB_PASSWORD);
             $sql = "UPDATE disciplines
                             SET status = :status
-                            WHERE profile = :profile
-                                AND special = :special
-                                AND name = :name
-                                AND kafedra = :kafedra
-                                AND qualification = :qualification
-                                AND education_form = :education_form
-                                AND entrance_year = :entrance_year";
+                            WHERE  syllabus_id = :syllabus_id
+                                AND code = :code
+                                AND kafedra = :kafedra";
             $stmt = $pdo->prepare($sql);
-            $stmt->bindParam(':status', $status, PDO::PARAM_STR);
-            $stmt->bindParam(':profile', $params['profile'], PDO::PARAM_STR);
-            $stmt->bindParam(':special', $params['special'], PDO::PARAM_STR);
-            $stmt->bindParam(':entrance_year', $params['year'], PDO::PARAM_STR);
-            $stmt->bindParam(':name', $params['name'], PDO::PARAM_STR);
-            $stmt->bindParam(':qualification', $params['qualification'], PDO::PARAM_STR);
-            $stmt->bindParam(':education_form', $params['educationForm'], PDO::PARAM_STR);
+            $stmt->bindParam(':syllabus_id', $params['syllabusID'], PDO::PARAM_STR);
+            $stmt->bindParam(':code', $params['code'], PDO::PARAM_STR);
             $stmt->bindParam(':kafedra', $params['kafedra'], PDO::PARAM_STR);
+            $stmt->bindParam(':status', $status, PDO::PARAM_STR);
             $result = $stmt->execute();
         } catch (\PDOException $e) {
             return ['error' => $e->getMessage()];

@@ -59,11 +59,7 @@ export default {
         ...el,
         entrance_year : this.$dayjs((new Date(el.entrance_year.replace(/-/g, "/")))).format('DD.MM.YYYY'),
         query : {
-          special: el.special,
-          profile: el.profile,
-          year: el.entrance_year,
-          qualification: el.qualification,
-          educationForm: el.education_form
+          id: el.id
         }
       }
     })

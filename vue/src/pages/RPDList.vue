@@ -5,7 +5,7 @@
       {{ (new Date(syllabus.year)).getFullYear() }}</h2>
     <h2 class="my-4">Уровень подготовки: {{ syllabus.qualification }}</h2>
     <h2 class="my-4">Форма обучения: {{ syllabus.educationForm }}</h2>
-    <SyllabusFiles :files="files" :syllabus="syllabus"/>
+    <SyllabusFiles :files="files" :syllabusID="syllabus.syllabusID"/>
     <table class="table my-5" v-if="RPDList">
       <thead>
       <tr>
@@ -77,13 +77,9 @@ export default {
         actual: el.actual,
         status: el.status,
         query: {
-          special: json.syllabusData.special,
-          profile: json.syllabusData.profile,
-          year: json.syllabusData.year,
-          name: json.name,
+          code: json.code,
           kafedra: json.kafedra,
-          qualification: el.qualification,
-          educationForm: el.education_form
+          syllabusID : json.syllabusData.syllabusID
         }
       }
     })
@@ -93,7 +89,8 @@ export default {
       profile: this.RPDList[0].syllabusData.profile,
       year: this.RPDList[0].syllabusData.year,
       educationForm: this.RPDList[0].syllabusData.formOfTraining,
-      qualification: this.RPDList[0].syllabusData.educationLevel
+      qualification: this.RPDList[0].syllabusData.educationLevel,
+      syllabusID: this.RPDList[0].syllabusData.syllabusID
     }
   }
 }

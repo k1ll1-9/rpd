@@ -3,6 +3,7 @@
 
 use Bitrix\Main\Context;
 use VAVT\Services\Postgres;
+use VAVT\UP\RPDManager;
 
 if (!$_SERVER['DOCUMENT_ROOT']) {
     $_SERVER['DOCUMENT_ROOT'] = '/home/bitrix/www';
@@ -12,7 +13,7 @@ define('NOT_CHECK_PERMISSIONS', true);
 
 
 require $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_before.php";
-require __DIR__ . '/RPDManager.php';
+require_once(__DIR__ . "/../vendor/autoload.php");
 
 $request = Context::getCurrent()->getRequest();
 $method = $request->getRequestMethod();
@@ -65,6 +66,10 @@ switch ($method) {
                 case 'deleteSyllabusFile':
                     $res = RPDManager::deleteSyllabusFile($data['params']);
                     die(\json_encode($res, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+                case 'exportRPD':
+                    $json = \json_encode(RPDManager::getRPDHistory($data['params']),JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+
+                    die($json);
             }
         } else {
             switch ($request['action']) {

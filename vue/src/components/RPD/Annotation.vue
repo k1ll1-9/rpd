@@ -1,6 +1,6 @@
 <template>
   <div class="my-5">
-    <h3 class="my-4" :id="$store.state.rpd.static.unitTitles[9].code">9. {{ $store.state.rpd.static.unitTitles[9].title }}</h3>
+    <h3 class="my-4" :id="$store.state.rpd.static.unitTitles[7].code">7. {{ $store.state.rpd.static.unitTitles[7].title }}</h3>
     <VisualEditor :identity="['managed','annotation']"/>
   </div>
 </template>

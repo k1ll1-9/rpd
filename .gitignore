@@ -8,3 +8,5 @@ config.php
 /vue/npm-debug.log*
 /vue/pnpm-debug.log*
 
+
+/vendor/

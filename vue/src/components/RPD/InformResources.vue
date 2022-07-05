@@ -6,34 +6,34 @@
     <div class="d-flex flex-column align-items-center p-1">
       <p><i>Для изменения порядка пунктов зажмите курсором номер пункта и перетащите.</i></p>
 
-      <div v-for="(unit,type,i) in informationalResources" :key="type" class="resources-unit w-100">
-        <h4 class="my-3">8.{{ i + 1 }} {{ type }}</h4>
+      <div v-for="(unit,infIndex,i) in informationalResources" :key="infIndex" class="resources-unit w-100">
+        <h4 class="my-3">8.{{ i + 1  }} {{ unit.name }}</h4>
         <Draggable
-            :list="unit"
+            :list="unit.data"
             item-key="index"
             v-bind="dragOptions"
             handle=".handle"
-            @change="updateUnit(type)"
+            @change="updateUnit(infIndex)"
             class="w-100">
           <template #item="{index}" class="w-100">
             <div class="d-flex w-100 my-1 draggable-item w-100">
               <p class="number d-flex align-items-center justify-content-center handle text-center">
                 {{ index + 1 }}.
               </p>
-              <TextArea :identity="['managed','informationalResources',type,index,'value']"
+              <TextArea :identity="['managed','informationalResources',infIndex,'data',index,'value']"
                         class="my-2"
-                        rows="1"/>
+                        rows="3"/>
               <button type="button"
-                      v-if="unit.length > 1"
-                      @click="removeResult(['managed','informationalResources',type],index)"
-                      class="btn btn-danger m-2">
+                      v-if="unit.data.length > 1"
+                      @click="removeResult(['managed','informationalResources',infIndex,'data'],index)"
+                      class="btn btn-danger m-2 align-self-center">
                 <BIconX-octagon class="cross"/>
               </button>
             </div>
           </template>
         </Draggable>
         <button type="button"
-                @click="addResult(['managed','informationalResources',type])"
+                @click="addResult(['managed','informationalResources',infIndex,'data'])"
                 class="btn btn-primary mt-2">
           Добавить ссылку(книгу)
         </button>
@@ -85,10 +85,10 @@ export default {
         updateType: 'SPLICE_RPD_ITEM'
       })
     },
-    updateUnit(type) {
+    updateUnit(infIndex) {
       this.$store.dispatch('rpd/updateData', {
-        identity: ['managed','informationalResources',type],
-        value: this.informationalResources[type],
+        identity: ['managed','informationalResources',infIndex],
+        value: this.informationalResources[infIndex],
         updateType: 'UPDATE_RPD_ITEM'
       });
     }
@@ -123,5 +123,8 @@ export default {
 
 .handle:active {
   cursor: grabbing;
+}
+.cross{
+  height: 25px;
 }
 </style>

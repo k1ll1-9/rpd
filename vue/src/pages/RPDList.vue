@@ -14,6 +14,8 @@
         <th>Дисциплина</th>
         <th>Кафедра</th>
         <th>РПД</th>
+        <th>Экспорт</th>
+        <th>Импорт</th>
       </tr>
       </thead>
       <tbody>
@@ -29,22 +31,38 @@
             {{ (rpd.status === 'blank') ? 'Создать' : 'Редактировать' }} РПД
           </router-link>
         </td>
+        <td>
+          <div v-if="(rpd.status !== 'blank')" @click="exportRPD(rpd.query)" class="btn-import">
+            <BIconDownload width="25" height="25"/>
+          </div>
+        </td>
+        <td>
+          <div class="btn-import">
+            <label for="file" class="file-label">
+              <BIconUpload width="25" height="25"/>
+            </label>
+            <input @change="importRPD()" type="file" name="formFile" class="d-none" id="file">
+          </div>
+        </td>
       </tr>
       </tbody>
     </table>
-    <Preloader v-else style="margin-top: 200px"/>
   </div>
+  <Preloader v-else style="margin-top: 200px"/>
+  <Modal></Modal>
 </template>
 
 <script>
 import Preloader from "../components/Misc/Preloader";
 import SyllabusFiles from "@/components/RPDList/SyllabusFiles";
+import Modal from "@/components/UI/Modal";
 
 export default {
   name: "RPDList",
   components: {
     Preloader,
-    SyllabusFiles
+    SyllabusFiles,
+    Modal
   },
   data() {
     return {
@@ -77,9 +95,9 @@ export default {
         actual: el.actual,
         status: el.status,
         query: {
-          code: json.code,
+          syllabusID: json.syllabusData.syllabusID,
           kafedra: json.kafedra,
-          syllabusID : json.syllabusData.syllabusID
+          code: json.code
         }
       }
     })
@@ -91,6 +109,34 @@ export default {
       educationForm: this.RPDList[0].syllabusData.formOfTraining,
       qualification: this.RPDList[0].syllabusData.educationLevel,
       syllabusID: this.RPDList[0].syllabusData.syllabusID
+    }
+  },
+  methods: {
+    async exportRPD(params) {
+      const res = await this.axios.post(
+          this.$store.state.APIurl,
+          {
+            action: 'exportRPD',
+            params: params
+          }, {
+            responseType: 'blob'
+          }
+      )
+      console.log(Object.entries(params));
+      //отдаем как файл полученный JSON
+      const url = window.URL.createObjectURL(new Blob([res.data]))
+      const link = document.createElement('a')
+      const fileName = Object.entries(params).map(([, v]) => v).join('_')
+
+      link.href = url;
+      link.setAttribute('download', fileName)
+      document.body.appendChild(link)
+      link.click();
+      document.body.removeChild(link)
+      window.URL.revokeObjectURL(url)
+    },
+    async importRPD() {
+
     }
   }
 }
@@ -108,6 +154,14 @@ td {
 .btn-primary {
   height: 60px;
   width: 145px;
+}
+
+.btn-import {
+  cursor: pointer;
+  display: inline-block;
+}
+.file-label{
+  cursor:pointer;
 }
 </style>
 

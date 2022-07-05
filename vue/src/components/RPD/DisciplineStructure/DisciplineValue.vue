@@ -10,8 +10,8 @@
           <th class="col-2" :colspan="$store.state.rpd.static.semestersCount">Семестр</th>
         </tr>
         <tr>
-          <th v-for="(item,index) in $store.state.rpd.static.disciplineStructure" :key="index">
-            {{ index }}
+          <th v-for="(item,index) in $store.state.rpd.static.semesters" :key="index">
+            {{ item }}
           </th>
         </tr>
         </thead>

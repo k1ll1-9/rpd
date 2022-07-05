@@ -18,13 +18,13 @@
       <ModulesSRS/>
     </div>
     <Technologies/>
+    <Annotation/>
+    <InformResources/>
     <div class="my-5">
-      <h2 class="my-4" :id="unitTitles[7].code">7. {{ unitTitles[7].title }}</h2>
+      <h2 class="my-4" :id="unitTitles[9].code">9. {{ unitTitles[9].title }}</h2>
       <GradesCurrent/>
       <GradesCurrentDescription/>
     </div>
-    <InformResources/>
-    <Annotation/>
     <PDFButton v-if="$store.state.user.role === 'admin'"/>
   </div>
   <Preloader v-else style="margin-top: 200px"/>

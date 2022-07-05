@@ -33,8 +33,19 @@ export const rpd = {
         });
 
       state.static = res.data.static
-      state.managed = res.data.managed
+      state.managed = res.data.managed || {}
       state.status = res.data.status
+
+      //создаем копии сложных объектов из шаблонов, если они еще не заполнены
+      if (state.managed.competencies === undefined){
+        state.managed.competencies = JSON.parse(JSON.stringify(state.static.competencies));
+      }
+      if (state.managed.disciplineStructure === undefined){
+        state.managed.disciplineStructure = JSON.parse(JSON.stringify(state.static.disciplineStructure));
+      }
+      if (state.managed.informationalResources === undefined){
+        state.managed.informationalResources = JSON.parse(JSON.stringify(state.static.informationalResources));
+      }
 
       return true;
     },

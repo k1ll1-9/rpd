@@ -49,20 +49,20 @@
     </table>
   </div>
   <Preloader v-else style="margin-top: 200px"/>
-  <Modal></Modal>
+  <ModalWarning></ModalWarning>
 </template>
 
 <script>
 import Preloader from "../components/Misc/Preloader";
 import SyllabusFiles from "@/components/RPDList/SyllabusFiles";
-import Modal from "@/components/UI/Modal";
+import ModalWarning from "@/components/UI/ModalWarning";
 
 export default {
   name: "RPDList",
   components: {
     Preloader,
     SyllabusFiles,
-    Modal
+    ModalWarning
   },
   data() {
     return {
@@ -126,7 +126,7 @@ export default {
       //отдаем как файл полученный JSON
       const url = window.URL.createObjectURL(new Blob([res.data]))
       const link = document.createElement('a')
-      const fileName = Object.entries(params).map(([, v]) => v).join('_')
+      const fileName = Object.entries(params).map(([, v]) => v).join('_') + '.json'
 
       link.href = url;
       link.setAttribute('download', fileName)

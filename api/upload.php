@@ -126,12 +126,12 @@ foreach ($res as &$item) {
 }
 
 try {
-    $sql = 'INSERT INTO syllabuses (id,profile,special,qualification,entrance_year,syllabus_year,last_change,education_form)
-                    VALUES(:syllabus_id,:profile,:special,:qualification,:entrance_year,:syllabus_year,current_timestamp,:education_form)
+    $sql = 'INSERT INTO syllabuses (id,profile,special,qualification,entrance_year,syllabus_year,last_change,education_form,actual)
+                    VALUES(:syllabus_id,:profile,:special,:qualification,:entrance_year,:syllabus_year,current_timestamp,:education_form,true)
                     ON CONFLICT (id)
                     DO
-                       UPDATE SET(last_change,syllabus_year,profile,special,entrance_year,qualification,education_form)
-                           = (current_timestamp,:syllabus_year,:profile,:special,:entrance_year,:qualification,:education_form)';
+                       UPDATE SET(last_change,syllabus_year,profile,special,entrance_year,qualification,education_form,actual)
+                           = (current_timestamp,:syllabus_year,:profile,:special,:entrance_year,:qualification,:education_form,true)';
 
     $stmt = $pdo->prepare($sql);
     $stmt->bindParam(':syllabus_id', $res[0]['syllabusData']['syllabusID'], PDO::PARAM_STR);

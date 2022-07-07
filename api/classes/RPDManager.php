@@ -96,6 +96,7 @@ class RPDManager
             $pdo = Postgres::getInstance()->connect('pgsql:host=' . DB_HOST . ';port=5432;dbname=' . DB_NAME . ';', DB_USER, DB_PASSWORD);
             $sql = 'SELECT profile,special,entrance_year,syllabus_year,qualification,education_form,id 
                            FROM syllabuses
+                           WHERE actual = true
                            ORDER BY qualification ASC,
                                     education_form ASC,
                                     special ASC,
@@ -353,4 +354,28 @@ class RPDManager
         }
     }
 
+    public static function deleteSyllabus($ID)
+    {
+        try {
+            $pdo = Postgres::getInstance()->connect('pgsql:host=' . DB_HOST . ';port=5432;dbname=' . DB_NAME . ';', DB_USER, DB_PASSWORD);
+            $sql = 'UPDATE syllabuses SET actual = false WHERE id = :id';
+            $stmt = $pdo->prepare($sql);
+            $stmt->bindParam(':id', $ID, \PDO::PARAM_STR);
+            $res = $stmt->execute();
+        } catch (\PDOException $e) {
+            echo $e->getMessage();
+        }
+
+        try {
+            $pdo = Postgres::getInstance()->connect('pgsql:host=' . DB_HOST . ';port=5432;dbname=' . DB_NAME . ';', DB_USER, DB_PASSWORD);
+            $sql = 'UPDATE disciplines SET actual = false WHERE syllabus_id = :id';
+            $stmt = $pdo->prepare($sql);
+            $stmt->bindParam(':id', $ID, \PDO::PARAM_STR);
+            $res = $stmt->execute();
+        } catch (\PDOException $e) {
+            echo $e->getMessage();
+        }
+
+        return ['success' => true];
+    }
 }

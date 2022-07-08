@@ -38,10 +38,11 @@
         </td>
         <td>
           <div class="btn-import">
-            <label for="file" class="file-label">
+            <label :for="`RPD_file_${rpd.code}`" class="file-label">
               <BIconUpload width="25" height="25"/>
             </label>
-            <input @change="importRPD()" type="file" name="formFile" class="d-none" id="file">
+            <input @change="readRPD(rpd,index)" type="file" :name="`RPD_file_${rpd.code}`" class="d-none"
+                   :id="`RPD_file_${rpd.code}`">
           </div>
         </td>
       </tr>
@@ -49,13 +50,21 @@
     </table>
   </div>
   <Preloader v-else style="margin-top: 200px"/>
-  <ModalWarning></ModalWarning>
+  <ModalWarning id="importRPDModal" @confirm="importRPD">
+    <template v-slot:title>
+      Импорт РПД
+    </template>
+    <template v-slot:body>
+      При импорте РПД все текущие данные будут потеряны. Продолжить?
+    </template>
+  </ModalWarning>
 </template>
 
 <script>
 import Preloader from "../components/Misc/Preloader";
 import SyllabusFiles from "@/components/RPDList/SyllabusFiles";
 import ModalWarning from "@/components/UI/ModalWarning";
+import {Modal} from 'bootstrap'
 
 export default {
   name: "RPDList",
@@ -67,9 +76,11 @@ export default {
   data() {
     return {
       ready: false,
+      json: null,
       RPDList: null,
       files: null,
-      syllabus: null //информация УП для компонетов файла УП и заголовков
+      syllabus: null, //информация УП для компонетов файла УП и заголовков,
+      RPD2import: {}
     }
   },
   async mounted() {
@@ -135,8 +146,60 @@ export default {
       document.body.removeChild(link)
       window.URL.revokeObjectURL(url)
     },
-    async importRPD() {
+    async readRPD(rpd,index) {
+      //читаем JSON из загруженного файла
 
+      const readJSON = () => {
+
+        const fr = new FileReader()
+
+        return new Promise((resolve, reject) => {
+          fr.onload = e => {
+            let json
+
+            try {
+              json = JSON.parse(e.target.result)
+            } catch (e) {
+              reject(e)
+            }
+            resolve(json)
+          }
+          fr.onerror = reject
+          fr.readAsText(event.target.files[0])
+        })
+      }
+
+      const _input = event.target
+
+      this.RPD2import.data = await readJSON().catch(e => console.log(e))
+
+      if (typeof (this.RPD2import.data) !== 'undefined') {
+
+        this.RPD2import.params = {
+          code: rpd.code,
+          syllabusID: rpd.syllabusData.syllabusID,
+          kafedra: rpd.kafedra
+        }
+        this.RPD2import.index = index
+
+        const modal = new Modal(document.getElementById('importRPDModal'))
+
+        modal.show()
+      }
+
+      _input.value = null
+    },
+    async importRPD() {
+      const res = await this.axios.post(this.$store.state.APIurl,
+          {
+              action: "importRPD",
+              params: this.RPD2import.params,
+              data: this.RPD2import.data
+          })
+
+      if (res.data.success === true){
+        this.RPDList[this.RPD2import.index].status = 'progress'
+      }
     }
   }
 }
@@ -160,8 +223,9 @@ td {
   cursor: pointer;
   display: inline-block;
 }
-.file-label{
-  cursor:pointer;
+
+.file-label {
+  cursor: pointer;
 }
 </style>
 

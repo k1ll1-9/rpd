@@ -69,6 +69,9 @@ switch ($method) {
                 case 'exportRPD':
                     $json = \json_encode(RPDManager::getRPDHistory($data['params']),JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
                     die($json);
+                case 'importRPD':
+                    $json = \json_encode(RPDManager::importRPD($data['params'],$data['data']),JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+                    die($json);
                 case 'deleteSyllabus':
                     $json = \json_encode(RPDManager::deleteSyllabus($data['params']['ID'],JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
                     die($json);

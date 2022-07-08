@@ -247,9 +247,9 @@ class RPDManager
 
         $oldData = self::getRPDHistory($params);
 
-        if ($oldData){
-            DataManager::checkInformResourcesBeforeSave($request['data'],$oldData);
-            DataManager::checkCompetenciesBeforeSave($request['data'],$oldData);
+        if ($oldData) {
+            DataManager::checkInformResourcesBeforeSave($request['data'], $oldData);
+            DataManager::checkCompetenciesBeforeSave($request['data'], $oldData);
         }
 
         $data = \json_encode($request['data'], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
@@ -377,5 +377,35 @@ class RPDManager
         }
 
         return ['success' => true];
+    }
+
+    public static function importRPD($params, $data)
+    {
+        $pdo = Postgres::getInstance()->connect('pgsql:host=' . DB_HOST . ';port=5432;dbname=' . DB_NAME . ';', DB_USER, DB_PASSWORD);
+        try {
+            $sql = 'INSERT INTO disciplines_history as dh (syllabus_id,code,kafedra,last_change,json)
+                            VALUES (:syllabus_id,:code,:kafedra,current_timestamp,:data)
+                            ON CONFLICT (syllabus_id,code,kafedra)
+                            DO UPDATE
+                            SET json = :data, last_change = current_timestamp
+                            WHERE dh.syllabus_id = :syllabus_id
+                                AND dh.code = :code
+                                AND dh.kafedra = :kafedra';
+            $stmt = $pdo->prepare($sql);
+            $stmt->bindParam(':syllabus_id', $params['syllabusID'], \PDO::PARAM_STR);
+            $stmt->bindParam(':code', $params['code'], \PDO::PARAM_STR);
+            $stmt->bindParam(':kafedra', $params['kafedra'], \PDO::PARAM_STR);
+            $stmt->bindParam(':data', \json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE), \PDO::PARAM_STR);
+            if ($stmt->execute()) {
+                if (isset($request['status'])) {
+                    self::setStatus('progress', $params);
+                }
+                $res = ['success' => true];
+            }
+        } catch (\PDOException $e) {
+            $res = ['error' => $e->getMessage()];
+        }
+
+        return $res;
     }
 }

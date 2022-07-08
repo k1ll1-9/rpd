@@ -67,8 +67,12 @@ switch ($method) {
                     $res = RPDManager::deleteSyllabusFile($data['params']);
                     die(\json_encode($res, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
                 case 'exportRPD':
-                    $json = \json_encode(RPDManager::getRPDHistory($data['params']),JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
-                    die($json);
+                    $res = RPDManager::getRPDHistory($data['params']);
+                    if ($res){
+                        die(\json_encode($res,JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+                    }   else {
+                        die();
+                    }
                 case 'importRPD':
                     $json = \json_encode(RPDManager::importRPD($data['params'],$data['data']),JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
                     die($json);

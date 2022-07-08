@@ -1,5 +1,8 @@
 <template>
-  <ejs-richtexteditor ref="rteObj" :value="value" @change="updateState"/>
+  <ejs-richtexteditor ref="rteObj"
+                      :value="value"
+                      @change="updateState"
+                      :toolbarSettings="toolbarSettings"/>
 </template>
 
 <script>
@@ -13,7 +16,16 @@ export default {
   name: "VisualEditor",
   props: ['identity'],
   data() {
-    return {}
+    return {
+      toolbarSettings: {
+        items: ['Bold', 'Italic', 'Underline', 'StrikeThrough','FontSize',
+          'LowerCase', 'UpperCase', '|',
+          'Formats', 'Alignments', 'OrderedList', 'UnorderedList',
+          'Outdent', 'Indent', '|',
+          'SourceCode',  '|', 'Undo', 'Redo'
+        ]
+      }
+    }
   },
   methods: {
     updateState() {
@@ -48,5 +60,6 @@ export default {
 
 .e-richtexteditor .e-rte-content .e-content {
   min-height: 400px;
+  text-align: left;
 }
 </style>

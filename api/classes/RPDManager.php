@@ -397,9 +397,7 @@ class RPDManager
             $stmt->bindParam(':kafedra', $params['kafedra'], \PDO::PARAM_STR);
             $stmt->bindParam(':data', \json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE), \PDO::PARAM_STR);
             if ($stmt->execute()) {
-                if (isset($request['status'])) {
-                    self::setStatus('progress', $params);
-                }
+                self::setStatus('progress', $params);
                 $res = ['success' => true];
             }
         } catch (\PDOException $e) {

@@ -26,8 +26,7 @@
         <td>{{ rpd.kafedra }}</td>
         <td>
           <router-link :to="{path : '/rpd', query : rpd.query}"
-                       class="btn btn-primary d-flex align-items-center justify-content-center"
-                       :class="{disabled: !rpd.editable }">
+                       :class="['btn d-flex align-items-center justify-content-center',getButtonClass(rpd)]">
             {{ (rpd.status === 'blank') ? 'Создать' : 'Редактировать' }} РПД
           </router-link>
         </td>
@@ -80,7 +79,7 @@ export default {
       RPDList: null,
       files: null,
       syllabus: null, //информация УП для компонетов файла УП и заголовков,
-      RPD2import: {}
+      RPD2import: {},
     }
   },
   async mounted() {
@@ -123,6 +122,23 @@ export default {
     }
   },
   methods: {
+    getButtonClass(rpd){
+      const buttonClass = []
+
+      switch (rpd.status){
+        case 'blank':
+          buttonClass.push('btn-danger')
+          break
+        case 'progress':
+          buttonClass.push('btn-warning')
+          break
+      }
+
+      if (!rpd.editable){
+        buttonClass.push('disabled')
+      }
+      return buttonClass
+    },
     async exportRPD(params) {
       const res = await this.axios.post(
           this.$store.state.APIurl,
@@ -133,18 +149,19 @@ export default {
             responseType: 'blob'
           }
       )
-      console.log(Object.entries(params));
-      //отдаем как файл полученный JSON
-      const url = window.URL.createObjectURL(new Blob([res.data]))
-      const link = document.createElement('a')
-      const fileName = Object.entries(params).map(([, v]) => v).join('_') + '.json'
+      if (res.data.size !== 0) {
+        //отдаем как файл полученный JSON
+        const url = window.URL.createObjectURL(new Blob([res.data]))
+        const link = document.createElement('a')
+        const fileName = Object.entries(params).map(([, v]) => v).join('_') + '.json'
 
-      link.href = url;
-      link.setAttribute('download', fileName)
-      document.body.appendChild(link)
-      link.click();
-      document.body.removeChild(link)
-      window.URL.revokeObjectURL(url)
+        link.href = url;
+        link.setAttribute('download', fileName)
+        document.body.appendChild(link)
+        link.click();
+        document.body.removeChild(link)
+        window.URL.revokeObjectURL(url)
+      }
     },
     async readRPD(rpd,index) {
       //читаем JSON из загруженного файла

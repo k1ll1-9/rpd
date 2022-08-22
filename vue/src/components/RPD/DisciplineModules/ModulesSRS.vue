@@ -72,7 +72,7 @@ export default {
         SRS: state => {
           return state.rpd.managed.disciplineStructure.map((el,i) => {
 
-            if (typeof (el.SRSTypes) === 'undefined') {
+            if (el.SRSTypes == null) {
               el.SRSTypes = [
                   {
                     'title': '',

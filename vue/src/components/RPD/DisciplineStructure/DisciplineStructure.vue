@@ -36,6 +36,7 @@
             </td>
             <td>
               <DigitInput class='text-center'
+                          @change="checkHours(disciplineStructure[index].semester)"
                           :identity="['managed','disciplineStructure',index,'load','lectures']"/>
             </td>
             <td>
@@ -86,6 +87,7 @@ export default {
   computed:
       mapState({
         disciplineStructure: state => state.rpd.managed.disciplineStructure,
+        value: state => state.rpd.static.disciplineValue,
       }),
   methods: {
     ...mapActions({
@@ -100,9 +102,32 @@ export default {
         index: index,
         updateType: 'SPLICE_RPD_ITEM'
       })
+    },
+    checkHours(semester) {
+      Object.entries(this.value).forEach(([k]) =>{
+       // const hours = v.semesters[semester].quantity
+        let currentHours = 0
+        switch(k){
+
+          case 'lectures':
+
+
+            Object.entries(this.disciplineStructure).forEach(([,v]) => {
+
+
+              if (v.semester === semester){
+                currentHours += v.load.lectures
+              }
+
+            })
+            console.log(currentHours)
+            break
+        }
+      })
     }
   },
   mounted() {
+
   }
 }
 </script>

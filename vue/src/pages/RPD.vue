@@ -24,8 +24,10 @@
       <h2 class="my-4" :id="unitTitles[9].code">9. {{ unitTitles[9].title }}</h2>
       <GradesCurrent/>
       <GradesCurrentDescription/>
+      <GradesIntermediate/>
     </div>
     <PDFButton v-if="$store.state.user.role === 'admin'"/>
+<!--    <NoticeWindow/>-->
   </div>
   <Preloader v-else style="margin-top: 200px"/>
 </template>
@@ -46,9 +48,11 @@ import PDFButton from "./../components/RPD/PDFButton";
 import Preloader from "./../components/Misc/Preloader";
 import GradesCurrent from "./../components/RPD/Grades/GradesCurrent"
 import GradesCurrentDescription from "./../components/RPD/Grades/GradesCurrentDescription";
+import GradesIntermediate from "../components/RPD/Grades/GradesIntermediate";
 import Technologies from "../components/RPD/EducationTechnologies";
 import InformResources from "./../components/RPD/InformResources";
 import Annotation from "@/components/RPD/Annotation";
+//import NoticeWindow from "@/components/RPD/NoticeWindow";
 import {mapState} from "vuex";
 
 export default {
@@ -71,7 +75,9 @@ export default {
     GradesCurrent,
     GradesCurrentDescription,
     Authors,
-    InformResources
+    InformResources,
+    GradesIntermediate
+//    NoticeWindow
   },
   data() {
     return {

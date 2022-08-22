@@ -17,6 +17,9 @@ export default {
   props: ['identity'],
   data() {
     return {
+      fontSize:{
+        default: "16pt"
+      },
       toolbarSettings: {
         items: ['Bold', 'Italic', 'Underline', 'StrikeThrough','FontSize',
           'LowerCase', 'UpperCase', '|',
@@ -61,5 +64,6 @@ export default {
 .e-richtexteditor .e-rte-content .e-content {
   min-height: 400px;
   text-align: left;
+  font-size: 12pt;
 }
 </style>

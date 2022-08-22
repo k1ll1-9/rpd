@@ -78,7 +78,7 @@ class RPDManager
         try {
             $sql = "SELECT json,actual,status,kafedra,syllabus_id FROM  disciplines 
                             WHERE syllabus_id = :syllabus_id 
-                            ORDER BY actual DESC, json->>'name' ASC";
+                            ORDER BY actual DESC";
             $stmt = $pdo->prepare($sql);
             $stmt->bindParam(':syllabus_id', $params['id'], \PDO::PARAM_STR);
             $stmt->execute();

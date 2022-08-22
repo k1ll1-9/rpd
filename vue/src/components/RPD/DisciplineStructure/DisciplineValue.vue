@@ -17,12 +17,10 @@
         </thead>
         <tbody>
         <tr v-for="(item,index) in disciplineValue" :key="{index}"
-            :class="{strong : item.label.strong}">
+            :class="[{strong : item.label.strong},'align-middle']">
           <td class="text-start ps-3">{{ item.label.value }}</td>
           <td>{{ item.total || '' }}</td>
-          <td v-for="(semester,number) in item.semesters" :key="number">
-            {{ tableData(index, semester) }}
-          </td>
+          <td v-for="(semester,number) in item.semesters" :key="number" v-html="tableData(index, semester)"></td>
         </tr>
         </tbody>
       </table>
@@ -64,8 +62,11 @@ export default {
       }),
   methods: {
     tableData(index, semester) {
+      if (index === 'controlOverall' && Array.isArray(semester.quantity)) {
+        return semester.quantity.join("+")
+      }
       if (index === 'control') {
-        return semester.controlName
+        return Array.isArray(semester.controlName) ? semester.controlName.join(", <br>") : semester.controlName
       } else {
         return semester.quantity || ''
       }
@@ -105,4 +106,7 @@ table {
   border: 2px;
 }
 
+td {
+  white-space: pre;
+}
 </style>

@@ -126,12 +126,12 @@ foreach ($res as &$item) {
 }
 
 try {
-    $sql = 'INSERT INTO syllabuses (id,profile,special,qualification,entrance_year,syllabus_year,last_change,education_form,actual)
-                    VALUES(:syllabus_id,:profile,:special,:qualification,:entrance_year,:syllabus_year,current_timestamp,:education_form,true)
+    $sql = 'INSERT INTO syllabuses (id,profile,special,qualification,entrance_year,syllabus_year,last_change,education_form,special_code,actual)
+                    VALUES(:syllabus_id,:profile,:special,:qualification,:entrance_year,:syllabus_year,current_timestamp,:education_form,:special_code,true)
                     ON CONFLICT (id)
                     DO
-                       UPDATE SET(last_change,syllabus_year,profile,special,entrance_year,qualification,education_form,actual)
-                           = (current_timestamp,:syllabus_year,:profile,:special,:entrance_year,:qualification,:education_form,true)';
+                       UPDATE SET(last_change,syllabus_year,profile,special,entrance_year,qualification,education_form,special_code,actual)
+                           = (current_timestamp,:syllabus_year,:profile,:special,:entrance_year,:qualification,:education_form,:special_code,true)';
 
     $stmt = $pdo->prepare($sql);
     $stmt->bindParam(':syllabus_id', $res[0]['syllabusData']['syllabusID'], PDO::PARAM_STR);
@@ -141,6 +141,7 @@ try {
     $stmt->bindParam(':qualification', $res[0]['syllabusData']['educationLevel'], PDO::PARAM_STR);
     $stmt->bindParam(':syllabus_year', $res[0]['syllabusData']['syllabusYear'], PDO::PARAM_STR);
     $stmt->bindParam(':education_form', $res[0]['syllabusData']['formOfTraining'], PDO::PARAM_STR);
+    $stmt->bindParam(':special_code', $res[0]['syllabusData']['specialCode'], PDO::PARAM_STR);
     $stmt->execute();
 
 } catch (\PDOException $e) {

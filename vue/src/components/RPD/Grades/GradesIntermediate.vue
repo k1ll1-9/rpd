@@ -4,8 +4,14 @@
     <div v-for="(types,semester) in controlTypes" :key="semester" class="my-4">
       <h3 class="my-3">{{ semester }} cеместр </h3>
       <div v-for="(type,index) in types.controlName" :key="index" class="my-4">
-        <h3 class="my-3">{{ type }}</h3>
-        <VisualEditor class="rte" :identity="['managed', 'intermediateControl', semester,type]"/>
+        <div class="my-3">
+          <h4 class="my-3">{{ type }}</h4>
+          <VisualEditor class="rte" :identity="['managed', 'intermediateControl', semester, index , type]"/>
+        </div>
+        <div class="my-3">
+          <h4 class="my-3">Критерии оценки</h4>
+          <VisualEditor class="rte" :identity="['managed', 'intermediateControl', semester, index , criterion]"/>
+        </div>
       </div>
     </div>
   </div>
@@ -22,15 +28,10 @@ export default {
   computed:
       mapState({
         controlTypes: (state) => Object.fromEntries(Object.entries(state.rpd.static.disciplineValue.control.semesters).map(([k, v]) => {
-              let name
 
-              if (Array.isArray(v.controlName)) {
-                name = v.controlName
-              } else {
-                name = [v.controlName]
-              }
+              const name = (Array.isArray(v.controlName)) ? v.controlName : [v.controlName]
 
-              return [k, { controlName : name}]
+              return [k, {controlName: name}]
 
             })
         ),
@@ -41,6 +42,6 @@ export default {
 
 <style scoped>
 .rte {
-  margin-bottom: 80px;
+  margin-bottom: 40px;
 }
 </style>

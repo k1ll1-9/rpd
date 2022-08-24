@@ -1,6 +1,6 @@
 <template>
   <div class="my-5">
-    <h3>Критерии оценки промежуточной аттестации</h3>
+    <h3>Промежуточная аттестация</h3>
     <div v-for="(types,semester) in controlTypes" :key="semester" class="my-4">
       <h3 class="my-3">{{ semester }} cеместр </h3>
       <div v-for="(type,index) in types.controlName" :key="index" class="my-4">

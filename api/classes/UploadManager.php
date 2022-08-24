@@ -114,14 +114,8 @@ class UploadManager
                         if ($item["loadName"] === 'Текущий контроль успеваемости') {
                             continue;
                         }
-                        if (!isset($disciplineValue['control']['semesters'][$semester]['controlName'])){
-                            $disciplineValue['control']['semesters'][$semester]['controlName'] = [];
-                        }
-                        if (!isset($disciplineValue['controlOverall']['semesters'][$semester]['quantity'])){
-                            $disciplineValue['controlOverall']['semesters'][$semester]['quantity'] = [];
-                        }
-                        $disciplineValue['controlOverall']['semesters'][$semester]['quantity'][] = $item['ZET'];
-                        $disciplineValue['control']['semesters'][$semester]['controlName'][] = $item['loadName'];
+                        $disciplineValue['controlOverall']['semesters'][$semester]['quantity'] = $item['ZET'];
+                        $disciplineValue['control']['semesters'][$semester]['controlName'] = $item['loadName'];
                         $disciplineValue['controlOverall']['total'] += $item['ZET'];
                     }
                 }

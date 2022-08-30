@@ -76,6 +76,8 @@ class DataManager
                     $data['managed']['competencies'][$compID]['nextLvl'] = [];
                 }
 
+                $data['managed']['competencies'][$compID]['name'] = $competency['name'];
+
                 foreach ($competency['nextLvl'] as $indID => $indicator) {
 
                     if (!isset($data['managed']['competencies'][$compID]['nextLvl'][$indID])) {
@@ -98,6 +100,8 @@ class DataManager
                             ]
                         ];
                     }
+
+                    $data['managed']['competencies'][$compID]['nextLvl'][$indID]['name'] = $indicator['name'];
                 }
             }
             //скрываем старые

@@ -20,27 +20,21 @@ try {
     echo $e->getMessage();
 }
 
-/*foreach ($res as $rpd)  {
+foreach ($res as $rpd)  {
 
     $json = json_decode($rpd['json'],true);
 
-    var_dump($json['informationalResources']);
+    if (isset($json['intermediateControl'])){
 
-    if (isset($json['informationalResources'])){
+        foreach ($json['intermediateControl'] as $semester => $number) {
 
-        $newRes = [];
-        $i = 1;
-
-        foreach ($json['informationalResources'] as $name => $item) {
-            $newRes[$i] = [
-                'order' => $i,
-                'name' => $name,
-                'data' => $item
-            ];
-            $i++;
+            foreach ($number as $type => $control) {
+                if (isset($control['undefined'])) {
+                    $json['intermediateControl'][$semester][$type]['criterion'] = $control['undefined'];
+                    unset($json['intermediateControl'][$semester][$type]['undefined']);
+                }
+            }
         }
-
-        $json['informationalResources'] = $newRes;
 
         $data = \json_encode($json, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
         try {
@@ -66,7 +60,7 @@ try {
         }
     }
 
-}*/
+}
 
 /*foreach ($res as $rpd) {
 

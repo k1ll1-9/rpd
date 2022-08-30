@@ -7,7 +7,7 @@ require_once(__DIR__ . "/../../config.php");
 require_once(__DIR__ . "/../../vendor/autoload.php");
 
 use VAVT\Services\Postgres;
-
+use Bitrix\Main\Web\HttpClient;
 
 class RPDManager
 {
@@ -404,6 +404,13 @@ class RPDManager
             $res = ['error' => $e->getMessage()];
         }
 
+        return $res;
+    }
+
+    public static function generatePDF($data)
+    {
+        $httpClient = new HttpClient();
+        $res = $httpClient->post(API_PATH . 'PDF.php', $data);
         return $res;
     }
 }

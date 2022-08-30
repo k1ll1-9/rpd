@@ -10,7 +10,7 @@
         </div>
         <div class="my-3">
           <h4 class="my-3">Критерии оценки</h4>
-          <VisualEditor class="rte" :identity="['managed', 'intermediateControl', semester, index , criterion]"/>
+          <VisualEditor class="rte" :identity="['managed', 'intermediateControl', semester, index , 'criterion']"/>
         </div>
       </div>
     </div>

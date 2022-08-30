@@ -79,6 +79,9 @@ switch ($method) {
                 case 'deleteSyllabus':
                     $json = \json_encode(RPDManager::deleteSyllabus($data['params']['ID'],JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
                     die($json);
+                case 'getPDF':
+                    $json = \json_encode(RPDManager::generatePDF($data['data']));
+                    die($json);
             }
         } else {
             switch ($request['action']) {

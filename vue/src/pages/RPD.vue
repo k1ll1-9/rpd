@@ -26,7 +26,7 @@
       <GradesCurrentDescription/>
       <GradesIntermediate/>
     </div>
-    <PDFButton v-if="$store.state.user.role === 'admin'"/>
+    <PDFButton v-if="visible"/>
 <!--    <NoticeWindow/>-->
   </div>
   <Preloader v-else style="margin-top: 200px"/>
@@ -82,6 +82,7 @@ export default {
   data() {
     return {
       ready: false,
+      visible: this.$store.state.user?.role === 'admin' || process.env.NODE_ENV === 'development'
     }
   },
   computed: {

@@ -1,14 +1,26 @@
 <?php
 
+if (!$_SERVER['DOCUMENT_ROOT']) {
+    $_SERVER['DOCUMENT_ROOT'] = '/home/bitrix/www';
+}
 
+define('NOT_CHECK_PERMISSIONS', true);
+define("NO_KEEP_STATISTIC", true);
+
+
+require $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_before.php";
 
 \ini_set('display_errors', 1);
 \error_reporting(E_ALL  & ~E_NOTICE);
 
 $allowedTags = '<p><li><ul><h1><h2><h3><h4><b><i><strong><span><br><tr><table><th><td>';
 
+
 $data = \file_get_contents('php://input');
 \parse_str($data,$json);
+var_dump($_SERVER);
+var_dump($json);
+die();
 
 $static = $json["static"];
 $syllabusData = $static["syllabusData"];

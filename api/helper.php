@@ -7,7 +7,7 @@ require_once(__DIR__ . "/../vendor/autoload.php");
 
 use VAVT\Services\Postgres;
 
-$pdo = Postgres::getInstance()->connect('pgsql:host=172.16.10.59;port=5432;dbname=Syllabuses_test;', 'umd-web', 'klopik463');
+$pdo = Postgres::getInstance()->connect('pgsql:host=172.16.10.59;port=5432;dbname=Syllabuses;', 'umd-web', 'klopik463');
 
 try {
     $sql = 'SELECT * FROM disciplines_history';

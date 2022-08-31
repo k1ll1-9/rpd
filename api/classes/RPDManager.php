@@ -407,10 +407,4 @@ class RPDManager
         return $res;
     }
 
-    public static function generatePDF($data)
-    {
-        $httpClient = new HttpClient();
-        $res = $httpClient->post(API_PATH . 'PDF.php', $data);
-        return $res;
-    }
 }

@@ -10,6 +10,7 @@ if (!$_SERVER['DOCUMENT_ROOT']) {
 }
 
 define('NOT_CHECK_PERMISSIONS', true);
+define("NO_KEEP_STATISTIC", true);
 
 
 require $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_before.php";
@@ -36,7 +37,7 @@ switch ($method) {
                 die(\json_encode($res, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
 
             case 'getRPDList':
-
+                var_dump($_SERVER);die();
                 $params = $request->getQueryList()->toArray();
                 $params = \json_decode($params['params'], true);
 
@@ -78,9 +79,6 @@ switch ($method) {
                     die($json);
                 case 'deleteSyllabus':
                     $json = \json_encode(RPDManager::deleteSyllabus($data['params']['ID'],JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
-                    die($json);
-                case 'getPDF':
-                    $json = \json_encode(RPDManager::generatePDF($data['data']));
                     die($json);
             }
         } else {

@@ -64,8 +64,8 @@ export const rpd = {
 
       await this.axios.post(rootState.APIurl, data);
     },
-    async initPDF({state,rootState}) {
-      const res = await this.axios.post(rootState.APIurl,
+    async initPDF({state}) {
+      const res = await this.axios.post(process.env.VUE_APP_PDF_URL ,
         {
           action: "getPDF",
           data: state

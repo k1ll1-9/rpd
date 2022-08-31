@@ -25,10 +25,16 @@ module.exports = {
 
 if (process.env.NODE_ENV === 'development') {
   module.exports.devServer = {
+    host: 'localhost',
     proxy: {
       '/api':
         {
-          target: process.env.VUE_APP_API_TARGET
+          target: process.env.VUE_APP_API_TARGET,
+          changeOrigin: true,
+          pathRewrite: {
+            '^/api/index.php' : '/index.php',
+            '^/api/generatePDF.php' : '/generatePDF.php'
+          }
         }
     }
   }

@@ -9,9 +9,14 @@ export default {
   props: {
     templatePath: String
   },
+  data() {
+    return {
+      ready: false,
+    }
+  },
   computed: {},
   mounted() {
-    this.$store.dispatch('init')
+    this.ready = this.$store.dispatch('init')
   }
 
 }

@@ -82,7 +82,7 @@ export default {
   data() {
     return {
       ready: false,
-      visible: this.$store.state.user?.role === 'admin' || process.env.NODE_ENV === 'development'
+      visible: false
     }
   },
   computed: {
@@ -91,7 +91,8 @@ export default {
     })
   },
   async mounted() {
-    this.ready = await this.$store.dispatch('rpd/initData', this.$route.query);
+    this.ready = await this.$store.dispatch('rpd/initData', this.$route.query)
+    this.visible = this.$store.state.user?.role === 'admin' || process.env.NODE_ENV === 'development'
   }
 }
 </script>

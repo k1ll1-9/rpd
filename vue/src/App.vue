@@ -28,7 +28,18 @@ export default {
   src: local("PT Sans"),
   url("./assets/fonts/PT-Sans/PTSans-Regular.ttf") format("truetype");
 }
-
+@font-face {
+  font-family: "PT Sans";
+  src: local("PT Sans"),
+  url("./assets/fonts/PT-Sans/PTSans-Bold.ttf") format("truetype");
+  font-weight: bold;
+}
+@font-face {
+  font-family: "PT Sans";
+  src: local("PT Sans"),
+  url("./assets/fonts/PT-Sans/PTSans-Italic.ttf") format("truetype");
+  font-style: italic;
+}
 #app {
   margin-top: 60px;
   width: 1200px;

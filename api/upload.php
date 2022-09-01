@@ -41,6 +41,7 @@ if ($request->isPost()) {
 $newStructure = [];
 
 foreach ($res as $item) {
+
     foreach ($item['disciplineStructure'] as $number => $semester) {
         foreach ($semester as $type) {
             if ($type['type'] === 'Нагрузка') {
@@ -58,15 +59,11 @@ $pdo = Postgres::getInstance()->connect('pgsql:host=' . DB_HOST . ';port=5432;db
 
 //селектим все дисциплины текущего УП и гасим отсутствующие
 try {
-    $sql = 'SELECT syllabus_id,code,kafedra FROM disciplines
-                    WHERE syllabus_id = :syllabus_id
-                    AND code = :code
-                    AND kafedra = :kafedra';
+    $sql = 'SELECT syllabus_id,code,kafedra,name FROM disciplines
+                    WHERE syllabus_id = :syllabus_id';
 
     $stmt = $pdo->prepare($sql);
     $stmt->bindParam(':syllabus_id', $res[0]['syllabusData']['syllabusID'], PDO::PARAM_STR);
-    $stmt->bindParam(':code', $res[0]['code'], PDO::PARAM_STR);
-    $stmt->bindParam(':kafedra', $res[0]['kafedra'], PDO::PARAM_STR);
     $stmt->execute();
     $selectRes = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -76,7 +73,7 @@ try {
 
 foreach ($res as $item) {
     foreach ($selectRes as $key => $selectItem) {
-        if ($selectItem['code'] === $item['code']) {
+        if ($selectItem['code'] === $item['code'] && $selectItem['kafedra'] === $item['kafedra']) {
             unset($selectRes[$key]);
         }
     }
@@ -91,8 +88,8 @@ foreach ($selectRes as $item) {
 
         $stmt = $pdo->prepare($sql);
         $stmt->bindParam(':syllabus_id', $res[0]['syllabusData']['syllabusID'], PDO::PARAM_STR);
-        $stmt->bindParam(':code', $res[0]['code'], PDO::PARAM_STR);
-        $stmt->bindParam(':kafedra', $res[0]['kafedra'], PDO::PARAM_STR);
+        $stmt->bindParam(':code', $item['code'], PDO::PARAM_STR);
+        $stmt->bindParam(':kafedra', $item['kafedra'], PDO::PARAM_STR);
         $stmt->execute();
 
     } catch (\PDOException $e) {

@@ -37,7 +37,6 @@ switch ($method) {
                 die(\json_encode($res, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
 
             case 'getRPDList':
-                var_dump($_SERVER);die();
                 $params = $request->getQueryList()->toArray();
                 $params = \json_decode($params['params'], true);
 

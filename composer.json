@@ -13,6 +13,7 @@
     ],
     "require": {
       "ext-json": "*",
-      "ext-curl": "*"
+      "ext-curl": "*",
+        "tecnickcom/tcpdf": "^6.5"
     }
 }

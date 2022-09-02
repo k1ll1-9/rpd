@@ -1,10 +1,10 @@
 <template>
-  <div class="my-5">
+  <div v-if="seminars" class="my-5">
     <h3 class="my-4" :id="unitTitles[5].subUnits[2].code">
       5.2 {{ unitTitles[5].subUnits[2].title }}
     </h3>
     <div v-for="(modules,title,index) in seminars" :key="index" class="my-4">
-      <h3>Тема {{index +1 }}. {{ title }}</h3>
+      <h3>Тема {{ getThemeNumber(modules) }}. {{ title }}</h3>
       <div v-for="(semester,number) in modules" :key="number" class="my-4">
         <h3>Семестр {{ number }}</h3>
         <div v-for="(seminarIndex) in semester.count" :key="seminarIndex" class="my-5">
@@ -38,24 +38,33 @@ export default {
               return;
             }
 
-            if (seminars[el.title] === undefined) {
-              seminars[el.title] = {};
-            }
-
             if (el.semester !== null) {
-              seminars[el.title][el.semester] = {
-                'seminars': el.seminars || [],
-                'count': Math.ceil(el.load?.seminars / 2) || 0,
-                'identity': ['managed', 'disciplineStructure', i, 'seminars']
+
+              const count = Math.ceil(el.load?.seminars / 2) || 0
+
+              if (count !== 0) {
+
+                if (seminars[el.title] === undefined) {
+                  seminars[el.title] = {};
+                }
+
+                seminars[el.title][el.semester] = {
+                  'seminars': el.seminars || [],
+                  'count': Math.ceil(el.load?.seminars / 2) || 0,
+                  'identity': ['managed', 'disciplineStructure', i, 'seminars'],
+                  'themeN': i + 1
+                }
               }
             }
-
           })
-          return seminars
+
+          return (Object.keys(seminars).length !== 0) ? seminars : false
         },
       }),
   methods: {
-
+    getThemeNumber(modules) {
+      return Object.values(modules)[0].themeN
+    }
   },
 }
 </script>

@@ -77,8 +77,7 @@ class RPDManager
 
         try {
             $sql = "SELECT json,actual,status,kafedra,syllabus_id FROM  disciplines 
-                            WHERE syllabus_id = :syllabus_id 
-                            ORDER BY actual DESC, json->>'disciplineIndex' ASC";
+                            WHERE syllabus_id = :syllabus_id";
             $stmt = $pdo->prepare($sql);
             $stmt->bindParam(':syllabus_id', $params['id'], \PDO::PARAM_STR);
             $stmt->execute();
@@ -86,6 +85,61 @@ class RPDManager
         } catch (\PDOException $e) {
             echo $e->getMessage();
         }
+
+        \usort($res, function ($d1, $d2) {
+
+            $a = \json_decode($d1['json'], true)['disciplineIndex'];
+            $b = \json_decode($d2['json'], true)['disciplineIndex'];
+            $exp1 = \explode('.', $a);
+            $exp2 = \explode('.', $b);
+            $aBlock = $exp1[0];
+            $aType = ($exp1[1] === 'О') ? 0 : 1;
+            $bBlock = $exp2[0];
+            $bType = ($exp2[1] === 'О') ? 0 : 1;
+            $DV1 = ($exp1[2] !== 'ДВ') ? 0 : 1;
+            $DV2 = ($exp2[2] !== 'ДВ') ? 0 : 1;
+            $actual1 = ($d1['actual']) ? 0 : 1;
+            $actual2 = ($d2['actual']) ? 0 : 1;
+
+
+            if (\strcoll($aBlock, $bBlock) > 0) {
+                $blockCmp = 1;
+            } else if (\strcoll($aBlock, $bBlock) < 0) {
+                $blockCmp = -1;
+            } else {
+                $blockCmp = 0;
+            }
+
+            if (\count($exp1) === \count($exp2)) {
+                if (\count($exp1) === 3) {
+                    $numCmp1 = $exp1[2] <=> $exp2[2];
+                } else if (\count($exp1) === 2) {
+                    $numCmp3 = $exp1[1] <=> $exp2[1];
+                } else if (\count($exp1) === 4) {
+                    $numCmp1 = $exp1[2] <=> $exp2[2];
+                    $numCmp2 = $exp1[3] <=> $exp2[3];
+                } else if (\count($exp1) === 5) {
+                    $numCmp1 = $exp1[3] <=> $exp2[3];
+                    $numCmp2 = $exp1[4] <=> $exp2[4];
+                }
+            }
+
+            if (\count($exp1) === 2 || \count($exp2) === 2) {
+                $numCmp3 = $exp1[1] <=> $exp2[1];
+                $numCmp1 = 1;
+                $numCmp2 = 1;
+            }
+
+            return
+                ($actual1 <=> $actual2) * 1000000+
+                $blockCmp * 100000 +
+                ($aType <=> $bType) * 10000 +
+                ($DV1 <=> $DV2) * 1000 +
+                $numCmp3 * 100 +
+                $numCmp1 * 10 +
+                $numCmp2;
+        });
+
 
         return $res;
     }

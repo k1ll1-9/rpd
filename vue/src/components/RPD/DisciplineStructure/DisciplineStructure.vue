@@ -8,7 +8,7 @@
           <thead style="border-bottom: 1px #000000 solid">
           <tr>
             <th class="col-1" rowspan="2">№ п/п</th>
-            <th class="col-5" rowspan="2">Наименование раздела дисциплины</th>
+            <th class="col-5" rowspan="2">Наименование темы дисциплины</th>
             <th class="col-1" rowspan="2">Семестр</th>
             <th class="col-4" colspan="3">Вид учебной работы <br> (в академических часах)</th>
             <th class="col-2" rowspan="2">В том числе в форме практической подготовки</th>

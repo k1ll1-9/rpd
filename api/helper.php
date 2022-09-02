@@ -7,7 +7,7 @@ require_once(__DIR__ . "/../vendor/autoload.php");
 
 use VAVT\Services\Postgres;
 
-$pdo = Postgres::getInstance()->connect('pgsql:host=172.16.10.59;port=5432;dbname=Syllabuses;', 'umd-web', 'klopik463');
+$pdo = Postgres::getInstance()->connect('pgsql:host=172.16.10.59;port=5432;dbname=Syllabuses_test;', 'umd-web', 'klopik463');
 
 try {
     $sql = 'SELECT * FROM disciplines_history';
@@ -24,17 +24,12 @@ foreach ($res as $rpd)  {
 
     $json = json_decode($rpd['json'],true);
 
-    if (isset($json['intermediateControl'])){
+    if (isset($json['disciplineTarget'])){
 
-        foreach ($json['intermediateControl'] as $semester => $number) {
+        $target = $json['disciplineTarget'];
 
-            foreach ($number as $type => $control) {
-                if (isset($control['undefined'])) {
-                    $json['intermediateControl'][$semester][$type]['criterion'] = $control['undefined'];
-                    unset($json['intermediateControl'][$semester][$type]['undefined']);
-                }
-            }
-        }
+        $json['disciplineTarget'] = [];
+        $json['disciplineTarget']['target'] = $target;
 
         $data = \json_encode($json, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
         try {

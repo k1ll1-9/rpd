@@ -10,8 +10,18 @@ class DataManager
     {
         $data['static']['unitTitles'] = [
             1 => [
-                'title' => 'Цель освоения дисциплины',
-                'code' => 'disciplineTarget'
+                'title' => 'Цели и задачи освоения дисциплины',
+                'code' => 'disciplineTarget',
+                'subUnits' => [
+                    1 => [
+                        'title' => 'Цель освоения дисциплины',
+                        'code' => 'target'
+                    ],
+                    2 => [
+                        'title' => 'Задачи освоения дисциплины',
+                        'code' => 'task'
+                    ]
+                ]
             ],
             2 => [
                 'title' => 'Место дисциплины в структуре ОПОП',
@@ -123,6 +133,8 @@ class DataManager
             foreach ($data['managed']['competencies'] as &$competency) {
                 \ksort($competency['nextLvl']);
             }
+
+            \uasort($data['managed']['competencies'], fn($a,$b) => $a['sort'] <=> $b['sort']);
         }
     }
 

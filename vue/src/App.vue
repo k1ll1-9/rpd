@@ -45,7 +45,7 @@ export default {
   width: 1200px;
 }
 
-h3, h2 {
+h3, h2, h4 {
   font-weight: 600 !important;
   text-align: center;
 }

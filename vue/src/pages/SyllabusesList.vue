@@ -9,32 +9,34 @@
         <th>Направление</th>
         <th>Профиль</th>
         <th>Дата начала обучения</th>
-        <th>Список дисциплин</th>
         <th v-if="canDelete"></th>
       </tr>
       </thead>
       <tbody>
-      <tr v-for="(syllabus, index) in syllabuses" :key="index">
-        <td>{{ syllabus.qualification }}</td>
-        <td>{{ syllabus.education_form }}</td>
-        <td>{{ syllabus.special }}</td>
-        <td>{{ syllabus.profile }}</td>
-        <td>{{ syllabus.entrance_year }}</td>
-        <td>
-          <router-link :to="{path : '/list', query : syllabus.query}" class="btn btn-primary">
-            К списку
-          </router-link>
-        </td>
-        <td v-if="canDelete">
-          <button class="btn btn-danger"
-                  data-bs-toggle="modal"
-                  data-bs-target="#deleteSyllabus"
-                  @click="currentSyllabus = syllabus"
-                  >
-            Удалить
-          </button>
-        </td>
-      </tr>
+      <template v-for="(syllabusGroup, groupName) in syllabuses" :key="groupName">
+        <tr v-for="(syllabus, index) in syllabusGroup" :key="index">
+          <template v-if="index === 0">
+            <td :rowspan="syllabusGroup.length">{{ syllabus.qualification }}</td>
+            <td :rowspan="syllabusGroup.length">{{ syllabus.education_form }}</td>
+            <td :rowspan="syllabusGroup.length">{{ syllabus.special }}</td>
+            <td :rowspan="syllabusGroup.length">{{ syllabus.profile }}</td>
+          </template>
+          <td>
+            <router-link :to="{path : '/list', query : syllabus.query}" class="btn btn-primary">
+              {{ syllabus.entrance_year }}
+            </router-link>
+          </td>
+          <td v-if="canDelete">
+            <button class="btn btn-danger"
+                    data-bs-toggle="modal"
+                    data-bs-target="#deleteSyllabus"
+                    @click="currentSyllabus = syllabus"
+            >
+              Удалить
+            </button>
+          </td>
+        </tr>
+      </template>
       </tbody>
     </table>
     <Preloader v-else style="margin-top: 200px"/>
@@ -44,7 +46,9 @@
       </template>
       <template v-if="currentSyllabus" v-slot:body>
         Вы действительно хотите удалить учебный план <br>
-        <strong>{{ `"${currentSyllabus.special} ${currentSyllabus.profile}  ${(new Date(currentSyllabus.syllabus_year)).getFullYear()}"` }}</strong>?
+        <strong>{{
+            `"${currentSyllabus.special} ${currentSyllabus.profile}  ${(new Date(currentSyllabus.syllabus_year)).getFullYear()}"`
+          }}</strong>?
       </template>
     </ModalWarning>
   </div>
@@ -62,7 +66,7 @@ export default {
   },
   data() {
     return {
-      syllabuses: null,
+      syllabuses: false,
       currentSyllabus: null,
       canDelete: null
     }
@@ -92,15 +96,24 @@ export default {
           }
         });
 
-    this.syllabuses = res.data.map((el) => {
-      return {
-        ...el,
-        entrance_year: this.$dayjs((new Date(el.entrance_year.replace(/-/g, "/")))).format('DD.MM.YYYY'),
-        query: {
-          id: el.id
-        }
-      }
-    })
+    this.syllabuses = res.data
+        .map((el) => {
+          return {
+            ...el,
+            entrance_year: this.$dayjs((new Date(el.entrance_year.replace(/-/g, "/")))).format('DD.MM.YYYY'),
+            query: {
+              id: el.id
+            }
+          }
+        })
+        .reduce((acc, c) => {
+          const key = `${c.special}_${c.profile}_${c.qualification}_${c.education_form}`
+
+          acc[key] = acc[key] ?? []
+          acc[key].push(c)
+
+          return acc
+        }, {})
 
     this.canDelete = this.$store.state.user.role === 'admin'
         || this.$store.state.user.role === 'editor'

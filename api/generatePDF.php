@@ -5,11 +5,12 @@ require_once(__DIR__ . "/../vendor/autoload.php");
 use VAVT\UP\PDF;
 
 \ini_set('display_errors', 1);
-\error_reporting(E_ALL  & ~E_NOTICE & ~E_WARNING);
+\error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING);
 
-$json = \json_decode(\file_get_contents('php://input'),true)['data'];
-$json = \json_decode(\file_get_contents('mockRPD.json'),true);
-$allowedTags = '<p><li><ul><h1><h2><h3><h4><b><i><strong><span><br><tr><table><th><td>';
+//$json = \json_decode(\file_get_contents('php://input'),true)['data'];
+$json = \json_decode(\file_get_contents('mockRPD2.json'), true);
+
+$allowedTags = '<p><li><ul><h1><h2><h3><h4><b><i><strong><br><tr><table><th><td>';
 
 $static = $json["static"];
 $syllabusData = $static["syllabusData"];
@@ -19,7 +20,30 @@ $unitTitles = $static["unitTitles"];
 $managed = $json["managed"];
 $competencies = $managed["competencies"];
 $disciplineStructure = $managed["disciplineStructure"];
-$year = \date('Y',\strtotime($syllabusData["syllabusYear"]));
+$year = \date('Y', \strtotime($syllabusData["syllabusYear"]));
+
+$modules = [];
+
+foreach ($disciplineStructure as $ds) {
+    $modules[$ds['title']][$ds['semester']] = $ds;
+}
+
+$sModules = [];
+
+$i = 1;
+
+foreach ($disciplineStructure as $ds) {
+    $seminarsCount = \ceil((int)$ds['load']['seminars'] / 2);
+
+    if ($seminarsCount > 0) {
+        $sModules[$ds['title']]['moduleN'] = $sModules[$ds['title']]['moduleN'] ?? $i;
+        $sModules[$ds['title']]['semesters'][$ds['semester']]['seminars'] = $ds['seminars'];
+        $sModules[$ds['title']]['semesters'][$ds['semester']]['seminarsCount'] = $seminarsCount;
+    }
+    $i++;
+}
+
+//var_dump($sModules);die();
 
 $html = '<span style="text-align: center">
         ФЕДЕРАЛЬНОЕ ГОСУДАРСТВЕННОЕ БЮДЖЕТНОЕ ОБРАЗОВАТЕЛЬНОЕ 
@@ -45,8 +69,8 @@ $html = '<span style="text-align: center">
 $html .= <<<HTML
 <h3 style="text-align: center"><strong>Рабочая программа учебной дисциплины</strong></h3>
 <h3 style="text-align: center"><b>{$static["disciplineIndex"]}  {$static["name"]} </b></h3>
-<span style="text-align: center">{$syllabusData["specialCode"]}  «{$syllabusData["special"]} »</span>
-<br><br><span style="text-align: center">Профиль – «{$syllabusData["profile"]} »</span>
+<span style="text-align: center">{$syllabusData["specialCode"]}  «{$syllabusData["special"]}»</span>
+<br><br><span style="text-align: center">Профиль – «{$syllabusData["profile"]}»</span>
 <p></p>
 <span style="text-align: center">Квалификация (степень) выпускника – {$syllabusData["educationLevel"]} </span>
 <br><br><span style="text-align: center">Форма обучения – {$syllabusData["educationForm"]} </span>
@@ -64,10 +88,11 @@ $html .= <<<HTML
 <br pagebreak="true"/>
 
 <h3 style="text-align: center">1. {$unitTitles[1]["title"]}  <br></h3>
-{$managed["disciplineTarget"]}
-<h3 style="text-align: center">2. {$unitTitles[2]["title"]} <br></h3>
-{$managed["disciplinePlace"]}
-<h3 style="text-align: center">3. {$unitTitles[3]["title"]}<br></h3>
+<h4 style="text-align: center">1.1 {$unitTitles[1]["subUnits"][1]["title"]} <br></h4>
+{$managed["disciplineTarget"]['target']}
+<h4 style="text-align: center">1.2 {$unitTitles[1]["subUnits"][2]["title"]} <br></h4>
+{$managed["disciplineTarget"]['task']}
+<h3 style="text-align: center">2. {$unitTitles[3]["title"]}<br></h3>
 
 
 <table  style=": 100%" border="1">
@@ -157,7 +182,7 @@ foreach ($competencies as $firstCol) {
 $html .= '</tbody>
         </table>';
 
-$html .= '<h3 style="text-align: center">4.'.$unitTitles[4]["title"] .'<br></h3>';
+$html .= '<h3 style="text-align: center">4.' . $unitTitles[4]["title"] . '<br></h3>';
 
 $html .= '<h3 style="text-align: center"> Объем дисциплины и виды учебной работы </h3>';
 
@@ -202,16 +227,16 @@ foreach ($disciplineValue as $dv) {
     }
     if ($dv["label"]["value"] == "Вид промежуточной аттестации") {
         foreach ($dv["semesters"] as $semestersHour) {
-            if (\is_array($semestersHour["controlName"])){
-                $semestersHour["controlName"] = \implode('-',$semestersHour["controlName"]);
+            if (\is_array($semestersHour["controlName"])) {
+                $semestersHour["controlName"] = \implode('-', $semestersHour["controlName"]);
             }
             $html .= '<td style="text-align: center; vertical-align: middle;">' . $strongOpen . $semestersHour["controlName"] . $strongClose . '</td>';
         }
     } else {
         foreach ($dv["semesters"] as $semestersHour) {
             $quantity = '-';
-            if (\is_array($semestersHour["quantity"])){
-                $semestersHour["quantity"] = \implode('-',$semestersHour["quantity"]);
+            if (\is_array($semestersHour["quantity"])) {
+                $semestersHour["quantity"] = \implode('-', $semestersHour["quantity"]);
             }
             if ($semestersHour["quantity"] == 0) {
                 $html .= '<td style="text-align: center; vertical-align: middle;">' . $strongOpen . '-' . $strongClose . '</td>';
@@ -223,11 +248,13 @@ foreach ($disciplineValue as $dv) {
     $html .= '</tr>';
 }
 
-$html .= '</tbody>';
-$html .= '</table>';
-$html .= '<h3 style="text-align: center"> Структура и содержание дисциплины (модуля) </h3>';//ToDo header должен быть в json
+$html .= <<<HTML
+</tbody>
+</table>
 
-$html .= '<table  style=": 100%" border="1">
+<h3 style="text-align: center"> Структура и содержание дисциплины (модуля) </h3>
+
+<table  style=": 100%" border="1">
             <thead>
                 <tr>
                     <th style="text-align: center; width:5%" rowspan="2">
@@ -258,13 +285,13 @@ $html .= '<table  style=": 100%" border="1">
                     </th>
                  </tr>
             </thead>
-         ';
-$html .= '<tbody>';
+<tbody>
+HTML;
 $n = 0;
+
 foreach ($disciplineStructure as $ds) {
     $n++;
-$html .=
-    <<<HTML
+    $html .= <<<HTML
     <tr>
     <td style="text-align: center; width:5%"> $n </td>
     <td style="text-align: left; width:43%"> {$ds["title"]} </td>
@@ -275,52 +302,65 @@ $html .=
     <td style="text-align: center; width:15%">{$ds["load"]["practicePrepare"]}</td>
     </tr>
 HTML;
-
 }
-$html .= '</tbody>';
-$html .= '</table>';
-$html .= '<br pagebreak="true"/>';
+$html .= <<<HTML
+</tbody>
+</table>
 
-$html .= '<h3 style="text-align: center">5. '.$unitTitles[5]["title"] .'<br></h3>';
+<br pagebreak="true"/>
 
-//$html .= '<p></p>';
+<h2 style="text-align: center">5. {$unitTitles[5]["title"]} <br></h2>
+<h3 style="text-align: center">5.1 {$unitTitles[5]["subUnits"][1]["title"]} <br></h3>
+HTML;
 
-//$html.='<br>';
-$html .= '<h3 style="text-align: center">5.1. '.$unitTitles[5]["subUnits"][1]["title"] .'<br></h3>';
 $n = 0;
-foreach ($disciplineStructure as $ds) {
+
+foreach ($modules as $title => $module) {
     $n++;
-    $html .= '<h3 style="text-align: center">Тема '.$n.'. '.$ds["title"].'</h3>';
-    $html .= '<p></p>';
-    $html .= '<h3 style="text-align: center">Семестр ' . $ds["semester"] . '<br></h3>';
-    $html .= strip_tags($ds["theme"], $allowedTags);
-
+    $html .= '<h3 style="text-align: center">Тема ' . $n . ' ' . $title . ' </h3>';
+    foreach ($module as $semester) {
+        $html .= '<h3 style = "text-align: center" > Семестр ' . $semester["semester"] . '<br></h3>';
+        $html .= \strip_tags($semester["theme"], $allowedTags);
+    }
 }
 
-$html .= '<h3 style="text-align: center">5.2 '.$unitTitles[5]["subUnits"][2]["title"] .'</h3>';
-foreach ($disciplineStructure as $ds) {
-    if (is_null($ds["seminars"])){
-        continue;
+$html .= '<h2 style="text-align: center">5.2 ' . $unitTitles[5]["subUnits"][2]["title"] . '</h2>';
+
+
+foreach ($sModules as $title => $module) {
+
+    $html .= '<h3 style="text-align: center">Тема  ' . $module['moduleN'] . ' ' . $title . '</h3>';
+
+    foreach ($module['semesters'] as $semesterN => $semester) {
+
+        $html .= '<h3 style="text-align: center">Семестр  ' . $semesterN . '</h3>';
+
+        if ($semester['seminarsCount'] > 0) {
+
+            $i = 1;
+
+            foreach ($semester['seminars'] as $key => $seminar) {
+
+                $html .= '<h3 style="text-align: center">Семинар ' . $key . '</h3>';
+                $html .= \strip_tags($seminar, $allowedTags);
+
+                $i++;
+
+                if ($i > $semester['seminarsCount']) {
+                    break;
+                }
+            }
+
+        }
     }
-    $html .= '<h3 style="text-align: center">Тема '.$ds["title"].'</h3>';
-
-    $html .= '<p></p>';
-    $n = 0;
-    foreach ($ds["seminars"] as $seminar) {
-
-        $n++;
-
-        $html .= '<h3 style="text-align: center">Семинар ' . $n . '</h3>';
-        $html .= strip_tags($seminar, $allowedTags);
-    }
-
 }
 
-$html .= '</tbody>';
-$html .= '</table>';
-$html .= '<h3 style="text-align: center">5.3.'.$unitTitles[5]["subUnits"][3]["title"] .'</h3>';
+$html .= <<<HTML
+</tbody>
+</table>
+<h3 style="text-align: center">5.3 {$unitTitles[5]["subUnits"][3]["title"]} </h3>
 
-$html .= '<table  style=": 100%" border="1">
+<table  style=": 100%" border="1">
             <thead>
                 <tr>
                     <th style="text-align: center">
@@ -340,8 +380,10 @@ $html .= '<table  style=": 100%" border="1">
                     </th>
                 </tr>
             </thead>
-         ';
-$html .= '<tbody>';
+         
+<tbody>
+HTML;
+
 $n = 0;
 foreach ($disciplineStructure as $ds) {
     $n++;
@@ -352,33 +394,33 @@ foreach ($disciplineStructure as $ds) {
     $html .= '<td style="text-align: center">' . $ds["semester"] . '</td>';
     $html .= '<td style="text-align: center">' . $ds["SRSDescription"] . '</td>';
     $html .= '<td style="text-align: center">' . $ds["load"]["SRS"] . '</td>';
-
     $html .= '</tr>';
 
-
 }
-$html .= '</tbody>';
-$html .= '</table>';
-$html .= '<br pagebreak="true"/>';
 
+$html .= <<<HTML
+</tbody>
+</table>
 
+<br pagebreak="true"/>
 
-$html .= '<h3 style="text-align: center">6.'.$unitTitles["disciplineModules"]["title"].'</h3>';
+<h3 style="text-align: center">6. {$unitTitles["disciplineModules"]["title"]} </h3>
 
+</p>
+<table>
+<tr><td style="text-align: right; : 5cm;">
+</td>
+<td style=": 9cm;">
+&nbsp;
+</td>
+<td style="text-align: left;">
+</td>
+</tr>
+</table>
+HTML;
 
-
-$html .= "</p>";
-$html .= '<table ><tr><td style="text-align: right; : 5cm;">';
-$html .= '</td><td style=": 9cm;">';
-$html .= '&nbsp;';
-$html .= '</td><td style="text-align: left;">';
-$html .= '</td></tr></table>';
-
-
-
-
-$fn = tempnam('/tmp/upload', 'sl7_');
-ob_end_clean();
+/*$fn = tempnam('/tmp/upload', 'sl7_');
+ob_end_clean();*/
 
 //echo $html; die();
 
@@ -392,9 +434,9 @@ $pdf->AddPage();
 $pdf->PageNo();
 $pdf->writeHTML($html, true, false, true, false, '');
 
-$fileName =  $json['static']['disciplineIndex'] . '_' . \date('d-m-Y', \strtotime($json['static']['syllabusData']['year'])) . '.pdf';
+$fileName = $json['static']['disciplineIndex'] . '_' . \date('d-m-Y', \strtotime($json['static']['syllabusData']['year'])) . '.pdf';
 $path = $_SERVER['DOCUMENT_ROOT'] . 'oplyuyko_test/rpd/' . $fileName;
-$link = '/oplyuyko_test/rpd/'. $fileName;
+$link = '/oplyuyko_test/rpd/' . $fileName;
 $pdf->Output($path, 'I');
 
 

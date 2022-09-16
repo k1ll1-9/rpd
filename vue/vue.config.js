@@ -25,7 +25,6 @@ module.exports = {
 
 if (process.env.NODE_ENV === 'development') {
   module.exports.devServer = {
-    host: 'localhost',
     proxy: {
       '/api':
         {

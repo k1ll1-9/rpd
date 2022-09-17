@@ -3,13 +3,13 @@
     <h3 class="my-4" :id="unitTitles[5].subUnits[2].code">
       5.2 {{ unitTitles[5].subUnits[2].title }}
     </h3>
-    <div v-for="(modules,title,index) in seminars" :key="index" class="my-4">
-      <h3>Тема {{ getThemeNumber(modules) }}. {{ title }}</h3>
+    <div v-for="(modules,index) in seminars" :key="index" class="my-4">
+      <h3>Тема {{ index + 1 }}. {{ getThemeTitle(modules) }}</h3>
       <div v-for="(semester,number) in modules" :key="number" class="my-4">
         <h3>Семестр {{ number }}</h3>
         <div v-for="(seminarIndex) in semester.count" :key="seminarIndex" class="my-5">
           <h4 class="my-5">Семинар {{ seminarIndex }}</h4>
-          <VisualEditor class="my-5" :identity="[...semester.identity, seminarIndex]"/>
+          <VisualEditor class="my-5" :identity="[...semester.identity, seminarIndex - 1]"/>
         </div>
       </div>
     </div>
@@ -30,7 +30,7 @@ export default {
           unitTitles: state => state.rpd.static.unitTitles
         }),
         seminars: state => {
-          const seminars = {}
+          const seminars = []
 
           state.rpd.managed.disciplineStructure.forEach((el, i) => {
 
@@ -44,26 +44,26 @@ export default {
 
               if (count !== 0) {
 
-                if (seminars[el.title] === undefined) {
-                  seminars[el.title] = {};
+                if (seminars[i] === undefined) {
+                  seminars[i] = {};
                 }
 
-                seminars[el.title][el.semester] = {
+                seminars[i][el.semester] = {
                   'seminars': el.seminars || [],
                   'count': Math.ceil(el.load?.seminars / 2) || 0,
                   'identity': ['managed', 'disciplineStructure', i, 'seminars'],
-                  'themeN': i + 1
+                  'themeTitle': el.title
                 }
               }
             }
           })
 
-          return (Object.keys(seminars).length !== 0) ? seminars : false
+          return (seminars.length !== 0) ? seminars : false
         },
       }),
   methods: {
-    getThemeNumber(modules) {
-      return Object.values(modules)[0].themeN
+    getThemeTitle(modules) {
+      return Object.values(modules)[0].themeTitle
     }
   },
 }

@@ -24,12 +24,22 @@ foreach ($res as $rpd)  {
 
     $json = json_decode($rpd['json'],true);
 
-    if (isset($json['disciplineTarget'])){
+    if (isset($json['disciplineStructure'])){
 
-        $target = $json['disciplineTarget'];
+        foreach ($json['disciplineStructure'] as &$module) {
 
-        $json['disciplineTarget'] = [];
-        $json['disciplineTarget']['target'] = $target;
+            if (isset($module['seminars'])){
+                $count = \ceil((int)$module['load']['seminars']/2);
+                $newSeminars = \array_slice($module['seminars'],0,$count);
+            }
+            $newSeminars = array_combine(
+                array_map(function ($key) { return ++$key; }, array_keys($newSeminars)),
+                $newSeminars
+            );
+            $module['seminars'] = $newSeminars;
+        }
+
+        unset($module);
 
         $data = \json_encode($json, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
         try {

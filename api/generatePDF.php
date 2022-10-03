@@ -44,8 +44,8 @@ foreach ($disciplineStructure as $ds) {
 }
 
 //var_dump($sModules);die();
-
-$html = '<span style="text-align: center">
+$html = '<style>table{width: 100%!important}</style>';
+$html .= '<span style="text-align: center">
         ФЕДЕРАЛЬНОЕ ГОСУДАРСТВЕННОЕ БЮДЖЕТНОЕ ОБРАЗОВАТЕЛЬНОЕ 
         <br>УЧРЕЖДЕНИЕ ВЫСШЕГО ОБРАЗОВАНИЯ
         <br>«ВСЕРОССИЙСКАЯ АКАДЕМИЯ ВНЕШНЕЙ ТОРГОВЛИ 
@@ -360,7 +360,7 @@ $html .= <<<HTML
 </table>
 <h3 style="text-align: center">5.3 {$unitTitles[5]["subUnits"][3]["title"]} </h3>
 
-<table  style=": 100%" border="1">
+<table border="1">
             <thead>
                 <tr>
                     <th style="text-align: center">
@@ -386,38 +386,120 @@ HTML;
 
 $n = 0;
 foreach ($disciplineStructure as $ds) {
-    $n++;
+
+    if ($ds['load']['SRS'] !== null) {
+        $n++;
+        $types = \count($ds["SRSTypes"]);
+
+        $html .= '<tr>';
+        $html .= '<td style="text-align: center">' . $n . '</td>';
+        $html .= '<td style="text-align: center">' . \strip_tags($ds["title"], '') . '</td>';
+        $html .= '<td style="text-align: center">' . $ds["semester"] . '</td>';
+        $html .= '<td style="text-align: left">';
+
+        foreach ($ds["SRSTypes"] as $key => $type) {
+            $html .= \strip_tags($type['title']);
+            if ($key !== ($types - 1)) {
+                $html .= '<br><br>';
+            }
+        }
+        $html .= '</td>';
+        $html .= '<td style="text-align: center">' . $ds["load"]["SRS"] . '</td>';
+        $html .= '</tr>';
+    }
+}
+$html .= '</tbody></table>';
+
+$html .= '<h2 style="text-align: center">Виды самостоятельной работы </h2>';
+
+$i = 1;
+
+foreach ($disciplineStructure as $key => $item) {
+
+    if ($item['load']['SRS'] !== null) {
+        $html .= '<h2 style="text-align: center">' . $i . '. ' . $item['title'] . '</h2>';
+        foreach ($item["SRSTypes"] as $type) {
+            $html .= '<h3 style="text-align: center">' . \strip_tags($type['title'], $allowedTags) . '</h3>';
+            $html .= \strip_tags($type['description'], $allowedTags);
+        }
+        $i++;
+    }
+}
+
+$html .= '<br pagebreak="true"/>';
+
+$html .= '<h2 style="text-align: center">6. ' . $unitTitles[6]["title"] . '</h2>';
+$html .= '<p>' . \strip_tags($managed['educationTechnologies'], $allowedTags) . '</p>';
+
+$html .= '<h2 style="text-align: center">7. ' . $unitTitles[7]["title"] . '</h2>';
+$html .= '<p>' . \strip_tags($managed['annotation'], $allowedTags) . '</p>';
+
+$html .= '<h2 style="text-align: center">8. ' . $unitTitles[8]["title"] . '</h2>';
+
+foreach ($managed['informationalResources'] as $k => $type) {
+
+    $html .= '<h3 style="text-align: center">8. ' . $k . '. ' . $type["name"] . '</h3>';
+
+    foreach ($type['data'] as $key => $item) {
+        $html .= '<p>' . ($key + 1) . '. ' . \strip_tags($item['value'], $allowedTags) . '</p>';
+    }
+}
+
+$html .= '<h2 style="text-align: center">9. ' . $unitTitles[9]["title"] . '</h2>';
+
+$html .= <<<HTML
+
+<table border="1">
+    <thead>
+        <tr>
+            <th style="text-align: center;">№ п/п</th>
+            <th style="text-align: center;">Наименование раздела дисциплины</th>
+            <th style="text-align: center;">Компетенция</th>
+            <th style="text-align: center;">Индикаторы достижения компетенции</th>
+            <th style="text-align: center;">Оценочные средства текущего контроля успеваемости</th>
+        </tr>
+    </thead>
+    <tbody>
+HTML;
+
+foreach ($disciplineStructure as $key => $disc) {
+    $n = $key + 1;
 
     $html .= '<tr>';
     $html .= '<td style="text-align: center">' . $n . '</td>';
-    $html .= '<td style="text-align: center">' . strip_tags($ds["title"], '') . '</td>';
-    $html .= '<td style="text-align: center">' . $ds["semester"] . '</td>';
-    $html .= '<td style="text-align: center">' . $ds["SRSDescription"] . '</td>';
-    $html .= '<td style="text-align: center">' . $ds["load"]["SRS"] . '</td>';
-    $html .= '</tr>';
+    $html .= '<td style="text-align: center">' . $disc['title'] . '</td>';
+    $html .= '<td style="text-align: center">' . \implode(',', $disc['competences']) . '</td>';
+    $html .= '<td style="text-align: center">' . \implode(',', $disc['indicators']) . '</td>';
+    $html .= '<td style="text-align: left">';
 
+    foreach ($disc["currentControl"] as $k => $type) {
+        $html .= \strip_tags($type['title']);
+        if ($k !== ($types - 1)) {
+            $html .= '<br><br>';
+        }
+    }
+    $html .= '</td>';
+    $html .= '</tr>';
 }
 
 $html .= <<<HTML
-</tbody>
-</table>
-
-<br pagebreak="true"/>
-
-<h3 style="text-align: center">6. {$unitTitles["disciplineModules"]["title"]} </h3>
-
-</p>
-<table>
-<tr><td style="text-align: right; : 5cm;">
-</td>
-<td style=": 9cm;">
-&nbsp;
-</td>
-<td style="text-align: left;">
-</td>
-</tr>
+    </tbody>
 </table>
 HTML;
+
+$html .= '<h2 style="text-align: center">Оценочные средства текущего контроля успеваемости</h2>';
+
+foreach ($disciplineStructure as $key => $disc) {
+
+    $html .= '<h2 style="text-align: center">'.$disc['title'].'</h2>';
+
+    foreach ($disc["currentControl"] as $k => $type) {
+        $html .= '<h2 style="text-align: center">'.\strip_tags($type['title']).'</h2>';
+        $html .= '<p>' . \strip_tags($type['value'], $allowedTags) . '</p>';
+    }
+}
+
+
 
 /*$fn = tempnam('/tmp/upload', 'sl7_');
 ob_end_clean();*/
@@ -436,11 +518,8 @@ $pdf->writeHTML($html, true, false, true, false, '');
 
 $fileName = $json['static']['disciplineIndex'] . '_' . \date('d-m-Y', \strtotime($json['static']['syllabusData']['year'])) . '.pdf';
 $path = $_SERVER['DOCUMENT_ROOT'] . 'oplyuyko_test/rpd/' . $fileName;
-$link = '/oplyuyko_test/rpd/' . $fileName;
-$pdf->Output($path, 'I');
+$link = 'https://lk.vavt.ru/oplyuyko_test/rpd/' . $fileName;
+$pdf->Output($path, 'F');
 
-
-//echo "<a href='https://lk.vavt.ru".$link."' target='_blank'>link</a>";
-
-//die(\json_encode(['link' => $link], JSON_UNESCAPED_UNICODE));
+die(\json_encode(['link' => $link], JSON_UNESCAPED_UNICODE));
 

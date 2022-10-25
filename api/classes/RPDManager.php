@@ -37,6 +37,7 @@ class RPDManager
         DataManager::checkCompetencies($data);
         DataManager::checkInformResources($data);
         DataManager::getUnitTitles($data);
+        DataManager::getControlShortNames($data);
         $data['version'] = '2022041501';
 
         return $data;
@@ -173,7 +174,8 @@ class RPDManager
                            array_to_json(practice_f) as practice_f,
                            array_to_json(oop_f) as oop_f,
                            array_to_json(methodical_f) as methodical_f,
-                           array_to_json(distant_f) as distant_f
+                           array_to_json(distant_f) as distant_f,
+                           array_to_json(gia_f) as gia_f
                     FROM  syllabuses 
                     WHERE id = :id';
             $stmt = $pdo->prepare($sql);
@@ -194,7 +196,7 @@ class RPDManager
             [
                 'colName' => 'pdf_f',
                 'arFiles' => self::getArFiles($res['pdf_f']),
-                'title' => 'PDF'
+                'title' => 'Учебный план'
             ],
             [
                 'colName' => 'competencies_f',

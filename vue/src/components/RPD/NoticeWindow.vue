@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <div class="wrapper d-flex justify-content-center ">
+    <div class="wrapper d-flex justify-content-center">
       <div class="fw-bold">
         РПД содержит ошибки!
       </div>
@@ -11,11 +11,13 @@
         <BIconArrowDownShort :class="[{opened: opened},'arrow-open']" />
       </div>
     </div>
-<!--    <div class="list-wrapper my-3">
+    <div class="list-wrapper mt-2" v-if="opened">
       <ol>
         <li></li>
+        <li></li>
+        <li></li>
       </ol>
-    </div>-->
+    </div>
   </div>
 </template>
 
@@ -68,5 +70,11 @@ export default {
 .opened{
   transform: rotate(180deg);
   transition: all 0.5s ease;
+}
+.open-text{
+  z-index: 100;
+}
+ol{
+  margin-bottom: 0;
 }
 </style>

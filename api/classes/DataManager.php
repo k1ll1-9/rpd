@@ -45,7 +45,7 @@ class DataManager
                     ],
                     2 => [
                         'title' =>
-                            'Планы семинарских / практических занятий (если предусмотрены учебным планом)',
+                            'Планы семинарских / практических занятий',
                         'code' => 'modulesSeminars'
                     ],
                     3 => [
@@ -186,6 +186,16 @@ class DataManager
             if (!isset($newData['informationalResources'][$key])) {
                 $newData['informationalResources'][$key] = $item;
             }
+        }
+    }
+
+    public static function getControlShortNames(&$data)
+    {
+        foreach ($data['static']['disciplineValue']['control']['semesters'] as $item) {
+            switch ($item['controlName']){
+                //case ''
+            }
+
         }
     }
 }

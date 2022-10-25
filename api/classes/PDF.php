@@ -52,7 +52,7 @@ class PDF extends TCPDF
     {
 
 
-        $this->SetY(-15);
+        $this->SetY(-20);
 
         $this->SetFont($this->fontname, '', 8, '', false);
 

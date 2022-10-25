@@ -76,13 +76,13 @@ export default {
     GradesCurrentDescription,
     Authors,
     InformResources,
-    GradesIntermediate
+    GradesIntermediate,
 //    NoticeWindow
   },
   data() {
     return {
       ready: false,
-      visible: false
+      visible: true
     }
   },
   computed: {
@@ -92,7 +92,7 @@ export default {
   },
   async mounted() {
     this.ready = await this.$store.dispatch('rpd/initData', this.$route.query)
-    this.visible = this.$store.state.user?.role === 'admin' || process.env.NODE_ENV === 'development'
+    /*this.visible = this.$store.state.user?.role === 'admin' || process.env.NODE_ENV === 'development'*/
   }
 }
 </script>

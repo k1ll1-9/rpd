@@ -152,8 +152,6 @@ class UploadManager
 
         $competencies = [];
 
-        $i = 0;
-
         foreach ($this->data['competencies'] as $competency) {
 
             $compID = $competency['competenceCipher'];
@@ -161,11 +159,7 @@ class UploadManager
             if (!isset($data['competencies'][$compID])) {
                 $competencies[$compID] = $competency;
                 $competencies[$compID]['nextLvl'] = [];
-                $competencies[$compID]['sort'] = $i;
-                $i++;
             }
-
-            $j=0;
 
             foreach ($competency['nextLvl'] as $indicator) {
 
@@ -173,8 +167,6 @@ class UploadManager
 
                 if (!isset($competencies[$compID]['nextLvl'][$indID])) {
                     $competencies[$compID]['nextLvl'][$indID] = $indicator;
-                    $competencies[$compID]['nextLvl'][$indID]['sort'] = $j;
-                    $j++;
                 }
 
                 if (!isset($competencies[$compID]['nextLvl'][$indID]['results'])) {

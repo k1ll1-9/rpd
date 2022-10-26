@@ -7,7 +7,7 @@
       <h3 class="my-4">Тема {{index +1 }}. {{ title }}</h3>
       <template v-if="module !== null">
         <div v-for="(semester,index) in module" :key="index" class="my-4">
-          <h4 class="my-4">Семестр {{ index }}</h4>
+          <h4 class="my-4" v-if="count(module) > 1">Семестр {{ index }}</h4>
           <VisualEditor class="my-5" :identity="semester.identity"/>
         </div>
       </template>
@@ -54,6 +54,9 @@ export default {
         }
       }),
   methods: {
+    count($module){
+      return Object.keys($module).length
+    }
   },
 }
 </script>

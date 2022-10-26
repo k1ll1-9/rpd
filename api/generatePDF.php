@@ -14,11 +14,22 @@ $static = $json["static"];
 $syllabusData = $static["syllabusData"];
 $disciplineValue = $static["disciplineValue"];
 $unitTitles = $static["unitTitles"];
-
 $managed = $json["managed"];
 $competencies = $managed["competencies"];
 $disciplineStructure = $managed["disciplineStructure"];
 $intermediateControl = $managed["intermediateControl"];
+
+$order = [
+    "lectures" => 0,
+    "practice" => 1,
+    "classroom" => 2,
+    "SRS" => 3,
+    "overall" => 4,
+    "control" => 5,
+    "controlOverall" => 6
+];
+
+\uksort($disciplineValue,fn($a,$b) => $order[$a] <=> $order[$b] );
 
 $year = \date('Y', \strtotime($syllabusData["syllabusYear"]));
 
@@ -43,7 +54,6 @@ foreach ($disciplineStructure as $ds) {
     $i++;
 }
 
-//var_dump($sModules);die();
 $html = '<style>
 table{
     width: 100%!important
@@ -52,7 +62,7 @@ table{
     font-size: 12pt;
 }
 h2{
-    font-size: 16pt;
+    font-size: 17pt;
 }
 h3{
     font-size: 15pt;
@@ -71,6 +81,7 @@ $html .= '<p style="text-align: center;">
         <br>УЧРЕЖДЕНИЕ ВЫСШЕГО ОБРАЗОВАНИЯ
         <br>«ВСЕРОССИЙСКАЯ АКАДЕМИЯ ВНЕШНЕЙ ТОРГОВЛИ 
         <br>МИНИСТЕРСТВА ЭКОНОМИЧЕСКОГО РАЗВИТИЯ РОССИЙСКОЙ ФЕДЕРАЦИИ»
+        <br>
         </p>
         <p> </p>
         <table  style=": 100%">
@@ -85,8 +96,7 @@ $html .= '<p style="text-align: center;">
                     <br>«___»______________2021 г.
                 </td>
             </tr>
-        </table>
-        <p> </p>';
+        </table>';
 
 $discTarget = escape4PDF($managed["disciplineTarget"]['target']);
 $discTask = escape4PDF($managed["disciplineTarget"]['task']);
@@ -98,17 +108,16 @@ $html .= <<<HTML
 <br>    
 <br>    
 <br>    
-<div style="font-size: 13pt;">
-<p style="text-align: center"><strong>Рабочая программа учебной дисциплины</strong></p>
-<p style="text-align: center; font-size: 18pt"><b>{$static["disciplineIndex"]}  {$static["name"]} </b></p>
-<span style="text-align: center">Код и направление подготовки - {$syllabusData["specialCode"]}  «{$syllabusData["special"]}»</span>
-<br><br><span style="text-align: center">Профиль – «{$syllabusData["profile"]}»</span>
-<p></p>
-<span style="text-align: center">Квалификация выпускника – {$syllabusData["educationLevel"]} </span>
-<br><br><span style="text-align: center">Форма обучения – {$syllabusData["formOfTraining"]} </span>
-<p></p>
-<span style="text-align: center">Год набора – $year г.</span>
-<p></p>
+<br>    
+<br>    
+<div style="font-size: 13pt;text-align: center;">
+<p style="font-size: 14pt"><strong>Рабочая программа учебной дисциплины</strong><br></p>
+<p style=" font-size: 18pt"><b>{$static["disciplineIndex"]}  {$static["name"]} </b><br></p>
+<p>Код и направление подготовки - {$syllabusData["specialCode"]}  «{$syllabusData["special"]}»<br></p>
+<p>Профиль – «{$syllabusData["profile"]}»<br></p>
+<p>Квалификация выпускника – {$syllabusData["educationLevel"]}</p>
+<p>Форма обучения – {$syllabusData["formOfTraining"]} </p>
+<p>Год набора – $year г.</p>
 </div>
 <br pagebreak="true"/>
 <span style="text-align: left">Разработчик программы: <br></span>
@@ -120,16 +129,17 @@ $html .= <<<HTML
 <br pagebreak="true"/>
 
 <h2 style="text-align: center">1. {$unitTitles[1]["title"]}  <br></h2>
-<h3 style="text-align: center">1.1 {$unitTitles[1]["subUnits"][1]["title"]} <br></h3>
-$discTarget
-
-<h3 style="text-align: center">1.2 {$unitTitles[1]["subUnits"][2]["title"]} <br></h3>
+<h3 style="text-align: center">1.1 {$unitTitles[1]["subUnits"][1]["title"]}</h3>
+$discTarget 
+<div></div>
+<h3 style="text-align: center">1.2 {$unitTitles[1]["subUnits"][2]["title"]} </h3>
 $discTask
-
-<h2 style="text-align: center">2. {$unitTitles[2]["title"]}  <br></h2>
+<div></div>
+<div></div>
+<h2 style="text-align: center">2. {$unitTitles[2]["title"]}</h2>
 $discPlace
-
-<h2 style="text-align: center">3. {$unitTitles[3]["title"]}<br></h2>
+<div></div>
+<h2 style="text-align: center">3. {$unitTitles[3]["title"]}</h2>
 <table  style=": 100%" border="1">
             <thead>
                 <tr>
@@ -175,11 +185,11 @@ for ($i = 0; $i < $rowCount; $i++) {
     $html .= '<tr>';
 
     if ($k === 0 || $k === $tContent[$j]["rowspan"]) {
-        $html .= '<td rowspan="' . $tContent[$j]["rowspan"] . '"><b>' . $tContent[$j]["cipher"] . '</b>.' . $tContent[$j]["name"] . '</td>';
+        $html .= '<td rowspan="' . $tContent[$j]["rowspan"] . '"><b>' . $tContent[$j]["cipher"] . '</b>. ' . $tContent[$j]["name"] . '</td>';
 
     }
 
-    $html .= '<td><b>' . $tContent[$j]['indicators'][$k]['cipher'] . '</b>.' . $tContent[$j]['indicators'][$k]["name"] . '</td>';
+    $html .= '<td><b>' . $tContent[$j]['indicators'][$k]['cipher'] . '</b>. ' . $tContent[$j]['indicators'][$k]["name"] . '</td>';
 
     $know = $tContent[$j]['indicators'][$k]['results']['know'];
     $able = $tContent[$j]['indicators'][$k]['results']['able'];
@@ -187,18 +197,22 @@ for ($i = 0; $i < $rowCount; $i++) {
 
     $html .= '<td>';
     $html .= '<p><b>Знать</b>:<br>';
-    foreach ($know as $item) {
-        $html .= ' - ' . $item['value'] . '<br>';
+
+    foreach ($know as $key => $item) {
+        $EOL = ($key !== (\count($know) - 1)) ? '<br>' : '';
+        $html .= ' - ' . $item['value'] . $EOL;
     }
     $html .= '</p>';
     $html .= '<p><b>Уметь</b>:<br>';
     foreach ($able as $item) {
-        $html .= ' - ' . $item['value'] . '<br>';
+        $EOL = ($key !== (\count($able) - 1)) ? '<br>' : '';
+        $html .= ' - ' . $item['value'] . $EOL;
     }
     $html .= '</p>';
     $html .= '<p><b>Владеть</b>:<br>';
     foreach ($master as $item) {
-        $html .= ' - ' . $item['value'] . '<br>';
+        $EOL = ($key !== (\count($master) - 1)) ? '<br>' : '';
+        $html .= ' - ' . $item['value'] . $EOL;
     }
     $html .= '</p>';
     $html .= '</td>';
@@ -303,7 +317,7 @@ $html .= <<<HTML
                     Вид учебной работы <br> (в академических часах) 
                     </th>
                     <th style="text-align: center; width:15%" rowspan="2">
-                    <strong>В том числе в форме практической подготовки</strong> 
+                    В том числе в форме практической подготовки
                     </th>
                 </tr>
                 <tr>
@@ -341,9 +355,11 @@ $html .= <<<HTML
 </tbody>
 </table>
 <br>
+<br>
 
-<h2 style="text-align: center">5. {$unitTitles[5]["title"]}</h2>
-<h3 style="text-align: center">5.$themesSubCount {$unitTitles[5]["subUnits"][1]["title"]} <br></h3>
+<h2 style="text-align: center">5. {$unitTitles[5]["title"]}<br></h2>
+<div>
+<h3 style="text-align: center">5.$themesSubCount {$unitTitles[5]["subUnits"][1]["title"]} </h3>
 HTML;
 
 $n = 0;
@@ -355,12 +371,12 @@ foreach ($modules as $title => $module) {
         $html .= escape4PDF($semester["theme"]);
     }
 }
-
+$html .= '</div>';
 if (!empty($sModules)) {
 
     $themesSubCount++;
 
-    $html .= '<h3 style="text-align: center">5.' . $themesSubCount . ' ' . $unitTitles[5]["subUnits"][2]["title"] . '</h3>';
+    $html .= '<div><h3 style="text-align: center">5.' . $themesSubCount . ' ' . $unitTitles[5]["subUnits"][2]["title"] . '</h3>';
 
     foreach ($sModules as $title => $module) {
 
@@ -373,9 +389,6 @@ if (!empty($sModules)) {
                 $i = 1;
 
                 foreach ($semester['seminars'] as $key => $seminar) {
-
-                    $seminar = \preg_replace('/text-indent:*;/','',$seminar);
-                    $seminar = \preg_replace('/\s{2,}/',' ',$seminar);
 
                     $html .= '<h4 style="text-align: center">Семинар ' . $key . '</h4>';
                     $html .= escape4PDF($seminar);
@@ -390,32 +403,32 @@ if (!empty($sModules)) {
             }
         }
     }
+    $html .= '</div>';
 }
 
 $themesSubCount++;
 
 $html .= <<<HTML
-</tbody>
-</table>
+<div>
 <h3 style="text-align: center">5.$themesSubCount {$unitTitles[5]["subUnits"][3]["title"]} </h3>
 
 <table border="1">
             <thead>
                 <tr>
-                    <th style="text-align: center">
+                    <th style="text-align: center; width: 5%">
                     № п/п
                     </th>
-                    <th style="text-align: center">
+                    <th style="text-align: center; width: 29%">
                     Наименование раздела дисциплины
                     </th>
-                    <th style="text-align: center">
+                    <th style="text-align: center; width: 15%;">
                     Семестр 
                     </th>
-                    <th style="text-align: center">
+                    <th style="text-align: center; width: 35%">
                     Вид самостоятельной работы 
                     </th>
-                    <th style="text-align: center">
-                    <strong> Трудоемкость <br> (в акад. <br> часах)</strong> 
+                    <th style="text-align: center; width: 20%">
+                    Трудоемкость <br> (в акад. <br> часах)
                     </th>
                 </tr>
             </thead>
@@ -431,10 +444,10 @@ foreach ($disciplineStructure as $ds) {
         $types = \count($ds["SRSTypes"]);
 
         $html .= '<tr>';
-        $html .= '<td style="text-align: center">' . $n . '</td>';
-        $html .= '<td style="text-align: center">' . \strip_tags($ds["title"], '') . '</td>';
-        $html .= '<td style="text-align: center">' . $ds["semester"] . '</td>';
-        $html .= '<td style="text-align: left">';
+        $html .= '<td style="text-align: center; width: 5%">' . $n . '</td>';
+        $html .= '<td style="text-align: center; width: 29%">' . \strip_tags($ds["title"], '') . '</td>';
+        $html .= '<td style="text-align: center; width: 15%">' . $ds["semester"] . '</td>';
+        $html .= '<td style="text-align: left; width: 35%">';
 
         foreach ($ds["SRSTypes"] as $key => $type) {
             $html .= \strip_tags($type['title']);
@@ -443,7 +456,7 @@ foreach ($disciplineStructure as $ds) {
             }
         }
         $html .= '</td>';
-        $html .= '<td style="text-align: center">' . $ds["load"]["SRS"] . '</td>';
+        $html .= '<td style="text-align: center; width: 20%">' . $ds["load"]["SRS"] . '</td>';
         $html .= '</tr>';
     }
 }
@@ -464,17 +477,18 @@ foreach ($disciplineStructure as $key => $item) {
         $i++;
     }
 }
-
+$html .= '</div><div></div>';
 $html .= '<h2 style="text-align: center">6. ' . $unitTitles[6]["title"] . '</h2>';
 $html .= '<p>' . escape4PDF($managed['educationTechnologies']) . '</p>';
 
 /*$html .= '<h2 style="text-align: center">7. ' . $unitTitles[7]["title"] . '</h2>';
 $html .= '<p>' . \strip_tags($managed['annotation'], $allowedTags) . '</p>';*/
 
+$html .= '<div></div>';
 $html .= '<h2 style="text-align: center">7. ' . $unitTitles[8]["title"] . '</h2>';
 
 foreach ($managed['informationalResources'] as $k => $type) {
-
+    $html .= '<div></div>';
     $html .= '<h3 style="text-align: center">7. ' . $k . '. ' . $type["name"] . '</h3>';
 
     foreach ($type['data'] as $key => $item) {
@@ -482,6 +496,7 @@ foreach ($managed['informationalResources'] as $k => $type) {
     }
 }
 
+$html .= '<div></div><div></div>';
 $html .= '<h2 style="text-align: center">8. ' . $unitTitles[9]["title"] . '</h2>';
 
 $html .= <<<HTML
@@ -489,11 +504,11 @@ $html .= <<<HTML
 <table border="1">
     <thead>
         <tr>
-            <th style="text-align: center;">№ п/п</th>
-            <th style="text-align: center;">Наименование раздела дисциплины</th>
-            <th style="text-align: center;">Компетенция</th>
-            <th style="text-align: center;">Индикаторы достижения компетенции</th>
-            <th style="text-align: center;">Оценочные средства текущего контроля успеваемости</th>
+            <th style="text-align: center; width: 5%">№ п/п</th>
+            <th style="text-align: center; width: 30%">Наименование раздела дисциплины</th>
+            <th style="text-align: center; width: 15%">Компетенция</th>
+            <th style="text-align: center; width: 20%">Индикаторы достижения компетенции</th>
+            <th style="text-align: center; width: 30%">Оценочные средства текущего контроля успеваемости</th>
         </tr>
     </thead>
     <tbody>
@@ -503,16 +518,16 @@ foreach ($disciplineStructure as $key => $disc) {
     $n = $key + 1;
 
     $html .= '<tr>';
-    $html .= '<td style="text-align: center">' . $n . '</td>';
-    $html .= '<td style="text-align: center">' . $disc['title'] . '</td>';
-    $html .= '<td style="text-align: center">' . \implode(',', $disc['competences']) . '</td>';
-    $html .= '<td style="text-align: center">' . \implode(',', $disc['indicators']) . '</td>';
-    $html .= '<td style="text-align: left">';
+    $html .= '<td style="text-align: center; width: 5%">' . $n . '</td>';
+    $html .= '<td style="text-align: center; width: 30%">' . $disc['title'] . '</td>';
+    $html .= '<td style="text-align: center; width: 15%">' . \implode(',', $disc['competences']) . '</td>';
+    $html .= '<td style="text-align: center; width: 20%">' . \implode(',', $disc['indicators']) . '</td>';
+    $html .= '<td style="text-align: left; width: 30%">';
 
     foreach ($disc["currentControl"] as $k => $type) {
-        $html .= \strip_tags($type['title']);
-        if ($k !== ($types - 1)) {
-            $html .= '<br><br>';
+        $html .= $type['title'];
+        if ($k !== (\count($disc["currentControl"]) - 1)) {
+            $html .= ',<br>';
         }
     }
     $html .= '</td>';
@@ -530,11 +545,11 @@ $html .= '<h2 style="text-align: center">9. Оценочные средства 
 
 foreach ($disciplineStructure as $key => $disc) {
 
-    $html .= '<h2 style="text-align: center">Тема ' . ($key + 1) . '. ' . $disc['title'] . '</h2>';
+    $html .= '<h4 style="text-align: center">Тема ' . ($key + 1) . '. ' . $disc['title'] . '</h4>';
 
     foreach ($disc["currentControl"] as $k => $type) {
 
-        $html .= '<h2 style="text-align: center">' . \strip_tags($type['title']) . '</h2>';
+        $html .= '<h4 style="text-align: center">' . \strip_tags($type['title']) . '</h4>';
         $html .= '<p>' . escape4PDF($type['value']) . '</p>';
     }
 }
@@ -557,7 +572,7 @@ foreach ($intermediateControl as $n => $semester) {
 }
 
 $html .= <<<HTML
-
+<div></div><div></div>
 <h2 style="text-align: center">11. Материально-техническое обеспечение дисциплины</h2>
 
 <p>Реализация программы предполагает наличие учебных кабинетов: </p>
@@ -565,18 +580,18 @@ $html .= <<<HTML
 <li>- лекционная аудитория, оборудованная видеопроекционной аппаратурой, экраном, компьютером; </li>
 <li>- кабинет для практических занятий (компьютерный класс), имеющий видеопроекционную аппаратуру с возможностью подключения к ПК, экран, персональные компьютеры с возможностью подключения к информационно-телекоммуникационной сети Internet.</li>
 </ul>
-
-<h2 style="text-align: center">11. Обеспечение доступности освоения программы обучающимися с ограниченными возможностями здоровья</h2>
+<div></div><div></div>
+<h2 style="text-align: center">12. Обеспечение доступности освоения программы обучающимися с ограниченными возможностями здоровья</h2>
 
 <p style="text-indent: 15px; text-align: justify">Условия организации и содержание обучения и контроля знаний обучающихся с ограниченными возможностями здоровья (далее – ОВЗ) определяются программой дисциплины, адаптированной при необходимости для обучения указанных обучающихся. </p>
 <p style="text-indent: 15px; text-align: justify">Организация обучения, текущей и промежуточной аттестации студентов с ОВЗ осуществляется с учетом особенностей психофизического развития, индивидуальных возможностей и состояния здоровья таких обучающихся. Исходя из психофизического развития и состояния здоровья студентов с ОВЗ, организуются занятия совместно с другими обучающимися в общих группах, используя социально-активные и рефлексивные методы обучения создания комфортного психологического климата в студенческой группе или, при соответствующем заявлении такого обучающегося, по индивидуальной программе, которая является модифицированным вариантом основной рабочей программы дисциплины. При этом содержание программы дисциплины не изменяется. Изменяются, как правило, формы обучения и контроля знаний, образовательные технологии и учебно-методические материалы. </p>
 <p style="text-indent: 15px; text-align: justify">Обучение студентов с ОВЗ также может осуществляться индивидуально и/или с применением элементов электронного обучения. Электронное обучение обеспечивает возможность коммуникаций с преподавателем, а также с другими обучаемыми посредством вебинаров (например, с использованием программы Skype), что способствует сплочению группы, направляет учебную группу на совместную работу, обсуждение, принятие группового решения. В образовательном процессе для повышения уровня восприятия и переработки учебной информации студентов с ОВЗ применяются мультимедийные и специализированные технические средства приема-передачи учебной информации в доступных формах для обучающихся с различными нарушениями, обеспечивается выпуск альтернативных форматов печатных материалов (крупный шрифт), электронных образовательных ресурсов в формах, адаптированных к ограничениям здоровья обучающихся, наличие необходимого материально-технического оснащения. Подбор и разработка учебных материалов производится преподавателем с учетом того, чтобы обучающиеся с нарушениями слуха получали информацию визуально, с нарушениями зрения – аудиально (например, с использованием программ-синтезаторов речи). </p>
 <p style="text-indent: 15px; text-align: justify">Для осуществления процедур текущего контроля успеваемости и промежуточной аттестации обучающихся лиц с ОВЗ оценочные средства по дисциплине, позволяющие оценить достижение ими результатов обучения и уровень сформированности компетенций, предусмотренных учебным планом и рабочей программой дисциплины, адаптируются для лиц с ограниченными возможностями здоровья с учетом индивидуальных психофизиологических особенностей (устно, письменно на бумаге, письменно на компьютере, в форме тестирования и т.п.). При необходимости обучающимся предоставляется дополнительное время для подготовки ответа при прохождении всех видов аттестации.</p>
 <p style="text-indent: 15px; text-align: justify">Особые условия предоставляются обучающиеся с ограниченными возможностями здоровья на основании заявления, содержащего сведения о необходимости создания соответствующих специальных условий.</p>
-
-<h2 style="text-align: center">11. Методические указания для обучающихся по освоению дисциплины</h2>
-
-<h3 style="text-align: center">11.1 Методические рекомендации по изучению дисциплины</h2>
+<div></div><div></div>
+<h2 style="text-align: center">13. Методические указания для обучающихся по освоению дисциплины</h2>
+<div></div>
+<h3 style="text-align: center">13.1 Методические рекомендации по изучению дисциплины</h2>
 
 <p style="text-indent: 15px; text-align: justify">Студентам необходимо ознакомиться: с содержанием рабочей программы дисциплины (далее – РПД), с целями и задачами дисциплины, ее связями с другими дисциплинами образовательной программы, методическими разработками по данной дисциплине, имеющимися на образовательном портале и сайте кафедры, с графиком консультаций преподавателей данной кафедры.</p>
 <p style="text-indent: 15px; text-align: justify">Советы по планированию и организации времени, необходимого на изучение дисциплины. Рекомендуемое распределение времени на изучение дисциплины указано в разделе «Структура и содержание дисциплины». В целях более плодотворной работы в семестре студенты также могут ознакомиться с планом дисциплины, составленным преподавателем – как для лекционных, так и для практических занятий.</p>
@@ -595,16 +610,16 @@ $html .= <<<HTML
 <li>- уточнение возникающих вопросов на консультации по дисциплине;</li>
 <li>- непосредственная подготовка к экзамену по дисциплине на основе выданных преподавателем вопросов к экзамену.</li>
 </ul>
-
-<h3 style="text-align: center">11.2. Рекомендации по подготовке к лекционным занятиям (теоретический курс)</h2>
+<div></div>
+<h3 style="text-align: center">13.2. Рекомендации по подготовке к лекционным занятиям (теоретический курс)</h2>
 
 <p style="text-indent: 15px; text-align: justify">Студентам необходимо:</p>
 <ul style="list-style-type:none">
 <li>- перед каждой лекцией просматривать рабочую программу дисциплины, что позволит сэкономить время на записывание темы лекции, ее основных вопросов, рекомендуемой литературы;</li>
 <li>- перед очередной лекцией необходимо просмотреть по конспекту материал предыдущей лекции. При затруднениях в восприятии материала следует обратиться к основным литературным источникам, если разобраться в материале опять не удалось, то обратиться к лектору (по графику его консультаций) или к преподавателю на практических занятиях. </li>
 </ul>
-
-<h3 style="text-align: center">11.3. Рекомендации по подготовке к практическим (семинарским) занятиям</h2>
+<div></div>
+<h3 style="text-align: center">13.3. Рекомендации по подготовке к практическим (семинарским) занятиям</h2>
 
 <p style="text-indent: 15px; text-align: justify">Студентам следует:</p>
 <ul style="list-style-type:none">
@@ -616,8 +631,8 @@ $html .= <<<HTML
 <li>- в ходе семинара давать конкретные, четкие ответы по существу вопросов;</li>
 <li>- на занятии доводить каждую задачу до окончательного решения, демонстрировать понимание проведенных расчетов (анализов, ситуаций), в случае затруднений обращаться к преподавателю.</li>
 </ul>
-
-<h3 style="text-align: center">11.3. Рекомендации по подготовке к практическим (семинарским) занятиям</h2>
+<div></div>
+<h3 style="text-align: center">12.3. Методические рекомендации по выполнению различных форм самостоятельных домашних заданий</h2>
 
 <p style="text-indent: 15px; text-align: justify">Самостоятельная работа студентов включает в себя выполнение различного рода заданий, которые ориентированы на более глубокое усвоение материала изучаемой дисциплины. По каждой теме учебной дисциплины студентам предлагается перечень заданий для самостоятельной работы.</p>
 <p style="text-indent: 15px; text-align: justify">К выполнению заданий для самостоятельной работы предъявляются следующие требования: задания должны исполняться самостоятельно и представляться в установленный срок, а также соответствовать установленным требованиям по оформлению.</p>
@@ -639,7 +654,7 @@ $pdf = new PDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', f
 $pdf->page1footerhtml = 'Москва ' . $year;
 $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
 $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
-$pdf->SetMargins(25, 20, 15,true);
+$pdf->SetMargins(25, 20, 15, true);
 $tagvs = [
     'p' => [
         ['h' => 1.2],
@@ -647,7 +662,6 @@ $tagvs = [
     ]
 ];
 $pdf->setHtmlVSpace($tagvs);
-
 $pdf->AddPage();
 $pdf->PageNo();
 $pdf->writeHTML($html, true, false, true, false, '');
@@ -655,19 +669,25 @@ $pdf->writeHTML($html, true, false, true, false, '');
 $fileName = $json['static']['disciplineIndex'] . '_' . \date('d-m-Y', \strtotime($json['static']['syllabusData']['year'])) . '.pdf';
 $path = $_SERVER['DOCUMENT_ROOT'] . 'oplyuyko_test/rpd/' . $fileName;
 $link = 'https://lk.vavt.ru/oplyuyko_test/rpd/' . $fileName;
+
 $pdf->Output($path, 'I');
 
 //die(\json_encode(['link' => $link], JSON_UNESCAPED_UNICODE));
 
-function escape4PDF($str){
+function escape4PDF($str)
+{
 
     $allowedTags = '<p><li><ul><h1><h2><h3><h4><b><i><strong><br><tr><table><th><td><b><span>';
 
-    $str = \preg_replace('/&nbsp;+/',' ',$str);
-    $str = \preg_replace('/\s{2,}/',' ',$str);
-    $str = \preg_replace('/style="([\s\S]+?)"/','',$str);
     $str = \trim(\strip_tags($str, $allowedTags));
-    $str = \preg_replace('/p>\s+?/','p>',$str);
+    $str = \preg_replace('/&nbsp;+/', ' ', $str);
+    $str = \preg_replace('/\s{2,}/', ' ', $str);
+    $str = \preg_replace('/style="([\s\S]+?)"|class="([\s\S]+?)"/', '', $str);
+    $str = \preg_replace('/width="([\s\S]+?)"/', '', $str);
+    $str = \preg_replace('/p>\s+?/', 'p>', $str);
+    /*    $str = \preg_replace('/<p>\s*<br>\s*<\/p>/','',$str);
+        $str = \preg_replace('/<p>\s*<\/p>/','',$str);*/
+    $str = \preg_replace('/<\s*\w+\s*>(\s*(<br>)*\s*)*<\/\s*\w+\s*>/', '', $str);
 
     return $str;
 }

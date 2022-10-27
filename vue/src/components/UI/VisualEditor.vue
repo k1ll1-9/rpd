@@ -2,12 +2,21 @@
   <ejs-richtexteditor ref="rteObj"
                       :value="value"
                       @change="updateState"
+                      @beforePasteCleanup="cleanup"
+                      :pasteCleanupSettings="pasteCleanupSettings"
                       :toolbarSettings="toolbarSettings"/>
 </template>
 
 <script>
 
-import {RichTextEditorComponent, Toolbar, Link, Image, HtmlEditor} from "@syncfusion/ej2-vue-richtexteditor"
+import {
+  RichTextEditorComponent,
+  Toolbar,
+  Link,
+  Image,
+  HtmlEditor,
+  PasteCleanup,
+} from "@syncfusion/ej2-vue-richtexteditor"
 
 export default {
   components: {
@@ -17,36 +26,54 @@ export default {
   props: ['identity'],
   data() {
     return {
-      fontSize:{
+      fontSize: {
         default: "16pt"
       },
       toolbarSettings: {
-        items: ['Bold', 'Italic', 'Underline', 'StrikeThrough','FontSize',
+        items: ['Bold', 'Italic', 'Underline', 'StrikeThrough', 'FontSize',
           'LowerCase', 'UpperCase', '|',
           'Formats', 'Alignments', 'OrderedList', 'UnorderedList',
           'Outdent', 'Indent', '|',
-          'SourceCode',  '|', 'Undo', 'Redo'
+          'SourceCode', '|', 'Undo', 'Redo'
         ]
+      },
+      pasteCleanupSettings: {
+        prompt: false,
+        deniedAttrs: ["style"],
+        allowedStyleProps: [],
+        deniedTags: ["br"],
+        keepFormat: true,
+        plainText: false
       }
     }
   },
   methods: {
+    cleanup() {
+      console.log('paste')
+    }
+    ,
     updateState() {
+      console.log('upd');
+      /*      var instance = this.$refs.rteObj.$el.ej2_instances[0];
+            console.log(instance)
+            instance.updateValue(this.$refs.rteObj.ej2Instances.getHtml() + 'YOBA');*/
       this.$store.dispatch('rpd/updateData', {
         identity: this.identity,
         value: this.$refs.rteObj.ej2Instances.getHtml(),
         updateType: 'UPDATE_RPD_ITEM'
       });
     }
-  },
+  }
+  ,
   computed: {
     value() {
 
       return this.identity.reduce((acc, c) => acc && acc[c], this.$store.state.rpd)
     }
-  },
+  }
+  ,
   provide: {
-    richtexteditor: [Toolbar, Link, Image, HtmlEditor],
+    richtexteditor: [Toolbar, Link, Image, HtmlEditor, PasteCleanup],
   }
 }
 </script>

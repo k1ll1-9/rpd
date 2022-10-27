@@ -26,7 +26,8 @@
       <GradesCurrentDescription/>
       <GradesIntermediate/>
     </div>
-    <PDFButton v-if="visible"/>
+    <PDFButton/>
+    <ApprovalButton v-if="visible"/>
 <!--    <NoticeWindow/>-->
   </div>
   <Preloader v-else style="margin-top: 200px"/>
@@ -44,6 +45,7 @@ import Target from "./../components/RPD/Target";
 import Competencies from "./../components/RPD/Competencies";
 import ModulesSRS from "./../components/RPD/DisciplineModules/ModulesSRS";
 import Navigation from "./../components/RPD/Navigation";
+import ApprovalButton from "./../components/RPD/ApprovalButton";
 import PDFButton from "./../components/RPD/PDFButton";
 import Preloader from "./../components/Misc/Preloader";
 import GradesCurrent from "./../components/RPD/Grades/GradesCurrent"
@@ -77,6 +79,7 @@ export default {
     Authors,
     InformResources,
     GradesIntermediate,
+    ApprovalButton,
 //    NoticeWindow
   },
   data() {
@@ -92,7 +95,7 @@ export default {
   },
   async mounted() {
     this.ready = await this.$store.dispatch('rpd/initData', this.$route.query)
-    /*this.visible = this.$store.state.user?.role === 'admin' || process.env.NODE_ENV === 'development'*/
+    this.visible = this.$store.state.user?.role === 'admin' || process.env.NODE_ENV === 'development'
   }
 }
 </script>

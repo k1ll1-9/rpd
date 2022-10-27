@@ -344,6 +344,8 @@ class RPDManager
         $user['ID'] = $USER->GetID();
 
         $res = \CUser::GetByID($user['ID'])->fetch();
+        $user['uniID'] = $res['UF_VAVT1CUNIID'];
+
         $res = \Bitrix\Iblock\SectionTable::getList(
             [
                 'filter' => [
@@ -367,6 +369,8 @@ class RPDManager
         } else {
             $user['role'] = 'user';
         }
+
+
 
         return $user;
     }

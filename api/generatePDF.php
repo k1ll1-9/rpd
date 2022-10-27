@@ -7,8 +7,8 @@ use VAVT\UP\PDF;
 \ini_set('display_errors', 1);
 \error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING);
 
-//$json = \json_decode(\file_get_contents('php://input'),true)['data'];
-$json = \json_decode(\file_get_contents('mockRPD.json'), true);
+$json = \json_decode(\file_get_contents('php://input'),true)['data'];
+//$json = \json_decode(\file_get_contents('mockRPD2.json'), true);
 
 $static = $json["static"];
 $syllabusData = $static["syllabusData"];
@@ -35,21 +35,21 @@ $year = \date('Y', \strtotime($syllabusData["syllabusYear"]));
 
 $modules = [];
 
-foreach ($disciplineStructure as $ds) {
-    $modules[$ds['title']][$ds['semester']] = $ds;
+foreach ($disciplineStructure as $key => $ds) {
+    $modules[$ds['semester']][$key + 1] = $ds;
 }
 
 $sModules = [];
 
 $i = 1;
 
-foreach ($disciplineStructure as $ds) {
+foreach ($disciplineStructure as $key => $ds) {
     $seminarsCount = \ceil((int)$ds['load']['seminars'] / 2);
 
     if ($seminarsCount > 0) {
-        $sModules[$ds['title']]['moduleN'] = $sModules[$ds['title']]['moduleN'] ?? $i;
-        $sModules[$ds['title']]['semesters'][$ds['semester']]['seminars'] = $ds['seminars'];
-        $sModules[$ds['title']]['semesters'][$ds['semester']]['seminarsCount'] = $seminarsCount;
+        $sModules[$ds['semester']][$key + 1]['seminars'] = $ds['seminars'];
+        $sModules[$ds['semester']][$key + 1]['title'] = $ds['title'];
+        $sModules[$ds['semester']][$key + 1]['seminarsCount'] = $seminarsCount;
     }
     $i++;
 }
@@ -71,12 +71,17 @@ h4{
     font-size: 14pt;
 }
 p{
+    text-align: justify;
     text-indent: 10px !important;
     margin: 0 !important;
     padding: 0  !important;
 }
+.front-page p{
+text-align: center;
+}
 </style>';
-$html .= '<p style="text-align: center;">
+$html .= '
+<p style="text-align: center;">
         ФЕДЕРАЛЬНОЕ ГОСУДАРСТВЕННОЕ БЮДЖЕТНОЕ ОБРАЗОВАТЕЛЬНОЕ 
         <br>УЧРЕЖДЕНИЕ ВЫСШЕГО ОБРАЗОВАНИЯ
         <br>«ВСЕРОССИЙСКАЯ АКАДЕМИЯ ВНЕШНЕЙ ТОРГОВЛИ 
@@ -110,7 +115,7 @@ $html .= <<<HTML
 <br>    
 <br>    
 <br>    
-<div style="font-size: 13pt;text-align: center;">
+<div style="font-size: 13pt;text-align: center;"  class="front-page">
 <p style="font-size: 14pt"><strong>Рабочая программа учебной дисциплины</strong><br></p>
 <p style=" font-size: 18pt"><b>{$static["disciplineIndex"]}  {$static["name"]} </b><br></p>
 <p>Код и направление подготовки - {$syllabusData["specialCode"]}  «{$syllabusData["special"]}»<br></p>
@@ -362,13 +367,11 @@ $html .= <<<HTML
 <h3 style="text-align: center">5.$themesSubCount {$unitTitles[5]["subUnits"][1]["title"]} </h3>
 HTML;
 
-$n = 0;
-
-foreach ($modules as $title => $module) {
-    $n++;
-    $html .= '<h4 style="text-align: center">Тема ' . $n . '. ' . $title . ' </h4>';
-    foreach ($module as $semester) {
-        $html .= escape4PDF($semester["theme"]);
+foreach ($modules as $number => $semester) {
+    $html .= (\count($modules) > 1) ? '<h4 style="text-align: center">Семестр ' . $number . ' </h4>' : '';
+    foreach ($semester as $key => $theme) {
+        $html .= '<h4 style="text-align: center">Тема ' . $key .'. ' .$theme['title'] . ' </h4>';
+        $html .= escape4PDF($theme["theme"]);
     }
 }
 $html .= '</div>';
@@ -378,19 +381,21 @@ if (!empty($sModules)) {
 
     $html .= '<div><h3 style="text-align: center">5.' . $themesSubCount . ' ' . $unitTitles[5]["subUnits"][2]["title"] . '</h3>';
 
-    foreach ($sModules as $title => $module) {
+    foreach ($sModules as $number => $semester) {
 
-        $html .= '<h3 style="text-align: center">Тема  ' . $module['moduleN'] . '. ' . $title . '</h3>';
+        $html .= (\count($sModules) > 1) ? '<h4 style="text-align: center">Семестр ' . $number . ' </h4>' : '';
 
-        foreach ($module['semesters'] as $semesterN => $semester) {
+        foreach ($semester as $key => $theme) {
 
-            if ($semester['seminarsCount'] > 0) {
+            if ($theme['seminarsCount'] > 0) {
 
                 $i = 1;
 
-                foreach ($semester['seminars'] as $key => $seminar) {
+                $html .=  '<h4 style="text-align: center">Тема ' . $key . '. '. $theme['title'] .'  </h4>';
 
-                    $html .= '<h4 style="text-align: center">Семинар ' . $key . '</h4>';
+                foreach ($theme['seminars'] as $index => $seminar) {
+
+                    $html .= '<h4 style="text-align: center">Семинар ' . $index . '</h4>';
                     $html .= escape4PDF($seminar);
 
                     $i++;
@@ -670,9 +675,9 @@ $fileName = $json['static']['disciplineIndex'] . '_' . \date('d-m-Y', \strtotime
 $path = $_SERVER['DOCUMENT_ROOT'] . 'oplyuyko_test/rpd/' . $fileName;
 $link = 'https://lk.vavt.ru/oplyuyko_test/rpd/' . $fileName;
 
-$pdf->Output($path, 'I');
+$pdf->Output($path, 'F');
 
-//die(\json_encode(['link' => $link], JSON_UNESCAPED_UNICODE));
+die(\json_encode(['link' => $link], JSON_UNESCAPED_UNICODE));
 
 function escape4PDF($str)
 {

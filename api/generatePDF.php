@@ -7,8 +7,8 @@ use VAVT\UP\PDF;
 \ini_set('display_errors', 1);
 \error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING);
 
-$json = \json_decode(\file_get_contents('php://input'),true)['data'];
-//$json = \json_decode(\file_get_contents('mockRPD2.json'), true);
+//$json = \json_decode(\file_get_contents('php://input'),true)['data'];
+$json = \json_decode(\file_get_contents('mockRPD.json'), true);
 
 $static = $json["static"];
 $syllabusData = $static["syllabusData"];
@@ -41,8 +41,6 @@ foreach ($disciplineStructure as $key => $ds) {
 
 $sModules = [];
 
-$i = 1;
-
 foreach ($disciplineStructure as $key => $ds) {
     $seminarsCount = \ceil((int)$ds['load']['seminars'] / 2);
 
@@ -51,7 +49,15 @@ foreach ($disciplineStructure as $key => $ds) {
         $sModules[$ds['semester']][$key + 1]['title'] = $ds['title'];
         $sModules[$ds['semester']][$key + 1]['seminarsCount'] = $seminarsCount;
     }
-    $i++;
+}
+
+$SRSModules = [];
+
+foreach ($disciplineStructure as $key => $ds) {
+    if ((isset($ds['load']['SRS']) && $ds['load']['SRS'] > 0) && !empty($ds['SRSTypes'])) {
+        $SRSModules[$ds['semester']][$key + 1]['SRSTypes'] = $ds['SRSTypes'];
+        $SRSModules[$ds['semester']][$key + 1]['title'] = $ds['title'];
+    }
 }
 
 $html = '<style>
@@ -420,7 +426,7 @@ $html .= <<<HTML
 <table border="1">
             <thead>
                 <tr>
-                    <th style="text-align: center; width: 5%">
+                    <th style="text-align: center; width: 6%">
                     № п/п
                     </th>
                     <th style="text-align: center; width: 29%">
@@ -429,7 +435,7 @@ $html .= <<<HTML
                     <th style="text-align: center; width: 15%;">
                     Семестр 
                     </th>
-                    <th style="text-align: center; width: 35%">
+                    <th style="text-align: center; width: 34%">
                     Вид самостоятельной работы 
                     </th>
                     <th style="text-align: center; width: 20%">
@@ -449,10 +455,10 @@ foreach ($disciplineStructure as $ds) {
         $types = \count($ds["SRSTypes"]);
 
         $html .= '<tr>';
-        $html .= '<td style="text-align: center; width: 5%">' . $n . '</td>';
+        $html .= '<td style="text-align: center; width: 6%">' . $n . '</td>';
         $html .= '<td style="text-align: center; width: 29%">' . \strip_tags($ds["title"], '') . '</td>';
         $html .= '<td style="text-align: center; width: 15%">' . $ds["semester"] . '</td>';
-        $html .= '<td style="text-align: left; width: 35%">';
+        $html .= '<td style="text-align: left; width: 34%">';
 
         foreach ($ds["SRSTypes"] as $key => $type) {
             $html .= \strip_tags($type['title']);
@@ -469,9 +475,25 @@ $html .= '</tbody></table><br>';
 
 $html .= '<h3 style="text-align: center">Виды самостоятельной работы </h3>';
 
-$i = 1;
 
-foreach ($disciplineStructure as $key => $item) {
+foreach ($SRSModules as $number => $semester) {
+
+    $html .= (\count($sModules) > 1) ? '<h4 style="text-align: center">Семестр ' . $number . ' </h4>' : '';
+
+    foreach ($semester as $key => $theme) {
+
+            $html .=  '<h4 style="text-align: center">Тема ' . $key . '. '. $theme['title'] .'  </h4>';
+
+            foreach ($theme['SRSTypes'] as $index => $type) {
+
+                $html .= '<h4 style="text-align: center">' . $type['title'] . '</h4>';
+                $html .= escape4PDF($type['description']);
+
+            }
+    }
+}
+
+/*foreach ($disciplineStructure as $key => $item) {
 
     if ($item['load']['SRS'] !== null) {
         $html .= '<h3 style="text-align: center">Тема ' . $i . '. ' . $item['title'] . '</h3>';
@@ -481,7 +503,7 @@ foreach ($disciplineStructure as $key => $item) {
         }
         $i++;
     }
-}
+}*/
 $html .= '</div><div></div>';
 $html .= '<h2 style="text-align: center">6. ' . $unitTitles[6]["title"] . '</h2>';
 $html .= '<p>' . escape4PDF($managed['educationTechnologies']) . '</p>';
@@ -675,9 +697,9 @@ $fileName = $json['static']['disciplineIndex'] . '_' . \date('d-m-Y', \strtotime
 $path = $_SERVER['DOCUMENT_ROOT'] . 'oplyuyko_test/rpd/' . $fileName;
 $link = 'https://lk.vavt.ru/oplyuyko_test/rpd/' . $fileName;
 
-$pdf->Output($path, 'F');
+$pdf->Output($path, 'I');
 
-die(\json_encode(['link' => $link], JSON_UNESCAPED_UNICODE));
+//die(\json_encode(['link' => $link], JSON_UNESCAPED_UNICODE));
 
 function escape4PDF($str)
 {

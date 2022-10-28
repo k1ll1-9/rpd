@@ -29,7 +29,7 @@ $order = [
     "controlOverall" => 6
 ];
 
-\uksort($disciplineValue,fn($a,$b) => $order[$a] <=> $order[$b] );
+\uksort($disciplineValue, fn($a, $b) => $order[$a] <=> $order[$b]);
 
 $year = \date('Y', \strtotime($syllabusData["syllabusYear"]));
 
@@ -95,6 +95,7 @@ $html .= '
         <br>
         </p>
         <p> </p>
+<!--
         <table  style=": 100%">
             <tr>
                 <td>
@@ -107,7 +108,22 @@ $html .= '
                     <br>«___»______________2021 г.
                 </td>
             </tr>
+        </table>-->
+        <table  style=": 100%">
+            <tr>
+                <td>
+                    &nbsp;
+                </td>
+                <td style="text-align: center;">
+                    <br>
+                    <br>
+                    <br><span style="color:#ffffff">{SP4}</span>
+                    <br>
+                    <br>
+                </td>
+            </tr>
         </table>';
+
 
 $discTarget = escape4PDF($managed["disciplineTarget"]['target']);
 $discTask = escape4PDF($managed["disciplineTarget"]['task']);
@@ -376,7 +392,7 @@ HTML;
 foreach ($modules as $number => $semester) {
     $html .= (\count($modules) > 1) ? '<h4 style="text-align: center">Семестр ' . $number . ' </h4>' : '';
     foreach ($semester as $key => $theme) {
-        $html .= '<h4 style="text-align: center">Тема ' . $key .'. ' .$theme['title'] . ' </h4>';
+        $html .= '<h4 style="text-align: center">Тема ' . $key . '. ' . $theme['title'] . ' </h4>';
         $html .= escape4PDF($theme["theme"]);
     }
 }
@@ -397,7 +413,7 @@ if (!empty($sModules)) {
 
                 $i = 1;
 
-                $html .=  '<h4 style="text-align: center">Тема ' . $key . '. '. $theme['title'] .'  </h4>';
+                $html .= '<h4 style="text-align: center">Тема ' . $key . '. ' . $theme['title'] . '  </h4>';
 
                 foreach ($theme['seminars'] as $index => $seminar) {
 
@@ -482,14 +498,14 @@ foreach ($SRSModules as $number => $semester) {
 
     foreach ($semester as $key => $theme) {
 
-            $html .=  '<h4 style="text-align: center">Тема ' . $key . '. '. $theme['title'] .'  </h4>';
+        $html .= '<h4 style="text-align: center">Тема ' . $key . '. ' . $theme['title'] . '  </h4>';
 
-            foreach ($theme['SRSTypes'] as $index => $type) {
+        foreach ($theme['SRSTypes'] as $index => $type) {
 
-                $html .= '<h4 style="text-align: center">' . $type['title'] . '</h4>';
-                $html .= escape4PDF($type['description']);
+            $html .= '<h4 style="text-align: center">' . $type['title'] . '</h4>';
+            $html .= escape4PDF($type['description']);
 
-            }
+        }
     }
 }
 
@@ -669,6 +685,31 @@ $html .= <<<HTML
 <li>- выполнять все плановые задания, выдаваемые преподавателем для самостоятельного выполнения, и разбирать на семинарах и консультациях неясные вопросы;</li>
 <li>- при подготовке к промежуточной аттестации параллельно прорабатывать соответствующие теоретические и практические разделы дисциплины, фиксируя неясные моменты для их обсуждения на плановой консультации.</li>
 </ul>
+<table  style=": 100%">
+    <tr>
+        <td style="text-align: center;">
+            <br>
+            <br>
+            <br><span style="color:#ffffff">{SP1}</span>
+            <br>
+            <br>
+        </td>
+        <td style="text-align: center;">
+            <br>
+            <br>
+            <br><span style="color:#ffffff">{SP2}</span>
+            <br>
+            <br>
+        </td>
+        <td style="text-align: center;">
+            <br>
+            <br>
+            <br><span style="color:#ffffff">{SP3}</span>
+            <br>
+            <br>
+        </td>
+    </tr>
+</table>
 HTML;
 
 /*$fn = tempnam('/tmp/upload', 'sl7_');

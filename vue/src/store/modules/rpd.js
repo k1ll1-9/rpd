@@ -20,6 +20,12 @@ export const rpd = {
     },
     SPLICE_RPD_ITEM(state, payload) {
       payload.identity.reduce((acc, c) => acc && acc[c], state).splice(payload.index, 1)
+    },
+    ADD_ERROR(state, payload) {
+      state.errors.push(payload)
+    },
+    REMOVE_ERROR(state, payload) {
+      state.errors = state.errors.filter((el) => el.id !== payload.id)
     }
   },
   actions: {
@@ -35,15 +41,16 @@ export const rpd = {
       state.static = res.data.static
       state.managed = res.data.managed || {}
       state.status = res.data.status
+      state.errors = []
 
       //создаем копии сложных объектов из шаблонов, если они еще не заполнены
-      if (state.managed.competencies === undefined){
+      if (state.managed.competencies === undefined) {
         state.managed.competencies = JSON.parse(JSON.stringify(state.static.competencies));
       }
-      if (state.managed.disciplineStructure === undefined){
+      if (state.managed.disciplineStructure === undefined) {
         state.managed.disciplineStructure = JSON.parse(JSON.stringify(state.static.disciplineStructure));
       }
-      if (state.managed.informationalResources === undefined){
+      if (state.managed.informationalResources === undefined) {
         state.managed.informationalResources = JSON.parse(JSON.stringify(state.static.informationalResources));
       }
 
@@ -65,12 +72,15 @@ export const rpd = {
       await this.axios.post(rootState.APIurl, data);
     },
     async initPDF({state}) {
-      const res = await this.axios.post(process.env.VUE_APP_PDF_URL ,
+      const res = await this.axios.post(process.env.VUE_APP_PDF_URL,
         {
           data: state
         });
       return res.data.link;
-    }
+    },
+    /*    validate({state}){
+          console.log(state)
+        }*/
   },
   namespaced: true
 }

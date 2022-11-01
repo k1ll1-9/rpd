@@ -3,12 +3,12 @@
     <h3 class="my-4" :id="unitTitles[5].subUnits[1].code">
       5.1 {{ unitTitles[5].subUnits[1].title }}
     </h3>
-    <div v-for="(module,title,index) in modules" :key="title" class="my-4">
-      <h3 class="my-4">Тема {{index +1 }}. {{ title }}</h3>
-      <template v-if="module !== null">
-        <div v-for="(semester,index) in module" :key="index" class="my-4">
-          <h4 class="my-4">Семестр {{ index }}</h4>
-          <VisualEditor class="my-5" :identity="semester.identity"/>
+    <div v-for="(semester,index) in modules" :key="index" class="my-4">
+      <h3 class="my-4" v-if="count(modules) >1">Семестр {{ index }}</h3>
+      <template v-if="semester !== null">
+        <div v-for="(theme,index) in semester" :key="index" class="my-4">
+          <h4 class="my-4">Тема {{ index }}. {{ theme.title }}</h4>
+          <VisualEditor class="my-5" :identity="theme.identity"/>
         </div>
       </template>
     </div>
@@ -29,31 +29,31 @@ export default {
           unitTitles: state => state.rpd.static.unitTitles
         }),
         modules: state => {
-          const modules = {}
+
+          const modules = {};
 
           state.rpd.managed.disciplineStructure.forEach((el, i) => {
 
-            if (el.title === null) {
+            if (el.title === null || el.semester === null) {
               return;
             }
 
-            if (modules[el.title] === undefined) {
-              modules[el.title] = {};
+            if (modules[el.semester] === undefined) {
+              modules[el.semester] = {};
             }
 
-            if (el.semester !== null) {
-              modules[el.title][el.semester] = {
-                'theme': el.theme,
-                'identity': ['managed','disciplineStructure', i, 'theme']
-              }
+            modules[el.semester][i + 1] = {
+              'title': el.title,
+              'identity': ['managed', 'disciplineStructure', i, 'theme']
             }
-
           })
-
-          return modules
+          return modules;
         }
       }),
   methods: {
+    count($module) {
+      return Object.keys($module).length
+    }
   },
 }
 </script>

@@ -45,7 +45,7 @@ class DataManager
                     ],
                     2 => [
                         'title' =>
-                            'Планы семинарских / практических занятий (если предусмотрены учебным планом)',
+                            'Планы семинарских / практических занятий',
                         'code' => 'modulesSeminars'
                     ],
                     3 => [
@@ -76,66 +76,65 @@ class DataManager
 
     public static function checkCompetencies(&$data)
     {
+        //добавляем новые
+        foreach ($data['static']['competencies'] as $compID => $competency) {
 
-        if (null !== $data['managed']['competencies']) {
-            //добавляем новые
-            foreach ($data['static']['competencies'] as $compID => $competency) {
+            if (!isset($data['managed']['competencies'][$compID])) {
+                $data['managed']['competencies'][$compID] = $competency;
+                $data['managed']['competencies'][$compID]['nextLvl'] = [];
+            }
 
-                if (!isset($data['managed']['competencies'][$compID])) {
-                    $data['managed']['competencies'][$compID] = $competency;
-                    $data['managed']['competencies'][$compID]['nextLvl'] = [];
-                }
+            $data['managed']['competencies'][$compID]['name'] = $competency['name'];
+            $data['managed']['competencies'][$compID]['rowOrder'] = $competency['rowOrder'];
 
-                $data['managed']['competencies'][$compID]['name'] = $competency['name'];
+            foreach ($competency['nextLvl'] as $indID => $indicator) {
 
-                foreach ($competency['nextLvl'] as $indID => $indicator) {
-
-                    if (!isset($data['managed']['competencies'][$compID]['nextLvl'][$indID])) {
-                        $data['managed']['competencies'][$compID]['nextLvl'][$indID] = $indicator;
-                        $data['managed']['competencies'][$compID]['nextLvl'][$indID]['results'] = [
-                            'know' => [
-                                0 => [
-                                    'value' => ''
-                                ]
-                            ],
-                            'able' => [
-                                0 => [
-                                    'value' => ''
-                                ]
-                            ],
-                            'master' => [
-                                0 => [
-                                    'value' => ''
-                                ]
+                if (!isset($data['managed']['competencies'][$compID]['nextLvl'][$indID])) {
+                    $data['managed']['competencies'][$compID]['nextLvl'][$indID] = $indicator;
+                    $data['managed']['competencies'][$compID]['nextLvl'][$indID]['results'] = [
+                        'know' => [
+                            0 => [
+                                'value' => ''
                             ]
-                        ];
-                    }
-
-                    $data['managed']['competencies'][$compID]['nextLvl'][$indID]['name'] = $indicator['name'];
+                        ],
+                        'able' => [
+                            0 => [
+                                'value' => ''
+                            ]
+                        ],
+                        'master' => [
+                            0 => [
+                                'value' => ''
+                            ]
+                        ]
+                    ];
                 }
+
+                $data['managed']['competencies'][$compID]['nextLvl'][$indID]['name'] = $indicator['name'];
+                $data['managed']['competencies'][$compID]['nextLvl'][$indID]['rowOrder'] = $indicator['rowOrder'];
             }
-            //скрываем старые
-            foreach ($data['managed']['competencies'] as $compID => $competency) {
-
-                if (!isset($data['static']['competencies'][$compID])) {
-                    unset($data['managed']['competencies'][$compID]);
-                    continue;
-                }
-
-                foreach ($competency['nextLvl'] as $indID => $indicator) {
-                    if (!isset($data['static']['competencies'][$compID]['nextLvl'][$indID])) {
-                        unset($data['managed']['competencies'][$compID]['nextLvl'][$indID]);
-                    }
-                }
-            }
-
-
-            foreach ($data['managed']['competencies'] as &$competency) {
-                \ksort($competency['nextLvl']);
-            }
-
-            \uasort($data['managed']['competencies'], fn($a,$b) => $a['sort'] <=> $b['sort']);
         }
+        //скрываем старые
+        foreach ($data['managed']['competencies'] as $compID => $competency) {
+
+            if (!isset($data['static']['competencies'][$compID])) {
+                unset($data['managed']['competencies'][$compID]);
+                continue;
+            }
+
+            foreach ($competency['nextLvl'] as $indID => $indicator) {
+                if (!isset($data['static']['competencies'][$compID]['nextLvl'][$indID])) {
+                    unset($data['managed']['competencies'][$compID]['nextLvl'][$indID]);
+                }
+            }
+        }
+
+
+        foreach ($data['managed']['competencies'] as &$competency) {
+            \ksort($competency['nextLvl']);
+        }
+
+        \uasort($data['managed']['competencies'], fn($a, $b) => $a['rowOrder'] <=> $b['rowOrder']);
     }
 
     public static function checkCompetenciesBeforeSave(&$newData, $oldData)
@@ -186,6 +185,16 @@ class DataManager
             if (!isset($newData['informationalResources'][$key])) {
                 $newData['informationalResources'][$key] = $item;
             }
+        }
+    }
+
+    public static function getControlShortNames(&$data)
+    {
+        foreach ($data['static']['disciplineValue']['control']['semesters'] as $item) {
+            switch ($item['controlName']) {
+                //case ''
+            }
+
         }
     }
 }

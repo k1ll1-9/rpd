@@ -3,13 +3,13 @@
     <h3 class="my-4" :id="unitTitles[5].subUnits[2].code">
       5.2 {{ unitTitles[5].subUnits[2].title }}
     </h3>
-    <div v-for="(modules,index) in seminars" :key="index" class="my-4">
-      <h3>Тема {{ index + 1 }}. {{ getThemeTitle(modules) }}</h3>
-      <div v-for="(semester,number) in modules" :key="number" class="my-4">
-        <h3>Семестр {{ number }}</h3>
-        <div v-for="(seminarIndex) in semester.count" :key="seminarIndex" class="my-5">
+    <div v-for="(semester,index) in seminars" :key="index" class="my-4">
+      <h3 v-if="count(seminars) > 1">Семестр {{index}}</h3>
+      <div v-for="(theme,number) in semester" :key="number" class="my-4">
+        <h3>Тема {{ number }} . {{ theme.title }} </h3>
+        <div v-for="(seminarIndex) in theme.count" :key="seminarIndex" class="my-5">
           <h4 class="my-5">Семинар {{ seminarIndex }}</h4>
-          <VisualEditor class="my-5" :identity="[...semester.identity, seminarIndex - 1]"/>
+          <VisualEditor class="my-5" :identity="[...theme.identity, seminarIndex]"/>
         </div>
       </div>
     </div>
@@ -30,40 +30,38 @@ export default {
           unitTitles: state => state.rpd.static.unitTitles
         }),
         seminars: state => {
-          const seminars = []
+          const seminars = {}
 
           state.rpd.managed.disciplineStructure.forEach((el, i) => {
 
-            if (el.title === null || el.load?.seminars === undefined) {
+            if (el.title === null || el.load?.seminars === undefined || el.semester === null) {
               return;
             }
-
-            if (el.semester !== null) {
 
               const count = Math.ceil(el.load?.seminars / 2) || 0
 
               if (count !== 0) {
 
-                if (seminars[i] === undefined) {
-                  seminars[i] = {};
+                if (seminars[el.semester] === undefined) {
+                  seminars[el.semester] = {};
                 }
 
-                seminars[i][el.semester] = {
+                seminars[el.semester][i + 1] = {
+                  'title': el.title,
                   'seminars': el.seminars || [],
                   'count': Math.ceil(el.load?.seminars / 2) || 0,
                   'identity': ['managed', 'disciplineStructure', i, 'seminars'],
-                  'themeTitle': el.title
                 }
               }
-            }
+
           })
 
-          return (seminars.length !== 0) ? seminars : false
+          return (Object.keys(seminars).length !== 0) ? seminars : false
         },
       }),
   methods: {
-    getThemeTitle(modules) {
-      return Object.values(modules)[0].themeTitle
+    count($module) {
+      return Object.keys($module).length
     }
   },
 }

@@ -44,12 +44,15 @@
     </table>
   </div>
   <div class="my-5">
-    <h3 class="my-4"> Виды самостоятельной работы </h3>
-    <div v-for="(module,index) in SRS" :key="index" class="my-4">
-      <h3> {{index + 1 }}. {{ module.title }}</h3>
-      <div v-for="(type,id) in module.SRSTypes" :key="id" class="my-4">
+    <h4 class="my-4"> Виды самостоятельной работы </h4>
+    <div v-for="(semester,index) in SRSDescription" :key="index" class="my-4">
+      <h4 v-if="count(SRSDescription) >1"> Семестр {{ index }}</h4>
+      <div v-for="(theme,id) in semester" :key="id" class="my-4">
+        <h4 class="my-5"> Тема {{ id }} . {{ theme.title }}</h4>
+        <div v-for="(type,id) in theme.SRSTypes" :key="id" class="my-4">
           <h4 class="my-5">{{ type.title }}</h4>
-          <VisualEditor class="my-5" :identity="module.identity.concat([id,'description'])"/>
+          <VisualEditor class="my-5" :identity="type.identity"/>
+        </div>
       </div>
     </div>
   </div>
@@ -70,14 +73,14 @@ export default {
           unitTitles: state => state.rpd.static.unitTitles
         }),
         SRS: state => {
-          return state.rpd.managed.disciplineStructure.map((el,i) => {
+          return state.rpd.managed.disciplineStructure.map((el, i) => {
 
             if (el.SRSTypes == null) {
               el.SRSTypes = [
-                  {
-                    'title': '',
-                    'description' : ''
-                  }
+                {
+                  'title': '',
+                  'description': ''
+                }
               ]
             }
             return {
@@ -85,6 +88,44 @@ export default {
               'identity': ['managed', 'disciplineStructure', i, 'SRSTypes']
             }
           }).filter((el) => el.load?.SRS && el.load?.SRS !== 0)
+        },
+        SRSDescription: state => {
+
+          const modules = {}
+
+          state.rpd.managed.disciplineStructure.map((el, i) => {
+
+            if (el.title === null || el.semester === null && (el.load?.SRS && el.load?.SRS !== 0)) {
+              return;
+            }
+
+            if (modules[el.semester] === undefined) {
+              modules[el.semester] = {};
+            }
+
+            if (modules[el.semester][i + 1] === undefined) {
+              modules[el.semester][i + 1] = {};
+              modules[el.semester][i + 1].title = el.title
+            }
+
+            if (el.SRSTypes == null) {
+              modules[el.semester][i + 1].SRSTypes = [
+                {
+                  'title': '',
+                  'description': '',
+                  'identity': ['managed', 'disciplineStructure', i, 'SRSTypes', 0]
+                }
+              ]
+            } else {
+              modules[el.semester][i + 1].SRSTypes = el.SRSTypes.map((el, index) => {
+                return {
+                  ...el,
+                  'identity': ['managed', 'disciplineStructure', i, 'SRSTypes', index, 'description']
+                }
+              })
+            }
+          })
+          return modules;
         }
       }),
   methods: {
@@ -92,7 +133,7 @@ export default {
       updateData: 'rpd/updateData'
     }),
     addResult(identity) {
-      this.updateData( {
+      this.updateData({
         identity: identity,
         updateType: 'PUSH_RPD_ITEM'
       })
@@ -104,6 +145,9 @@ export default {
         updateType: 'SPLICE_RPD_ITEM'
       })
     },
+    count($module) {
+      return Object.keys($module).length
+    }
   },
 }
 </script>

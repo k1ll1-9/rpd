@@ -1,8 +1,8 @@
 <template>
   <div class="container">
-    <div class="wrapper d-flex justify-content-center ">
+    <div class="wrapper d-flex justify-content-center">
       <div class="fw-bold">
-        РПД содержит ошибки!
+        РПД содержит ошибки в следующих блоках:
       </div>
       <div class="arrow-wrapper ms-2 d-flex position-absolute justify-content-center" @click="toggle">
         <div class="open-text">
@@ -11,15 +11,17 @@
         <BIconArrowDownShort :class="[{opened: opened},'arrow-open']" />
       </div>
     </div>
-<!--    <div class="list-wrapper my-3">
-      <ol>
-        <li></li>
-      </ol>
-    </div>-->
+    <div class="list-wrapper mt-2" v-if="opened">
+      <ul v-for="(item,index) in errors" :key="index">
+        <li><a :href="`#${item.id}`">{{item.desc}}</a></li>
+      </ul>
+    </div>
   </div>
 </template>
 
 <script>
+
+import {mapState} from "vuex";
 
 export default {
   name: "NoticeWindow",
@@ -33,7 +35,11 @@ export default {
       this.opened = !this.opened
     }
   },
-  computed: {}
+  computed: {
+    ...mapState({
+      errors: state => state.rpd.errors.sort((a,b) => a.order - b.order)
+    })
+  }
 }
 </script>
 
@@ -68,5 +74,20 @@ export default {
 .opened{
   transform: rotate(180deg);
   transition: all 0.5s ease;
+}
+.open-text{
+  z-index: 100;
+}
+ol{
+  margin-bottom: 0;
+}
+li{
+  text-align: left;
+}
+a:hover{
+  text-decoration: underline;
+}
+a{
+  color: #000000;
 }
 </style>

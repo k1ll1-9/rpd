@@ -20,23 +20,26 @@ try {
     echo $e->getMessage();
 }
 
-foreach ($res as $rpd)  {
+foreach ($res as $rpd) {
 
-    $json = json_decode($rpd['json'],true);
+    $json = json_decode($rpd['json'], true);
 
-    if (isset($json['disciplineStructure'])){
+    if (isset($json['disciplineStructure'])) {
 
         foreach ($json['disciplineStructure'] as &$module) {
 
-            if (isset($module['seminars'])){
-                $count = \ceil((int)$module['load']['seminars']/2);
-                $newSeminars = \array_slice($module['seminars'],0,$count);
+            if (isset($module['seminars'])) {
+                $count = \ceil((int)$module['load']['seminars'] / 2);
+                $newSeminars = \array_slice($module['seminars'], 0, $count);
+
+                $newSeminars = array_combine(
+                    array_map(function ($key) {
+                        return ++$key;
+                    }, array_keys($newSeminars)),
+                    $newSeminars
+                );
+                $module['seminars'] = $newSeminars;
             }
-            $newSeminars = array_combine(
-                array_map(function ($key) { return ++$key; }, array_keys($newSeminars)),
-                $newSeminars
-            );
-            $module['seminars'] = $newSeminars;
         }
 
         unset($module);

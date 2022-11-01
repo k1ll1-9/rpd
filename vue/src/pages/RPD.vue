@@ -108,5 +108,6 @@ export default {
 }
 .error {
   color: #FF2400;
+  font-weight: 700;
 }
 </style>

@@ -1,6 +1,8 @@
 <template>
   <div class="row">
-    <h3 class="my-4" :id="$store.state.rpd.static.unitTitles[3].code">3. {{ $store.state.rpd.static.unitTitles[3].title }}</h3>
+    <h3 class="my-4" :id="$store.state.rpd.static.unitTitles[3].code">
+      3. {{ $store.state.rpd.static.unitTitles[3].title}}
+    </h3>
     <table class="table table-bordered">
       <thead>
       <tr>
@@ -10,7 +12,7 @@
       </tr>
       </thead>
       <tbody>
-      <template v-for="(competence,index) in managedCompetencies" :key="index">
+      <template v-for="(competence,index,i) in managedCompetencies" :key="index">
         <tr v-for="(indicator,id,indicatorIndex) in competence.nextLvl" :key="id">
           <td class="text-start align-middle"
               :rowspan="countIndicators(competence.nextLvl)"
@@ -26,7 +28,11 @@
               <div class="d-flex align-items-center"
                    v-for="(results,resultID) in managedCompetencies[index].nextLvl[id].results.know"
                    :key="resultID">
-                <TextArea class="my-2" rows="3" :identity="getTextAreaIdentity(index,id,'know',resultID)"/>
+                <TextArea class="my-2"
+                          rows="3"
+                          @input="validate()"
+                          :ref="`comp_${i}_ind_${indicatorIndex}_know_${resultID}`"
+                          :identity="getTextAreaIdentity(index,id,'know',resultID)"/>
                 <button type="button"
                         @click="removeResult(index,id,'know',resultID)"
                         v-if="Object.keys(managedCompetencies[index].nextLvl[id].results.know).length > 1"
@@ -45,7 +51,11 @@
               <div class="d-flex align-items-center"
                    v-for="(results,resultID) in managedCompetencies[index].nextLvl[id].results.able"
                    :key="resultID">
-                <TextArea class="my-2" rows="3" :identity="getTextAreaIdentity(index,id,'able',resultID)"/>
+                <TextArea class="my-2"
+                          rows="3"
+                          @input="validate()"
+                          :ref="`comp_${i}_ind_${indicatorIndex}_able_${resultID}`"
+                          :identity="getTextAreaIdentity(index,id,'able',resultID)"/>
                 <button type="button"
                         @click="removeResult(index,id,'able',resultID)"
                         v-if="Object.keys(managedCompetencies[index].nextLvl[id].results.able).length > 1"
@@ -64,7 +74,11 @@
               <div class="d-flex align-items-center"
                    v-for="(results,resultID) in managedCompetencies[index].nextLvl[id].results.master"
                    :key="resultID">
-                <TextArea class="my-2" rows="3" :identity="getTextAreaIdentity(index,id,'master',resultID)"/>
+                <TextArea class="my-2"
+                          rows="3"
+                          @input="validate()"
+                          :ref="`comp_${i}_ind_${indicatorIndex}_master_${resultID}`"
+                          :identity="getTextAreaIdentity(index,id,'master',resultID)"/>
                 <button type="button"
                         @click="removeResult(index,id,'master',resultID)"
                         v-if="Object.keys(managedCompetencies[index].nextLvl[id].results.master).length > 1"
@@ -89,15 +103,28 @@
 <script>
 
 import TextArea from "../UI/TextArea";
-import {mapState,mapActions} from 'vuex'
+import {mapState, mapActions} from 'vuex'
+import required from "@/mixins/required";
 
 export default {
   name: "Competencies",
+  mixins: [required],
   components: {TextArea},
-  computed:
-      mapState({
-        managedCompetencies: state => state.rpd.managed.competencies,
-      }),
+  data() {
+    return {
+      requiredFields: [],
+      noticeData: {
+        order: 3,
+        id: this.$store.state.rpd.static.unitTitles[3].code,
+        desc: 'Компетенции обучающихся, формируемые в результате освоения дисциплины'
+      }
+    }
+  },
+  computed: {
+    ...mapState({
+      managedCompetencies: state => state.rpd.managed.competencies,
+    })
+  },
   methods: {
     ...mapActions({
       updateData: 'rpd/updateData'
@@ -111,19 +138,32 @@ export default {
     getIdentity(compID, indID, resType) {
       return ['managed', 'competencies', compID, 'nextLvl', indID, 'results', resType]
     },
-    addResult(compID, indID, resType) {
-      this.updateData( {
+    async addResult(compID, indID, resType) {
+      await this.updateData({
         identity: this.getIdentity(compID, indID, resType),
         updateType: 'PUSH_RPD_ITEM'
       })
+      this.checkRequired()
+      this.validate()
     },
-    removeResult(compID, indID, resType, index) {
-      this.updateData({
+    async removeResult(compID, indID, resType, index) {
+      await this.updateData({
         identity: this.getIdentity(compID, indID, resType),
         index: index,
         updateType: 'SPLICE_RPD_ITEM'
       })
+      this.checkRequired()
+      this.validate()
     },
+    checkRequired(){
+      this.requiredFields = Object.entries(this.$refs)
+          .filter(([k,v]) => k.includes('comp') && v !== null)
+          .map(([, v]) => v)
+    }
+  },
+  mounted() {
+    this.checkRequired()
+    this.validate()
   }
 }
 </script>
@@ -132,7 +172,12 @@ export default {
 ul li {
   list-style: none;
 }
-
+.red{
+  color: red;
+}
+.white{
+  color: white;
+}
 textarea {
   width: 600px;
 }

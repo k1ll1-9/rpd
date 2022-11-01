@@ -24,8 +24,8 @@ $order = [
     "practice" => 1,
     "classroom" => 2,
     "SRS" => 3,
-    "overall" => 4,
-    "control" => 5,
+    "control" => 4,
+    "overall" => 5,
     "controlOverall" => 6
 ];
 
@@ -685,29 +685,34 @@ $html .= <<<HTML
 <li>- выполнять все плановые задания, выдаваемые преподавателем для самостоятельного выполнения, и разбирать на семинарах и консультациях неясные вопросы;</li>
 <li>- при подготовке к промежуточной аттестации параллельно прорабатывать соответствующие теоретические и практические разделы дисциплины, фиксируя неясные моменты для их обсуждения на плановой консультации.</li>
 </ul>
-<table  style=": 100%">
+<table  style="width: 33% !important;">
     <tr>
-        <td style="text-align: center;">
+        <td style="text-align: center">
             <br>
             <br>
-            <br><span style="color:#ffffff">{SP1}</span>
-            <br>
-            <br>
-        </td>
-        <td style="text-align: center;">
-            <br>
-            <br>
-            <br><span style="color:#ffffff">{SP2}</span>
+            <br><span style="color:#000000">{SP1}</span>
             <br>
             <br>
         </td>
-        <td style="text-align: center;">
+    </tr>
+    <tr>
+        <td style="text-align: center">
             <br>
             <br>
-            <br><span style="color:#ffffff">{SP3}</span>
+            <br><span style="color:#000000">{SP2}</span>
+            <br> 
+            <br>
+        </td> 
+    </tr>
+    <tr>
+        <td style="text-align: center">
+            <br>
+            <br>
+            <br><span style="color:#000000">{SP3}</span>
             <br>
             <br>
         </td>
+       </tr>
     </tr>
 </table>
 HTML;

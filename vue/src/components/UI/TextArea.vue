@@ -2,7 +2,6 @@
   <textarea class="form-control "
             type="text"
             :value="value"
-            @focus="lastValid = $event.target.value"
             @change="updateState"></textarea>
 </template>
 <script>
@@ -12,12 +11,12 @@ export default {
   props: ['identity'],
   data() {
     return {
-      lastValid: null
     }
   },
   methods: {
-    updateState(e) {
-      this.$store.dispatch('rpd/updateData', {
+    async updateState(e) {
+      console.log(this.identity)
+      await this.$store.dispatch('rpd/updateData', {
         identity: this.identity,
         value: e.target.value,
         updateType: 'UPDATE_RPD_ITEM'

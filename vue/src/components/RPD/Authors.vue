@@ -61,7 +61,7 @@ export default {
       this.$refs.authorFIO,
       this.$refs.authorPosition,
       this.$refs.reviewerFIO,
-      this.$refs.authorPosition
+      this.$refs.reviewerPosition
     ]
     this.validate()
   }

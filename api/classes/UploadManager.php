@@ -57,20 +57,20 @@ class UploadManager
                 'semesters' => $semesters,
                 'total' => 0
             ],
-            'overall' => [
-                'label' => [
-                    'value' => 'Общая трудоемкость, час.',
-                    'strong' => true
-                ],
-                'semesters' => $semesters,
-                'total' => 0
-            ],
             'control' => [
                 'label' => [
                     'value' => 'Вид промежуточной аттестации',
                     'strong' => true
                 ],
                 'sum' => 0,
+                'semesters' => $semesters,
+                'total' => 0
+            ],
+            'overall' => [
+                'label' => [
+                    'value' => 'Общая трудоемкость, час.',
+                    'strong' => true
+                ],
                 'semesters' => $semesters,
                 'total' => 0
             ],

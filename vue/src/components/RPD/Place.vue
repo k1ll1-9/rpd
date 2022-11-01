@@ -19,7 +19,7 @@ export default {
   data() {
     return {
       noticeData: {
-        order: 1,
+        order: 2,
         id: this.$store.state.rpd.static.unitTitles[2].code,
         desc: 'Место дисциплины в структуре ОПОП'
       }}

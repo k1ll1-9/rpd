@@ -2,8 +2,6 @@
   <input class="form-control"
          type="text"
          :value="value"
-         @focus="lastValid = $event.target.value"
-         @input="validate"
          @change="updateState">
 </template>
 

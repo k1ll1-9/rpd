@@ -2,7 +2,6 @@
   <ejs-richtexteditor ref="rteObj"
                       :value="value"
                       @change="updateState"
-                      @beforePasteCleanup="cleanup"
                       :pasteCleanupSettings="pasteCleanupSettings"
                       :toolbarSettings="toolbarSettings"/>
 </template>
@@ -48,32 +47,32 @@ export default {
     }
   },
   methods: {
-    cleanup() {
-      console.log('paste')
-    }
-    ,
     updateState() {
-      console.log('upd');
-      /*      var instance = this.$refs.rteObj.$el.ej2_instances[0];
-            console.log(instance)
-            instance.updateValue(this.$refs.rteObj.ej2Instances.getHtml() + 'YOBA');*/
+      console.log(this.$refs.rteObj.ej2Instances.contentModule)
       this.$store.dispatch('rpd/updateData', {
         identity: this.identity,
         value: this.$refs.rteObj.ej2Instances.getHtml(),
         updateType: 'UPDATE_RPD_ITEM'
       });
     }
-  }
-  ,
+  },
   computed: {
     value() {
-
       return this.identity.reduce((acc, c) => acc && acc[c], this.$store.state.rpd)
     }
-  }
-  ,
+  },
   provide: {
     richtexteditor: [Toolbar, Link, Image, HtmlEditor, PasteCleanup],
+  },
+  mounted() {
+    this.$refs.rteObj.ej2Instances.contentModule.editableElement
+        .addEventListener('input',()=> {
+          this.$emit('input')
+        })
+    this.$refs.rteObj.ej2Instances.contentModule.editableElement
+        .addEventListener('paste',()=> {
+          this.$emit('input')
+        })
   }
 }
 </script>

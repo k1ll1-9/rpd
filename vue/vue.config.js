@@ -1,10 +1,21 @@
 const Dotenv = require('dotenv-webpack');
+const path = require('path');
+
+function resolve(dir) {
+  return path.resolve(__dirname, dir);
+}
 
 module.exports = {
   css: {
     extract: false,
   },
   configureWebpack: {
+    resolve: {
+      extensions: ['.js', '.vue', '.json', '.ts'],
+      alias: {
+        '@': resolve('src/'),
+      },
+    },
     optimization: {
       splitChunks: false
     },

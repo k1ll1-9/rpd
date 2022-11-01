@@ -190,11 +190,11 @@ class DataManager
 
     public static function getControlShortNames(&$data)
     {
-        foreach ($data['static']['disciplineValue']['control']['semesters'] as $item) {
+/*        foreach ($data['static']['disciplineValue']['control']['semesters'] as $item) {
             switch ($item['controlName']) {
-                //case ''
+
             }
 
-        }
+        }*/
     }
 }

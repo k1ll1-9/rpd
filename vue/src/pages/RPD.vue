@@ -97,18 +97,14 @@ export default {
   async mounted() {
     this.ready = await this.$store.dispatch('rpd/initData', this.$route.query)
     this.visible = this.$store.state.user?.role === 'admin' || process.env.NODE_ENV === 'development'
-   // this.$store.dispatch('rpd/validate')
   }
 }
 </script>
 
 <style>
-.invalid {
-  border-color: #FF2400;
-}
-.invalid.form-control:focus {
-  border-color: #FF2400;
-  box-shadow: 0 0 0 0.25rem rgb(253, 13 ,13,0.25);
+.invalid,.invalid.form-control:focus  {
+  border-color: #FF2400 !important;
+  box-shadow: 0 0 0 0.25rem rgb(253, 13 ,13,0.25) !important;
 }
 .error {
   color: #FF2400;

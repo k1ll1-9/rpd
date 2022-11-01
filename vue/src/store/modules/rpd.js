@@ -78,9 +78,6 @@ export const rpd = {
         });
       return res.data.link;
     },
-    /*    validate({state}){
-          console.log(state)
-        }*/
   },
   namespaced: true
 }

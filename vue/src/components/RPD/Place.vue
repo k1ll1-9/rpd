@@ -1,21 +1,35 @@
 <template>
   <div class="my-5">
     <h3 class="my-4" :id="$store.state.rpd.static.unitTitles[2].code">2. {{ $store.state.rpd.static.unitTitles[2].title }}</h3>
-    <VisualEditor :identity="['managed','disciplinePlace']"/>
+    <VisualEditor :identity="['managed','disciplinePlace']"
+                  @input="validate"
+                  ref="place"/>
   </div>
 </template>
 
 <script>
 
 import VisualEditor from "../UI/VisualEditor";
+import required from "@/mixins/required";
 
 export default {
   components: {VisualEditor},
   name: "Place",
+  mixins: [required],
   data() {
-    return {}
+    return {
+      noticeData: {
+        order: 1,
+        id: this.$store.state.rpd.static.unitTitles[2].code,
+        desc: 'Место дисциплины в структуре ОПОП'
+      }}
   },
-  computed: {}
+  mounted(){
+    this.requiredFields = [
+      this.$refs.place
+    ]
+    this.validate()
+  }
 }
 </script>
 

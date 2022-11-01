@@ -1,19 +1,21 @@
 <template>
   <div class="container">
-    <div class="wrapper d-flex justify-content-center">
+    <div class="wrapper d-flex ms-2">
       <div class="fw-bold">
         РПД содержит ошибки в следующих блоках:
       </div>
       <div class="arrow-wrapper ms-2 d-flex position-absolute justify-content-center" @click="toggle">
-        <div class="open-text">
+        <div class="open-text fw-bold">
           {{ opened ? 'Свернуть' : 'Развернуть' }}
         </div>
         <BIconArrowDownShort :class="[{opened: opened},'arrow-open']" />
       </div>
     </div>
     <div class="list-wrapper mt-2" v-if="opened">
-      <ul v-for="(item,index) in errors" :key="index">
-        <li><a :href="`#${item.id}`">{{item.desc}}</a></li>
+      <ul>
+        <li v-for="(item,index) in errors" :key="index">
+          <a :href="`#${item.id}`">{{item.desc}}</a>
+        </li>
       </ul>
     </div>
   </div>
@@ -47,7 +49,7 @@ export default {
 .container {
   z-index: 102;
   padding: 15px;
-  width: 700px;
+  width: 500px;
   position: fixed;
   top: 30px;
   right: 100px;
@@ -65,7 +67,7 @@ export default {
 .arrow-wrapper{
   right: 20px;
   top: 10px;
-  border: 1px solid #656464;
+  border: 2px solid #656464;
   padding: 5px;
   border-radius: 5px;
   cursor: pointer;
@@ -78,8 +80,8 @@ export default {
 .open-text{
   z-index: 100;
 }
-ol{
-  margin-bottom: 0;
+ul{
+  margin-bottom: 5px;
 }
 li{
   text-align: left;

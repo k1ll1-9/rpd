@@ -9,7 +9,7 @@ export default {
       let valid = true
 
       this.requiredFields.forEach((ref) => {
-console.log(ref)
+
         if (ref.$el?.ej2_instances !== undefined && ref.$el?.ej2_instances[0].localeObj.controlName === 'richtexteditor') {
           ref.$el.value = ref.$el?.ej2_instances[0].vueInstance.getText()
         }

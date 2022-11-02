@@ -9,7 +9,11 @@
         <h3>Тема {{ number }} . {{ theme.title }} </h3>
         <div v-for="(seminarIndex) in theme.count" :key="seminarIndex" class="my-5">
           <h4 class="my-5">Семинар {{ seminarIndex }}</h4>
-          <VisualEditor class="my-5" :identity="[...theme.identity, seminarIndex]"/>
+          <VisualEditor
+              :ref="`semester_${index}_theme_${number}_seminar_${seminarIndex}`"
+              @input="validate()"
+              class="my-5"
+              :identity="[...theme.identity, seminarIndex]"/>
         </div>
       </div>
     </div>
@@ -20,10 +24,22 @@
 
 import VisualEditor from "../../UI/VisualEditor";
 import {mapState} from "vuex";
+import required from "@/mixins/required";
 
 export default {
   components: {VisualEditor},
+  mixins: [required],
   name: 'ModulesSeminars',
+  data() {
+    return {
+      requiredFields: [],
+      noticeData: {
+        order: 6,
+        id: this.$store.state.rpd.static.unitTitles[5].subUnits[2].code,
+        desc: 'Планы семинарских / практических занятий'
+      }
+    }
+  },
   computed: {
     ...mapState({
       unitTitles: state => state.rpd.static.unitTitles,
@@ -61,8 +77,21 @@ export default {
   methods: {
     count($module) {
       return Object.keys($module).length
+    },
+    checkRequired() {
+      this.requiredFields = Object.entries(this.$refs)
+          .filter(([k, v]) => {  return  k.includes('seminar') && v !== null})
+          .map(([, v]) => v)
     }
   },
+  updated(){
+    this.checkRequired()
+    this.validate()
+  },
+  mounted() {
+    this.checkRequired()
+    this.validate()
+  }
 }
 </script>
 

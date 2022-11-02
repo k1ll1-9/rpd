@@ -124,7 +124,7 @@ $html .= '
             </tr>
         </table>';
 
-
+//TODO перенести штампы на 2ю страницу
 $discTarget = escape4PDF($managed["disciplineTarget"]['target']);
 $discTask = escape4PDF($managed["disciplineTarget"]['task']);
 $discPlace = escape4PDF($managed["disciplinePlace"]);

@@ -37,7 +37,6 @@ export default {
           this.$store.commit('rpd/ADD_ERROR', this.noticeData);
         }
       }
-console.log(this.requiredFields)
 
     }
   }

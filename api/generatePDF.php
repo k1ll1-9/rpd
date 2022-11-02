@@ -153,6 +153,37 @@ $html .= <<<HTML
 <br>
 <span style="text-align: left">Рецензенты: <br></span>
 <span style="text-align: left"><i>{$managed['authors']['reviewer']['FIO']}</i>, {$managed['authors']['reviewer']['position']}</span>
+<div></div>
+<table  style="width: 55% !important;">
+    <tr>
+        <td style="text-align: center">
+            <br>
+            <br>
+            <br><span style="color:#FFFFFF">{SP1}</span>
+            <br>
+            <br>
+        </td>
+    </tr>
+    <tr>
+        <td style="text-align: center">
+            <br>
+            <br>
+            <br><span style="color:#FFFFFF">{SP2}</span>
+            <br> 
+            <br>
+        </td> 
+    </tr>
+    <tr>
+        <td style="text-align: center">
+            <br>
+            <br>
+            <br><span style="color:#FFFFFF">{SP3}</span>
+            <br>
+            <br>
+        </td>
+       </tr>
+    </tr>
+</table>
 <br pagebreak="true"/>
 
 <h2 style="text-align: center">1. {$unitTitles[1]["title"]}  <br></h2>
@@ -685,36 +716,6 @@ $html .= <<<HTML
 <li>- выполнять все плановые задания, выдаваемые преподавателем для самостоятельного выполнения, и разбирать на семинарах и консультациях неясные вопросы;</li>
 <li>- при подготовке к промежуточной аттестации параллельно прорабатывать соответствующие теоретические и практические разделы дисциплины, фиксируя неясные моменты для их обсуждения на плановой консультации.</li>
 </ul>
-<table  style="width: 33% !important;">
-    <tr>
-        <td style="text-align: center">
-            <br>
-            <br>
-            <br><span style="color:#000000">{SP1}</span>
-            <br>
-            <br>
-        </td>
-    </tr>
-    <tr>
-        <td style="text-align: center">
-            <br>
-            <br>
-            <br><span style="color:#000000">{SP2}</span>
-            <br> 
-            <br>
-        </td> 
-    </tr>
-    <tr>
-        <td style="text-align: center">
-            <br>
-            <br>
-            <br><span style="color:#000000">{SP3}</span>
-            <br>
-            <br>
-        </td>
-       </tr>
-    </tr>
-</table>
 HTML;
 
 /*$fn = tempnam('/tmp/upload', 'sl7_');

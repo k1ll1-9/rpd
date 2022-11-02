@@ -23,6 +23,9 @@ export default {
   },
   name: "VisualEditor",
   props: ['identity'],
+  provide: {
+    richtexteditor: [Toolbar, Link, Image, HtmlEditor, PasteCleanup],
+  },
   data() {
     return {
       fontSize: {
@@ -48,7 +51,6 @@ export default {
   },
   methods: {
     updateState() {
-      console.log(this.$refs.rteObj.ej2Instances.contentModule)
       this.$store.dispatch('rpd/updateData', {
         identity: this.identity,
         value: this.$refs.rteObj.ej2Instances.getHtml(),
@@ -60,9 +62,6 @@ export default {
     value() {
       return this.identity.reduce((acc, c) => acc && acc[c], this.$store.state.rpd)
     }
-  },
-  provide: {
-    richtexteditor: [Toolbar, Link, Image, HtmlEditor, PasteCleanup],
   },
   mounted() {
     this.$refs.rteObj.ej2Instances.contentModule.editableElement

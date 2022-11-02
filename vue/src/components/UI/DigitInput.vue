@@ -1,7 +1,7 @@
 <template>
   <input class="form-control"
          type="text"
-         :value="value"
+         ref="input"
          @focus="lastValid = $event.target.value"
          @input="validate"
          @change="updateState">
@@ -34,10 +34,9 @@ export default {
       }
     }
   },
-  computed: {
-    value() {
-      return this.identity.reduce((acc, c) => acc && acc[c], this.$store.state.rpd)
-    }
+  computed: {},
+  mounted() {
+    this.$refs.input.value = this.identity.reduce((acc, c) => acc && acc[c], this.$store.state.rpd) || ''
   }
 
 }

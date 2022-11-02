@@ -1,7 +1,7 @@
 <template>
-  <textarea class="form-control "
+  <textarea class="form-control"
             type="text"
-            :value="value"
+            ref="input"
             @change="updateState"></textarea>
 </template>
 <script>
@@ -10,25 +10,22 @@ export default {
   name: "TextArea",
   props: ['identity'],
   data() {
-    return {
-    }
+    return {}
   },
   methods: {
-    async updateState(e) {
-      console.log(this.identity)
-      await this.$store.dispatch('rpd/updateData', {
-        identity: this.identity,
-        value: e.target.value,
-        updateType: 'UPDATE_RPD_ITEM'
-      });
-    },
-  },
-  computed: {
-    value() {
-      return this.identity.reduce((acc, c) => acc && acc[c], this.$store.state.rpd)
+    updateState(e) {
+      this.$store.dispatch('rpd/updateData',
+          {
+            identity: this.identity,
+            value: e.target.value,
+            updateType: 'UPDATE_RPD_ITEM'
+          });
     }
+  },
+  computed: {},
+  mounted() {
+    this.$refs.input.value = this.identity.reduce((acc, c) => acc && acc[c], this.$store.state.rpd)  || ''
   }
-
 }
 </script>
 

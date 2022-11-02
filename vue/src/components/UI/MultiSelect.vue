@@ -1,5 +1,6 @@
 <template>
-  <MultiSelect :value="value" @change="updateState" />
+  <MultiSelect :value="value"
+               @change="updateState" />
 </template>
 
 <script>
@@ -14,7 +15,7 @@ export default {
   },
   data() {
     return {
-      fields: {text: 'text', value: 'value'}
+      value : null
     }
   },
   methods: {
@@ -26,12 +27,10 @@ export default {
             });
     },
   },
-  computed: {
-        value() {
-          return this.identity.reduce((acc, c) => acc && acc[c], this.$store.state.rpd)
-        }
+  computed: {},
+  mounted() {
+    this.value = this.identity.reduce((acc, c) => acc && acc[c], this.$store.state.rpd)
   }
-
 }
 </script>
 

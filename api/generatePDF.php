@@ -124,7 +124,6 @@ $html .= '
             </tr>
         </table>';
 
-//TODO перенести штампы на 2ю страницу
 $discTarget = escape4PDF($managed["disciplineTarget"]['target']);
 $discTask = escape4PDF($managed["disciplineTarget"]['task']);
 $discPlace = escape4PDF($managed["disciplinePlace"]);
@@ -154,7 +153,7 @@ $html .= <<<HTML
 <span style="text-align: left">Рецензенты: <br></span>
 <span style="text-align: left"><i>{$managed['authors']['reviewer']['FIO']}</i>, {$managed['authors']['reviewer']['position']}</span>
 <div></div>
-<table  style="width: 55% !important;">
+<table  style="width: 65% !important;">
     <tr>
         <td style="text-align: center">
             <br>

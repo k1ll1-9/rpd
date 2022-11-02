@@ -53,9 +53,9 @@ export default {
   position: fixed;
   top: 30px;
   right: 100px;
-  background-color: rgb(253, 253, 150, 0.9);
+  background-color: rgb(246, 134, 140);
   border-radius: 5px;
-  border: 1px solid rgba(218, 218, 117, 0.9);
+  border: 1px solid rgba(171, 6, 24, 0.9);
   box-shadow: 0 0 2px #000000;
 }
 .arrow-open{
@@ -67,7 +67,7 @@ export default {
 .arrow-wrapper{
   right: 20px;
   top: 10px;
-  border: 2px solid #656464;
+  border: 2px solid rgba(91, 40, 43, 0.9);
   padding: 5px;
   border-radius: 5px;
   cursor: pointer;

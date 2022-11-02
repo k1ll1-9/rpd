@@ -1,5 +1,6 @@
 <template>
   <div id="gradesCurrent">
+    <span v-if="!isValid" class="error">Должны быть запролнены все поля</span>
     <table class="table-bordered w-100">
       <thead style="border-bottom: 1px #000000 solid">
       <tr>

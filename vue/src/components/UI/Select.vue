@@ -1,5 +1,6 @@
 <template>
-  <DropDown  :value="value" @change="updateState"/>
+  <DropDown  ref="input"
+             @change="updateState"/>
 </template>
 
 <script>
@@ -25,12 +26,10 @@ export default {
       });
     },
   },
-  computed: {
-    value() {
-      return this.identity.reduce((acc, c) => acc && acc[c], this.$store.state.rpd)
-    }
+  computed: {},
+  mounted() {
+    this.$refs.input.$el.value = this.identity.reduce((acc, c) => acc && acc[c], this.$store.state.rpd)
   }
-
 }
 </script>
 

@@ -7,7 +7,7 @@
       <p><i>Для изменения порядка пунктов зажмите курсором номер пункта и перетащите.</i></p>
 
       <div v-for="(unit,infIndex,i) in informationalResources" :key="infIndex" class="resources-unit w-100">
-        <h4 class="my-3">8.{{ i + 1  }} {{ unit.name }}</h4>
+        <h4 class="my-3">8.{{ i + 1 }} {{ unit.name }}</h4>
         <Draggable
             :list="unit.data"
             item-key="index"
@@ -20,9 +20,12 @@
               <p class="number d-flex align-items-center justify-content-center handle text-center">
                 {{ index + 1 }}.
               </p>
-              <TextArea :identity="['managed','informationalResources',infIndex,'data',index,'value']"
-                        class="my-2"
-                        rows="3"/>
+              <TextArea
+                  :identity="['managed','informationalResources',infIndex,'data',index,'value']"
+                  :ref="`type_${infIndex}_resource_${index}`"
+                  @input="validate()"
+                  class="my-2"
+                  rows="3"/>
               <button type="button"
                       v-if="unit.data.length > 1"
                       @click="removeResult(['managed','informationalResources',infIndex,'data'],index)"
@@ -49,50 +52,76 @@
 import TextArea from "../UI/TextArea";
 import {mapActions, mapState} from "vuex";
 import Draggable from "vuedraggable";
+import required from "../../mixins/required";
 
 export default {
   components: {TextArea, Draggable},
+  mixins: [required],
   name: "InformResources",
   data() {
-    return {}
+    return {
+      requiredFields: [],
+      noticeData: {
+        order: 10,
+        id: this.$store.state.rpd.static.unitTitles[8].code,
+        desc: 'Учебно-методическое и информационное обеспечение дисциплины'
+      }
+    }
   },
-  computed:
-      mapState({
-        informationalResources: state => state.rpd.managed.informationalResources,
-        dragOptions() {
-          return {
-            animation: 200,
-            group: "description",
-            disabled: false,
-            ghostClass: "ghost"
-          };
-        }
-      }),
+  computed: {
+    ...mapState({
+      informationalResources: state => state.rpd.managed.informationalResources,
+    }),
+    dragOptions() {
+      return {
+        animation: 200,
+        group: "description",
+        disabled: false,
+        ghostClass: "ghost"
+      };
+    }
+  },
   methods: {
     ...mapActions({
       updateData: 'rpd/updateData'
     }),
-    addResult(identity) {
-      this.updateData({
+    async addResult(identity) {
+      await this.updateData({
         identity: identity,
         updateType: 'PUSH_RPD_ITEM'
       })
+      this.checkRequired()
+      this.validate()
     },
-    removeResult(identity, index) {
-      this.updateData({
+    async removeResult(identity, index) {
+      await this.updateData({
         identity: identity,
         index: index,
         updateType: 'SPLICE_RPD_ITEM'
       })
+      this.checkRequired()
+      this.validate()
     },
     updateUnit(infIndex) {
       this.$store.dispatch('rpd/updateData', {
-        identity: ['managed','informationalResources',infIndex],
+        identity: ['managed', 'informationalResources', infIndex],
         value: this.informationalResources[infIndex],
         updateType: 'UPDATE_RPD_ITEM'
       });
+    },
+    checkRequired() {
+      this.requiredFields = Object.entries(this.$refs)
+          .filter(([k, v]) => {
+            return k.includes('resource') && v !== null
+          })
+          .map(([, v]) => v)
     }
+  },
+  mounted() {
+    this.checkRequired()
+    this.validate()
   }
+
 }
 </script>
 
@@ -124,7 +153,8 @@ export default {
 .handle:active {
   cursor: grabbing;
 }
-.cross{
+
+.cross {
   height: 25px;
 }
 </style>

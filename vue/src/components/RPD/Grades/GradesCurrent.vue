@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div id="gradesCurrent">
     <table class="table-bordered w-100">
       <thead style="border-bottom: 1px #000000 solid">
       <tr>
@@ -26,12 +26,16 @@
         <td>
           <div class="d-flex flex-column align-items-start p-1">
             <div class="d-flex align-items-center w-100"
-                 v-for="(controlForm,ID) in discipline.currentControl"
-                 :key="ID">
-              <TextArea class="my-2" rows="3" :identity="getTextAreaIdentity(discipline.identity, ID)"/>
+                 v-for="(controlForm,id) in discipline.currentControl"
+                 :key="id">
+              <TextArea class="my-2"
+                        rows="3"
+                        :ref="`theme_${index}_control_${id}`"
+                        @input="validate()"
+                        :identity="getTextAreaIdentity(discipline.identity, id)"/>
               <button type="button"
                       v-if="discipline.currentControl.length > 1"
-                      @click="removeResult(discipline.identity,ID)"
+                      @click="removeResult(discipline.identity,id)"
                       class="btn btn-danger m-2">
                 <BIconX-octagon class="cross"/>
               </button>
@@ -54,71 +58,84 @@
 import TextArea from "../../UI/TextArea";
 import MultiSelect from "../../UI/MultiSelect";
 import {mapActions, mapState} from "vuex";
+import required from "../../../mixins/required";
 
 export default {
   name: 'GradesCurrent',
   components: {TextArea, MultiSelect},
-  computed:
-      mapState({
-        indicators: state => {
-          const indicators = []
+  mixins: [required],
+  data() {
+    return {
+      requiredFields: [],
+      noticeData: {
+        order: 9,
+        id: 'gradesCurrent',
+        desc: 'Оценочные материалы'
+      }
+    }
+  },
+  computed: {
+    ...mapState({
+      indicators: state => {
+        const indicators = []
 
-          for (let competence in state.rpd.managed.competencies) {
+        for (let competence in state.rpd.managed.competencies) {
 
-            for (let indicator in state.rpd.managed.competencies[competence].nextLvl) {
-              if (indicators[indicator] === undefined) {
-                indicators.push(indicator)
-              }
+          for (let indicator in state.rpd.managed.competencies[competence].nextLvl) {
+            if (indicators[indicator] === undefined) {
+              indicators.push(indicator)
             }
           }
-          return indicators
-        },
-        disciplines: state => {
-          return state.rpd.managed.disciplineStructure.map((el, i) => {
-
-            if (el.currentControl === null) {
-              el.currentControl = [{'title': ''}]
-            }
-
-            if (el.indicators === null) {
-              el.indicators = []
-            }
-
-            return {
-              ...el,
-              'identity': ['managed', 'disciplineStructure', i, 'currentControl']
-            }
-
-          }).filter((el) => el.title !== null)
-        },
-        indicatorsMapping: state => {
-          const indicatorsMapping = {}
-
-          for (let competence in state.rpd.managed.competencies) {
-
-            for (let indicator in state.rpd.managed.competencies[competence].nextLvl) {
-
-              if (indicatorsMapping[indicator] === undefined) {
-                indicatorsMapping[indicator] = competence
-              }
-            }
-          }
-
-          return indicatorsMapping
         }
-      }),
+        return indicators
+      },
+      disciplines: state => {
+        return state.rpd.managed.disciplineStructure.map((el, i) => {
+
+          if (el.currentControl === null) {
+            el.currentControl = [{'title': ''}]
+          }
+
+          if (el.indicators === null) {
+            el.indicators = []
+          }
+
+          return {
+            ...el,
+            'identity': ['managed', 'disciplineStructure', i, 'currentControl']
+          }
+
+        }).filter((el) => el.title !== null)
+      },
+      indicatorsMapping: state => {
+        const indicatorsMapping = {}
+
+        for (let competence in state.rpd.managed.competencies) {
+
+          for (let indicator in state.rpd.managed.competencies[competence].nextLvl) {
+
+            if (indicatorsMapping[indicator] === undefined) {
+              indicatorsMapping[indicator] = competence
+            }
+          }
+        }
+
+        return indicatorsMapping
+      }
+    })
+  },
   methods: {
     ...mapActions({
       updateData: 'rpd/updateData'
     }),
-    getCompetencesString(competences){
+    getCompetencesString(competences) {
       return competences === null ? '' : competences.join(',')
     },
     getTextAreaIdentity(identity, ID) {
       return identity.concat([ID, 'title'])
     },
     addResult(identity) {
-      this.updateData( {
+      this.updateData({
         identity: identity,
         updateType: 'PUSH_RPD_ITEM'
       })
@@ -145,9 +162,23 @@ export default {
         value: competences,
         updateType: 'UPDATE_RPD_ITEM'
       });
-
+    },
+    checkRequired() {
+      this.requiredFields = Object.entries(this.$refs)
+          .filter(([k, v]) => {
+            return k.includes('theme') && v !== null
+          })
+          .map(([, v]) => v)
     }
   },
+  updated() {
+    this.checkRequired()
+    this.validate()
+  },
+  mounted() {
+    this.checkRequired()
+    this.validate()
+  }
 }
 </script>
 

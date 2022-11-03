@@ -40,15 +40,17 @@
             </td>
             <td>
               <DigitInput class='text-center'
-                          @change="checkHours(disciplineStructure[index].semester)"
+                          @change="checkHours(disciplineStructure[index].semester,'lectures')"
                           :identity="['managed','disciplineStructure',index,'load','lectures']"/>
             </td>
             <td>
               <DigitInput class='text-center'
+                          @change="checkHours(disciplineStructure[index].semester,'seminars')"
                           :identity="['managed','disciplineStructure',index,'load','seminars']"/>
             </td>
             <td>
               <DigitInput class='text-center'
+                          @change="checkHours(disciplineStructure[index].semester,'SRS')"
                           :identity="['managed','disciplineStructure',index,'load','SRS']"/>
             </td>
             <td>
@@ -118,31 +120,23 @@ export default {
         updateType: 'SPLICE_RPD_ITEM'
       })
     },
-    checkHours(semester) {
-      Object.entries(this.value).forEach(([k]) =>{
-       // const hours = v.semesters[semester].quantity
-        let currentHours = 0
-        switch(k){
+    checkHours(semester, type) {
 
-          case 'lectures':
+      if (!semester) {
+        return
+      }
 
+      const currentHours = Object.values(this.disciplineStructure)
+          .reduce((acc, v) => type in v.load && v.semester === semester ? acc + v.load[type] : acc, 0)
 
-            Object.entries(this.disciplineStructure).forEach(([,v]) => {
+      if (currentHours !== this.value[type].semesters[semester].quantity){
+        console.log('YOBA')
+      }
 
-
-              if (v.semester === semester){
-                currentHours += v.load.lectures
-              }
-
-            })
-            console.log(currentHours)
-            break
-        }
-      })
     },
-    checkRequired(){
+    checkRequired() {
       this.requiredFields = Object.entries(this.$refs)
-          .filter(([k,v]) => k.includes('disc') && v !== null)
+          .filter(([k, v]) => k.includes('disc') && v !== null)
           .map(([, v]) => v)
     }
   },

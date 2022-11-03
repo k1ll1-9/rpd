@@ -10,9 +10,10 @@ export default {
 
       this.requiredFields.forEach((ref) => {
 
-        if (ref.$el?.ej2_instances !== undefined && ref.$el?.ej2_instances[0].localeObj.controlName === 'richtexteditor') {
+        if (ref.$el?.ej2_instances !== undefined && ref.$el?.ej2_instances[0]?.localeObj?.controlName === 'richtexteditor') {
           ref.$el.value = ref.$el?.ej2_instances[0].vueInstance.getText()
         }
+        console.log(ref.$el.value)
         if (ref.$el.value === undefined || ref.$el.value.trim() === '') {
           if (ref.$el.classList.contains('e-rte-hidden')) {
             ref.$el.parentElement.classList.add('invalid')

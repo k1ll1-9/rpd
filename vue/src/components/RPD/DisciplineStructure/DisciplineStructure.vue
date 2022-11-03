@@ -1,7 +1,7 @@
 <template>
   <div>
-    <h3 class="my-5">Структура и содержание дисциплины (модуля)</h3>
-    <h1>{{ }}</h1>
+    <h3 class="my-5" id="disciplineStructure">Структура и содержание дисциплины (модуля)</h3>
+    <div v-if="!isValid" class="error mb-4">Необходимо заполнить название темы и номер семестра</div>
     <div class="row">
       <div class="col">
         <table class="table-bordered">
@@ -26,12 +26,16 @@
               {{ index + 1 }}
             </td>
             <td>
-              <TextInput :identity="['managed','disciplineStructure',index,'title']"/>
+              <TextInput :identity="['managed','disciplineStructure',index,'title']"
+                         :ref="`disc_title_${index}`"
+                         @input="validate()"/>
             </td>
             <td>
               <Select :identity="['managed','disciplineStructure',index,'semester']"
                       :dataSource="$store.state.rpd.static.semesters"
                       cssClass="defaults"
+                      :ref="`disc_semester_${index}`"
+                      @change="validate()"
                       width="60%"/>
             </td>
             <td>
@@ -79,11 +83,22 @@ import {mapState, mapActions} from 'vuex'
 import TextInput from "../../UI/TextInput";
 import DigitInput from "../../UI/DigitInput";
 import Select from "../../UI/Select";
+import required from "../../../mixins/required";
 
 export default {
   components: {Select, TextInput, DigitInput},
   name: 'DisciplineStructure',
-  props: {},
+  mixins: [required],
+  data() {
+    return {
+      requiredFields: [],
+      noticeData: {
+        order: 4,
+        id: 'disciplineStructure',
+        desc: 'Структура и содержание дисциплины (модуля)'
+      }
+    }
+  },
   computed:
       mapState({
         disciplineStructure: state => state.rpd.managed.disciplineStructure,
@@ -124,10 +139,20 @@ export default {
             break
         }
       })
+    },
+    checkRequired(){
+      this.requiredFields = Object.entries(this.$refs)
+          .filter(([k,v]) => k.includes('disc') && v !== null)
+          .map(([, v]) => v)
     }
   },
+  updated() {
+    this.checkRequired()
+    this.validate()
+  },
   mounted() {
-
+    this.checkRequired()
+    this.validate()
   }
 }
 </script>

@@ -33,7 +33,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 @import "../../../node_modules/@syncfusion/ej2-base/styles/material.css";
 @import "../../../node_modules/@syncfusion/ej2-inputs/styles/material.css";
 @import "../../../node_modules/@syncfusion/ej2-vue-dropdowns/styles/material.css";
@@ -60,5 +60,10 @@ export default {
 {
   color: blueviolet !important;
 }
+.invalid,.invalid.form-control:focus  {
+  border: none !important;
+  box-shadow:  none !important;
+}
 
 </style>
+

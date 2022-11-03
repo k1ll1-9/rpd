@@ -110,4 +110,14 @@ export default {
   color: #FF2400;
   font-weight: 700;
 }
+
+/*кастомизация верстки селектов - не работают scoped компонетов*/
+.e-input-group:has(> .invalid.e-dropdownlist){
+  border: 1px solid #FF2400 !important;
+  border-radius: 5px;
+  box-shadow: 0 0 0 0.25rem rgb(253, 13 ,13,0.25) !important;
+}
+.e-input-group:has(>.e-dropdownlist){
+  top: 2px;
+}
 </style>

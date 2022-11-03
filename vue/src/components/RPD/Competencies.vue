@@ -3,6 +3,7 @@
     <h3 class="my-4" :id="$store.state.rpd.static.unitTitles[3].code">
       3. {{ $store.state.rpd.static.unitTitles[3].title}}
     </h3>
+    <div v-if="!isValid" class="error mb-4">Должны быть запролнены все поля</div>
     <table class="table table-bordered">
       <thead>
       <tr>

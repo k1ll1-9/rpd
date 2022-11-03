@@ -1,6 +1,6 @@
 <template>
   <div class="wrapper" id="authors">
-    <span v-if="!isValid" class="error">Должны быть запролнены все поля</span>
+    <div v-if="!isValid" class="error mb-4">Должны быть запролнены все поля</div>
     <div class="my-4">
       <p class="text-start my-1">Разработчик программы:</p>
       <TextInput class="my-2 author-input"

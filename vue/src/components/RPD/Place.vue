@@ -1,6 +1,7 @@
 <template>
   <div class="my-5">
     <h3 class="my-4" :id="$store.state.rpd.static.unitTitles[2].code">2. {{ $store.state.rpd.static.unitTitles[2].title }}</h3>
+    <div v-if="!isValid" class="error mb-4">Должны быть запролнены все поля</div>
     <VisualEditor :identity="['managed','disciplinePlace']"
                   @input="validate"
                   ref="place"/>

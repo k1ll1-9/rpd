@@ -21,7 +21,7 @@
           </tr>
           </thead>
           <tbody>
-          <tr v-for="(discipline,index) in disciplineStructure" :key="index">
+          <tr v-for="(discipline,index) in disciplineStructure" :key="discipline.title + discipline.semester || index">
             <td>
               {{ index + 1 }}
             </td>

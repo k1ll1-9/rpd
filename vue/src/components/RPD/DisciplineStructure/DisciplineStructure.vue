@@ -1,7 +1,8 @@
 <template>
-  <div>
+  <div id="disciplineStructureTable">
     <h3 class="my-5" id="disciplineStructure">Структура и содержание дисциплины (модуля)</h3>
     <div v-if="!isValid" class="error mb-4">Необходимо заполнить название темы и номер семестра</div>
+    <div v-if="!isValidHours" class="error mb-4">Неправильно распределена нагрузка</div>
     <div class="row">
       <div class="col">
         <table class="table-bordered">
@@ -28,30 +29,33 @@
             <td>
               <TextInput :identity="['managed','disciplineStructure',index,'title']"
                          :ref="`disc_title_${index}`"
-                         @input="validate()"/>
+                         @input="validateFull();checkAllHours()"/>
             </td>
             <td>
               <Select :identity="['managed','disciplineStructure',index,'semester']"
                       :dataSource="$store.state.rpd.static.semesters"
                       cssClass="defaults"
                       :ref="`disc_semester_${index}`"
-                      @change="validate()"
+                      @change="validateFull();checkAllHours()"
                       width="60%"/>
             </td>
             <td>
-              <DigitInput class='text-center'
-                          @change="checkHours(disciplineStructure[index].semester,'lectures')"
-                          :identity="['managed','disciplineStructure',index,'load','lectures']"/>
+              <DigitInput
+                  :class="[{'invalid' : errors.lectures?.[disciplineStructure[index].semester] === true},'text-center']"
+                  @input="checkHours(disciplineStructure[index].semester,['lectures'],index,$event)"
+                  :identity="['managed','disciplineStructure',index,'load','lectures']"/>
             </td>
             <td>
-              <DigitInput class='text-center'
-                          @change="checkHours(disciplineStructure[index].semester,'seminars')"
-                          :identity="['managed','disciplineStructure',index,'load','seminars']"/>
+              <DigitInput
+                  :class="[{'invalid' : errors.practice?.[disciplineStructure[index].semester] === true},'text-center']"
+                  @input="checkHours(disciplineStructure[index].semester,['practice'],index,$event)"
+                  :identity="['managed','disciplineStructure',index,'load','practice']"/>
             </td>
             <td>
-              <DigitInput class='text-center'
-                          @change="checkHours(disciplineStructure[index].semester,'SRS')"
-                          :identity="['managed','disciplineStructure',index,'load','SRS']"/>
+              <DigitInput
+                  :class="[{'invalid' : errors.SRS?.[disciplineStructure[index].semester] === true},'text-center']"
+                  @input="checkHours(disciplineStructure[index].semester,['SRS'],index,$event)"
+                  :identity="['managed','disciplineStructure',index,'load','SRS']"/>
             </td>
             <td>
               <DigitInput class='text-center'
@@ -59,7 +63,7 @@
             </td>
             <td style="min-width: 62px">
               <button type="button" v-show="disciplineStructure.length > 1"
-                      @click="removeRow(index)"
+                      @click="removeRow(index);checkAllHours()"
                       class="btn btn-danger px-3 ">
                 <BIconX-octagon class="cross"/>
               </button>
@@ -93,19 +97,24 @@ export default {
   mixins: [required],
   data() {
     return {
+      loadTypes: ['lectures', 'SRS', 'practice'],
+      errors: {},
       requiredFields: [],
       noticeData: {
         order: 4,
-        id: 'disciplineStructure',
+        id: 'disciplineStructureTable',
         desc: 'Структура и содержание дисциплины (модуля)'
       }
     }
   },
-  computed:
-      mapState({
-        disciplineStructure: state => state.rpd.managed.disciplineStructure,
-        value: state => state.rpd.static.disciplineValue,
-      }),
+  computed: {
+    ...mapState({
+      disciplineStructure: state => state.rpd.managed.disciplineStructure,
+      value: state => state.rpd.static.disciplineValue,
+    }),
+    semesters: ctx => Object.keys(Object.values(ctx.value)[0].semesters),
+    isValidHours: ctx => Object.values(ctx.errors).filter((el) => Object.values(el).includes(true)).length === 0
+  },
   methods: {
     ...mapActions({
       updateData: 'rpd/updateData'
@@ -120,24 +129,65 @@ export default {
         updateType: 'SPLICE_RPD_ITEM'
       })
     },
-    checkHours(semester, type) {
+    checkHours(semester, types, index = null, $event) {
 
       if (!semester) {
         return
       }
 
-      const currentHours = Object.values(this.disciplineStructure)
-          .reduce((acc, v) => type in v.load && v.semester === semester ? acc + v.load[type] : acc, 0)
+      types.forEach((type) => {
+        const currentHours = Object.values(this.disciplineStructure)
+            .reduce((acc, v, k) => {
 
-      if (currentHours !== this.value[type].semesters[semester].quantity){
-        console.log('YOBA')
+              if (v.load?.[type] === undefined && index !== null) {
+                v.load = v.load || {}
+                v.load[type] = parseInt($event.target.value) || 0
+              } else if (v.load === null) {
+                return acc
+              }
+
+              if (type in v.load && v.semester === parseInt(semester)) {
+
+                if (index !== null && index === k) {
+                  const val = parseInt($event.target.value) || 0
+                  return acc + val
+                } else {
+                  return acc + v.load[type]
+                }
+              } else {
+                return acc
+              }
+            }, 0)
+
+        if (currentHours !== this.value[type].semesters[semester]?.quantity) {
+          (this.errors[type] ??= {})[semester] = true
+        } else {
+          (this.errors[type] ??= {})[semester] = false
+        }
+      })
+
+      if (this.isValidHours && this.isValid) {
+        this.$store.commit('rpd/REMOVE_ERROR', this.noticeData);
+      } else {
+        this.$store.commit('rpd/ADD_ERROR', this.noticeData);
       }
 
+    },
+    checkAllHours() {
+      this.semesters.forEach((el) => this.checkHours(el, this.loadTypes))
     },
     checkRequired() {
       this.requiredFields = Object.entries(this.$refs)
           .filter(([k, v]) => k.includes('disc') && v !== null)
           .map(([, v]) => v)
+    },
+    validateFull(){
+      this.validate();
+      if (this.isValid && this.isValidHours) {
+        this.$store.commit('rpd/REMOVE_ERROR', this.noticeData);
+      } else if (!this.isValid && this.isValidHours) {
+        this.$store.commit('rpd/ADD_ERROR', this.noticeData);
+      }
     }
   },
   updated() {
@@ -145,6 +195,7 @@ export default {
     this.validate()
   },
   mounted() {
+    this.checkAllHours()
     this.checkRequired()
     this.validate()
   }
@@ -154,16 +205,6 @@ export default {
 <style scoped>
 h3 {
   margin: 40px 0 0;
-}
-
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-
-li {
-  display: inline-block;
-  margin: 0 10px;
 }
 
 a {

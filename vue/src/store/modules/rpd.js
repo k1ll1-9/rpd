@@ -22,7 +22,9 @@ export const rpd = {
       payload.identity.reduce((acc, c) => acc && acc[c], state).splice(payload.index, 1)
     },
     ADD_ERROR(state, payload) {
-      state.errors.push(payload)
+      if (state.errors.filter((el)=> el.id === payload.id).length === 0){
+        state.errors.push(payload)
+      }
     },
     REMOVE_ERROR(state, payload) {
       state.errors = state.errors.filter((el) => el.id !== payload.id)

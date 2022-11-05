@@ -28,7 +28,7 @@ export default {
     return {
       requiredFields: [],
       noticeData: {
-        order: 10,
+        order: 12,
         id: 'gradesDescription',
         desc: 'Оценочные средства текущего контроля успеваемости'
       }

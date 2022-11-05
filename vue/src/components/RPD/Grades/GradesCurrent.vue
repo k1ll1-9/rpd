@@ -1,6 +1,7 @@
 <template>
-  <div id="gradesCurrent">
-    <span v-if="!isValid" class="error">Должны быть запролнены все поля</span>
+  <div>
+    <div v-if="!isValid" class="error mb-4">Должны быть запролнены все поля</div>
+    <div v-if="!fullIndicators" class="error mb-4">Не распределены индикаторы: {{missedIndicators.join(',')}}</div>
     <table class="table-bordered w-100">
       <thead style="border-bottom: 1px #000000 solid">
       <tr>
@@ -22,7 +23,8 @@
                        :identity="['managed', 'disciplineStructure', index, 'indicators']"
                        :dataSource="indicators"
                        placeholder="Выберите индикаторы"
-                       @change="updateCompetence($event,index)"/>
+                       :ref="`comps_${index}`"
+                       @change="updateCompetence($event,index);validate()"/>
         </td>
         <td>
           <div class="d-flex flex-column align-items-start p-1">
@@ -67,10 +69,11 @@ export default {
   mixins: [required],
   data() {
     return {
+      compsValid: true,
       requiredFields: [],
       noticeData: {
-        order: 9,
-        id: 'gradesCurrent',
+        order: 11,
+        id: this.$store.state.rpd.static.unitTitles[9].code,
         desc: 'Оценочные материалы'
       }
     }
@@ -123,7 +126,20 @@ export default {
 
         return indicatorsMapping
       }
-    })
+    }),
+    missedIndicators: (ctx) => {
+      const filledIndicators = ctx.disciplines.reduce((acc,c) =>{
+        return c.indicators.reduce((acc,c) =>{
+          if (!acc.includes(c)){
+            acc.push(c)
+          }
+          return acc
+        },acc)
+      },[])
+
+      return ctx.indicators.filter((el) => !filledIndicators.includes(el))
+    },
+    fullIndicators: (ctx) => ctx.missedIndicators.length === 0
   },
   methods: {
     ...mapActions({
@@ -164,10 +180,10 @@ export default {
         updateType: 'UPDATE_RPD_ITEM'
       });
     },
-    checkRequired() {
+    checkRequired() {this.fullIndicators
       this.requiredFields = Object.entries(this.$refs)
           .filter(([k, v]) => {
-            return k.includes('theme') && v !== null
+            return (k.includes('theme') || k.includes('comps')) && v !== null
           })
           .map(([, v]) => v)
     }
@@ -175,10 +191,20 @@ export default {
   updated() {
     this.checkRequired()
     this.validate()
+    if (this.fullIndicators) {
+      this.$store.commit('rpd/REMOVE_ERROR', this.noticeData);
+    } else {
+      this.$store.commit('rpd/ADD_ERROR', this.noticeData);
+    }
   },
   mounted() {
     this.checkRequired()
     this.validate()
+    if (this.fullIndicators) {
+      this.$store.commit('rpd/REMOVE_ERROR', this.noticeData);
+    } else {
+      this.$store.commit('rpd/ADD_ERROR', this.noticeData);
+    }
   }
 }
 </script>

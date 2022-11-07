@@ -53,7 +53,7 @@ export default {
   position: fixed;
   top: 30px;
   right: 100px;
-  background-color: rgb(246, 134, 140);
+  background-color: rgb(246, 134, 140,0.9);
   border-radius: 5px;
   border: 1px solid rgba(171, 6, 24, 0.9);
   box-shadow: 0 0 2px #000000;

@@ -37,7 +37,7 @@ export default {
     return {
       requiredFields: [],
       noticeData: {
-        order: 9,
+        order: 13,
         id: 'intermediateControl',
         desc: 'Промежуточная аттестация'
       }

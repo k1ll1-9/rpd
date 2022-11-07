@@ -10,6 +10,7 @@ export default {
   props: ['options', 'label','disabled'],
   methods: {
     async upload(e) {
+
       const formData = new FormData();
 
       formData.append('file', e.target.files[0]);

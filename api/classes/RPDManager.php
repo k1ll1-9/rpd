@@ -16,7 +16,7 @@ class RPDManager
         $pdo = Postgres::getInstance()->connect('pgsql:host=' . DB_HOST . ';port=5432;dbname=' . DB_NAME . ';', DB_USER, DB_PASSWORD);
 
         try {
-            $sql = 'SELECT json,status FROM  disciplines 
+            $sql = 'SELECT json,status,valid,approval FROM  disciplines 
                             WHERE (syllabus_id,code,kafedra) = (:syllabus_id,:code,:kafedra)';
             $stmt = $pdo->prepare($sql);
             $stmt->bindParam(':syllabus_id', $params['syllabusID'], \PDO::PARAM_STR);
@@ -77,7 +77,7 @@ class RPDManager
         $pdo = Postgres::getInstance()->connect('pgsql:host=' . DB_HOST . ';port=5432;dbname=' . DB_NAME . ';', DB_USER, DB_PASSWORD);
 
         try {
-            $sql = "SELECT json,actual,status,kafedra,syllabus_id FROM  disciplines 
+            $sql = "SELECT json,actual,status,valid,approval,kafedra,syllabus_id FROM  disciplines 
                             WHERE syllabus_id = :syllabus_id";
             $stmt = $pdo->prepare($sql);
             $stmt->bindParam(':syllabus_id', $params['id'], \PDO::PARAM_STR);
@@ -132,7 +132,7 @@ class RPDManager
             }
 
             return
-                ($actual1 <=> $actual2) * 1000000+
+                ($actual1 <=> $actual2) * 1000000 +
                 $blockCmp * 100000 +
                 ($aType <=> $bType) * 10000 +
                 ($DV1 <=> $DV2) * 1000 +
@@ -326,7 +326,7 @@ class RPDManager
             $stmt->bindParam(':data', $data, \PDO::PARAM_STR);
             if ($stmt->execute()) {
                 if (isset($request['status'])) {
-                    self::setStatus($request['status'], $request['params']);
+                    self::setStatus('status', $request['status'], $request['params']);
                 }
                 $res = ['success' => true];
             }
@@ -371,7 +371,6 @@ class RPDManager
         }
 
 
-
         return $user;
     }
 
@@ -394,12 +393,12 @@ class RPDManager
         return $arFiles;
     }
 
-    public static function setStatus(string $status, array $params)
+    public static function setStatus(string $statusName, string $status, array $params)
     {
         try {
             $pdo = Postgres::getInstance()->connect('pgsql:host=' . DB_HOST . ';port=5432;dbname=' . DB_NAME . ';', DB_USER, DB_PASSWORD);
             $sql = "UPDATE disciplines
-                            SET status = :status
+                            SET {$statusName} = :status
                             WHERE  syllabus_id = :syllabus_id
                                 AND code = :code
                                 AND kafedra = :kafedra";
@@ -408,10 +407,14 @@ class RPDManager
             $stmt->bindParam(':code', $params['code'], \PDO::PARAM_STR);
             $stmt->bindParam(':kafedra', $params['kafedra'], \PDO::PARAM_STR);
             $stmt->bindParam(':status', $status, \PDO::PARAM_STR);
-            $result = $stmt->execute();
+            if ($stmt->execute()) {
+                $res = ['success' => true];
+            }
         } catch (\PDOException $e) {
-            return ['error' => $e->getMessage()];
+            $res = ['error' => $e->getMessage()];
         }
+
+        return $res;
     }
 
     public static function deleteSyllabus($ID)
@@ -457,7 +460,7 @@ class RPDManager
             $stmt->bindParam(':kafedra', $params['kafedra'], \PDO::PARAM_STR);
             $stmt->bindParam(':data', \json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE), \PDO::PARAM_STR);
             if ($stmt->execute()) {
-                self::setStatus('progress', $params);
+                self::setStatus('status', 'progress', $params);
                 $res = ['success' => true];
             }
         } catch (\PDOException $e) {

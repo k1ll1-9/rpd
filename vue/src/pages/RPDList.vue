@@ -14,6 +14,8 @@
         <th>Дисциплина</th>
         <th>Кафедра</th>
         <th>РПД</th>
+        <th>Статус</th>
+        <th>Согласование</th>
         <th>Экспорт</th>
         <th>Импорт</th>
       </tr>
@@ -27,9 +29,11 @@
         <td>
           <router-link :to="{path : '/rpd', query : rpd.query}"
                        :class="['btn d-flex align-items-center justify-content-center',getButtonClass(rpd)]">
-            {{ (rpd.status === 'blank') ? 'Создать' : 'Редактировать' }} РПД
+            {{ (rpd.status === 'blank') ? 'Создать' : 'Редактировать' }} <br> РПД
           </router-link>
         </td>
+        <td :class="rpd.valid === 'valid' ? 'text-success' : 'text-danger'"><b>{{getValidationStatus(rpd)}}</b></td>
+        <td :class="rpd.approval === 'approved' ? 'text-success' : 'text-danger'"><b>{{getApprovalStatus(rpd)}}</b></td>
         <td>
           <div v-if="(rpd.status !== 'blank')" @click="exportRPD(rpd.query)" class="btn-import">
             <BIconDownload width="25" height="25"/>
@@ -104,6 +108,8 @@ export default {
             || process.env.NODE_ENV === 'development',
         actual: el.actual,
         status: el.status,
+        valid: el.valid,
+        approval: el.approval,
         query: {
           syllabusID: json.syllabusData.syllabusID,
           kafedra: json.kafedra,
@@ -122,6 +128,26 @@ export default {
     }
   },
   methods: {
+    getValidationStatus(rpd){
+      switch (rpd.valid){
+        case'valid':
+          return 'Заполнена'
+        case'needCheck':
+          return 'Нужна проверка'
+        default:
+          return 'Не заполнена'
+      }
+    },
+    getApprovalStatus(rpd){
+      switch (rpd.approval){
+        case'approved':
+          return 'Согласована'
+        case'inProcess':
+          return 'На согласовании'
+        default:
+          return 'Не согласована'
+      }
+    },
     getButtonClass(rpd){
       const buttonClass = []
 

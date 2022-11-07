@@ -22,11 +22,15 @@ export const rpd = {
       payload.identity.reduce((acc, c) => acc && acc[c], state).splice(payload.index, 1)
     },
     ADD_ERROR(state, payload) {
-      if (state.errors.filter((el)=> el.id === payload.id).length === 0){
+      state.errors = state.errors || []
+
+      if (state.errors.filter((el) => el.id === payload.id).length === 0) {
         state.errors.push(payload)
       }
     },
     REMOVE_ERROR(state, payload) {
+      state.errors = state.errors || []
+
       state.errors = state.errors.filter((el) => el.id !== payload.id)
     }
   },
@@ -43,7 +47,6 @@ export const rpd = {
       state.static = res.data.static
       state.managed = res.data.managed || {}
       state.status = res.data.status
-      state.errors = []
 
       //создаем копии сложных объектов из шаблонов, если они еще не заполнены
       if (state.managed.competencies === undefined) {
@@ -56,7 +59,7 @@ export const rpd = {
         state.managed.informationalResources = JSON.parse(JSON.stringify(state.static.informationalResources));
       }
 
-      return true;
+      return true
     },
     async updateData({commit, state, rootState}, payload) {
       commit(payload.updateType, payload)
@@ -68,7 +71,7 @@ export const rpd = {
       }
 
       if (state.status === 'blank') {
-        data.status = 'progress';
+        data.status = 'progress'
       }
 
       await this.axios.post(rootState.APIurl, data);
@@ -78,7 +81,20 @@ export const rpd = {
         {
           data: state
         });
-      return res.data.link;
+      return res.data.link
+    },
+    async setStatus({rootState}, payload) {
+
+      const data = {
+        action: "setStatus",
+        status: payload.status,
+        statusName: payload.statusName,
+        params: router.currentRoute.value.query
+      }
+
+      const res = await this.axios.post(rootState.APIurl, data);
+
+      return res.data
     },
   },
   namespaced: true

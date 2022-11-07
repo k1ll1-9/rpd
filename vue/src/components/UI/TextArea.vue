@@ -14,6 +14,9 @@ export default {
   },
   methods: {
     updateState(e) {
+      if (e.event === null) {
+        return false
+      }
       this.$store.dispatch('rpd/updateData',
           {
             identity: this.identity,
@@ -24,7 +27,7 @@ export default {
   },
   computed: {},
   mounted() {
-    this.$refs.input.value = this.identity.reduce((acc, c) => acc && acc[c], this.$store.state.rpd)  || ''
+    this.$refs.input.value = this.identity.reduce((acc, c) => acc && acc[c], this.$store.state.rpd) || ''
   }
 }
 </script>

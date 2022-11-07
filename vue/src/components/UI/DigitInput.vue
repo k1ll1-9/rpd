@@ -19,6 +19,9 @@ export default {
   },
   methods: {
     updateState(e) {
+      if (e.event === null) {
+        return false
+      }
       this.$store.dispatch('rpd/updateData', {
         identity: this.identity,
         value: parseInt(e.target.value.trim()) || null,

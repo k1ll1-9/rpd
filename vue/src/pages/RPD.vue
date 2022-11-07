@@ -91,33 +91,50 @@ export default {
   computed: {
     ...mapState({
       unitTitles: state => state.rpd.static.unitTitles,
-      isValid: state => state.rpd.errors.length === 0
+      isValid: state => {
+        if (state.rpd.errors === undefined) {
+          return true
+        } else {
+          return state.rpd.errors.length === 0
+        }
+      },
     })
   },
   async mounted() {
     this.ready = await this.$store.dispatch('rpd/initData', this.$route.query)
     this.visible = this.$store.state.user?.role === 'admin' || process.env.NODE_ENV === 'development'
-  }
+    this.$watch('isValid', (val) => {
+      console.log(val ? 'valid' : 'invalid')
+      //  if (oldVal !== undefined){ console.log(oldVal)
+      this.$store.dispatch('rpd/setStatus', {
+        statusName: 'valid',
+        status: val ? 'valid' : 'invalid'
+      })
+      //    }
+    })
+  },
 }
 </script>
 
 <style>
-.invalid,.invalid.form-control:focus  {
+.invalid, .invalid.form-control:focus {
   border-color: #FF2400 !important;
-  box-shadow: 0 0 0 0.25rem rgb(253, 13 ,13,0.25) !important;
+  box-shadow: 0 0 0 0.25rem rgb(253, 13, 13, 0.25) !important;
 }
+
 .error {
   color: #FF2400;
   font-weight: 700;
 }
 
 /*кастомизация верстки селектов - не работают scoped компонетов*/
-.e-input-group:has(> .invalid.e-dropdownlist){
+.e-input-group:has(> .invalid.e-dropdownlist) {
   border: 1px solid #FF2400 !important;
   border-radius: 5px;
-  box-shadow: 0 0 0 0.25rem rgb(253, 13 ,13,0.25) !important;
+  box-shadow: 0 0 0 0.25rem rgb(253, 13, 13, 0.25) !important;
 }
-.e-input-group:has(>.e-dropdownlist){
+
+.e-input-group:has(>.e-dropdownlist) {
   top: 2px;
 }
 </style>

@@ -149,6 +149,10 @@ export default {
       })
     },
     updateCompetence(e, index) {
+      if (e.event === null) {
+        return false
+      }
+
       const values = Object.values(e.value)
       const competences = []
 

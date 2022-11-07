@@ -62,22 +62,24 @@ switch ($method) {
                 case 'setData':
                     $res = RPDManager::setRPDData($data);
                     die(\json_encode($res));
-                    break;
+                case 'setStatus':
+                    $res = RPDManager::setStatus($data['statusName'], $data['status'], $data['params']);
+                    die(\json_encode($res));
                 case 'deleteSyllabusFile':
                     $res = RPDManager::deleteSyllabusFile($data['params']);
                     die(\json_encode($res, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
                 case 'exportRPD':
                     $res = RPDManager::getRPDHistory($data['params']);
-                    if ($res){
-                        die(\json_encode($res,JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
-                    }   else {
+                    if ($res) {
+                        die(\json_encode($res, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+                    } else {
                         die();
                     }
                 case 'importRPD':
-                    $json = \json_encode(RPDManager::importRPD($data['params'],$data['data']),JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+                    $json = \json_encode(RPDManager::importRPD($data['params'], $data['data']), JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
                     die($json);
                 case 'deleteSyllabus':
-                    $json = \json_encode(RPDManager::deleteSyllabus($data['params']['ID'],JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+                    $json = \json_encode(RPDManager::deleteSyllabus($data['params']['ID'], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
                     die($json);
             }
         } else {
@@ -85,7 +87,7 @@ switch ($method) {
                 case 'uploadSyllabusFile':
                     $params = \json_decode($request->getPost('params'), true);
                     $file = $request->getFile('file');
-                    $res = RPDManager::uploadSyllabusFile($params,$file);
+                    $res = RPDManager::uploadSyllabusFile($params, $file);
                     die(\json_encode($res, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
             }
         }

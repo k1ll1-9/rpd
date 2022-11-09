@@ -4,7 +4,8 @@
     <div v-if="!isValid" class="error mb-4">Должны быть запролнены все поля</div>
     <VisualEditor :identity="['managed','disciplinePlace']"
                   @input="validate"
-                  ref="place"/>
+                  ref="place"
+                  :readonly="$store.state.rpd.locked"/>
   </div>
 </template>
 

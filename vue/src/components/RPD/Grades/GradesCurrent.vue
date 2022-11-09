@@ -24,7 +24,8 @@
                        :dataSource="indicators"
                        placeholder="Выберите индикаторы"
                        :ref="`comps_${index}`"
-                       @change="updateCompetence($event,index);validate()"/>
+                       @change="updateCompetence($event,index);validate()"
+                       :readonly="$store.state.rpd.locked"/>
         </td>
         <td>
           <div class="d-flex flex-column align-items-start p-1">
@@ -35,17 +36,20 @@
                         rows="3"
                         :ref="`theme_${index}_control_${id}`"
                         @input="validate()"
-                        :identity="getTextAreaIdentity(discipline.identity, id)"/>
+                        :identity="getTextAreaIdentity(discipline.identity, id)"
+                        :disabled="$store.state.rpd.locked"/>
               <button type="button"
                       v-if="discipline.currentControl.length > 1"
                       @click="removeResult(discipline.identity,id)"
-                      class="btn btn-danger m-2">
+                      class="btn btn-danger m-2"
+                      :disabled="$store.state.rpd.locked">
                 <BIconX-octagon class="cross"/>
               </button>
             </div>
             <button type="button"
                     @click="addResult(discipline.identity)"
-                    class="btn btn-primary my-2">
+                    class="btn btn-primary my-2"
+                    :disabled="$store.state.rpd.locked">
               Добавить результат
             </button>
           </div>
@@ -184,7 +188,7 @@ export default {
         updateType: 'UPDATE_RPD_ITEM'
       });
     },
-    checkRequired() {this.fullIndicators
+    checkRequired() {
       this.requiredFields = Object.entries(this.$refs)
           .filter(([k, v]) => {
             return (k.includes('theme') || k.includes('comps')) && v !== null
@@ -195,7 +199,7 @@ export default {
   updated() {
     this.checkRequired()
     this.validate()
-    if (this.fullIndicators) {
+    if (this.fullIndicators && this.isValid) {
       this.$store.commit('rpd/REMOVE_ERROR', this.noticeData);
     } else {
       this.$store.commit('rpd/ADD_ERROR', this.noticeData);
@@ -204,7 +208,7 @@ export default {
   mounted() {
     this.checkRequired()
     this.validate()
-    if (this.fullIndicators) {
+    if (this.fullIndicators && this.isValid) {
       this.$store.commit('rpd/REMOVE_ERROR', this.noticeData);
     } else {
       this.$store.commit('rpd/ADD_ERROR', this.noticeData);

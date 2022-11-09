@@ -1,50 +1,73 @@
 <template>
   <div>
-  <button v-if="!PDFLink && !loading"  class="btn btn-lg btn-primary mb-4" @click="requestApprove()">
+  <button :class="[{'disabled': false},'btn btn-lg btn-primary mb-4']" @click="requestApprove()">
     Отправить на согласование
   </button>
-  <Preloader v-else-if="loading"/>
-  <p v-else>{{data}}</p>
+  </div>
+  <div v-if="visible">
+    <button class="btn btn-lg btn-primary mb-4" @click="disapprove()">
+      Отозвать
+    </button>
   </div>
 </template>
 
 <script>
-import Preloader from "../Misc/Preloader";
 
 export default {
-  components: {Preloader},
+  props: ['disabled'],
   name: "ApprovalButton",
   data() {
     return {
-      PDFLink: null,
-      loading: false,
-      data: ''
+      visible: false
     }
   },
   methods: {
     async requestApprove() {
       this.loading = true
-      this.PDFLink = await this.$store.dispatch('rpd/initPDF')
+      const PDFLink = await this.$store.dispatch('rpd/initPDF','approval')
 
       const data = {
-        link: this.PDFLink,
+        link: PDFLink,
         BXID: this.$store.state.user.ID,
         UniID: this.$store.state.user.uniID,
         disciplineCode: this.$store.state.rpd.static.code,
         disciplineName: this.$store.state.rpd.static.name,
+        educationLevel: this.$store.state.rpd.static.syllabusData.educationLevel,
+        profile: this.$store.state.rpd.static.syllabusData.profile,
+        special: this.$store.state.rpd.static.syllabusData.special,
         kafedra: this.$store.state.rpd.static.kafedra,
         syllabusID: this.$store.state.rpd.static.syllabusData.syllabusID
       }
 
-      console.log(data);
+      if (PDFLink){
 
-      this.data = JSON.stringify(data)
-      this.loading = false
+        const res = await this.$store.dispatch('rpd/setStatus', {
+          statusName: 'approval',
+          status: 'inProcess'
+        })
+
+        if (res.success){
+          window.location.replace('/doc/rpd/rpd.php?perm=' + btoa(encodeURIComponent(JSON.stringify(data))))
+        }
+
+      }
+
+    },
+    async disapprove(){
+      await this.$store.dispatch('rpd/setStatus', {
+        statusName: 'approval',
+        status: null
+      })
     }
+  },
+  mounted() {
+    this.visible = this.$store.state.user?.role === 'admin' || process.env.NODE_ENV === 'development'
   }
 }
 </script>
 
 <style scoped>
-
+.btn{
+  width: 275px;
+}
 </style>

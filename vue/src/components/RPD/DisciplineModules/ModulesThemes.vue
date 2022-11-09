@@ -12,7 +12,8 @@
               :ref="`semester_${index}_theme_${i}`"
               @input="validate()"
               class="my-5"
-              :identity="theme.identity"/>
+              :identity="theme.identity"
+              :readonly="$store.state.rpd.locked"/>
         </div>
       </template>
     </div>

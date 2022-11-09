@@ -4,7 +4,8 @@
     <VisualEditor
         ref="technologies"
         @input="validate()"
-        :identity="['managed','educationTechnologies']"/>
+        :identity="['managed','educationTechnologies']"
+        :readonly="$store.state.rpd.locked"/>
   </div>
 </template>
 

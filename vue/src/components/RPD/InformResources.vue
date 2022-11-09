@@ -6,30 +6,33 @@
     <div class="d-flex flex-column align-items-center p-1">
       <p><i>Для изменения порядка пунктов зажмите курсором номер пункта и перетащите.</i></p>
 
-      <div v-for="(unit,infIndex,i) in informationalResources" :key="infIndex" class="resources-unit w-100">
+      <div v-for="(unit,infIndex,i) in informationalResources" :key="infIndex+'_'+ i" class="resources-unit w-100">
         <h4 class="my-3">8.{{ i + 1 }} {{ unit.name }}</h4>
         <Draggable
             :list="unit.data"
-            item-key="index"
+            item-key="value"
             v-bind="dragOptions"
             handle=".handle"
             @change="updateUnit(infIndex)"
-            class="w-100">
-          <template #item="{index}" class="w-100">
+            class="w-100"
+            :disabled="$store.state.rpd.locked">
+          <template #item="element" class="w-100">
             <div class="d-flex w-100 my-1 draggable-item w-100">
               <p class="number d-flex align-items-center justify-content-center handle text-center">
-                {{ index + 1 }}.
+                {{ element.index + 1 }}.
               </p>
               <TextArea
-                  :identity="['managed','informationalResources',infIndex,'data',index,'value']"
-                  :ref="`type_${infIndex}_resource_${index}`"
+                  :identity="['managed','informationalResources',infIndex,'data',element.index,'value']"
+                  :ref="`type_${infIndex}_resource_${element.index}`"
                   @input="validate()"
                   class="my-2"
-                  rows="3"/>
+                  rows="3"
+                  :disabled="$store.state.rpd.locked"/>
               <button type="button"
                       v-if="unit.data.length > 1"
                       @click="removeResult(['managed','informationalResources',infIndex,'data'],index)"
-                      class="btn btn-danger m-2 align-self-center">
+                      class="btn btn-danger m-2 align-self-center"
+                      :class="{'disabled' : $store.state.rpd.locked}">
                 <BIconX-octagon class="cross"/>
               </button>
             </div>
@@ -37,7 +40,8 @@
         </Draggable>
         <button type="button"
                 @click="addResult(['managed','informationalResources',infIndex,'data'])"
-                class="btn btn-primary mt-2">
+                class="btn btn-primary mt-2"
+                :class="{'disabled' : $store.state.rpd.locked}">
           Добавить ссылку(книгу)
         </button>
       </div>

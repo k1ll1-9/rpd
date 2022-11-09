@@ -7,12 +7,14 @@
                  placeholder='ФИО'
                  ref="authorFIO"
                  @input="validate()"
-                 :identity="['managed','authors','author','FIO']"/>
+                 :identity="['managed','authors','author','FIO']"
+                 :disabled="$store.state.rpd.locked"/>
       <TextInput class="my-2 author-input"
                  placeholder='Должность'
                  ref="authorPosition"
                  @input="validate()"
-                 :identity="['managed','authors','author','position']"/>
+                 :identity="['managed','authors','author','position']"
+                 :disabled="$store.state.rpd.locked"/>
     </div>
     <div class="my-4">
       <p class="text-start my-1">Рецензент:</p>
@@ -20,12 +22,14 @@
                  placeholder='ФИО'
                  ref="reviewerFIO"
                  @input="validate()"
-                 :identity="['managed','authors','reviewer','FIO']"/>
+                 :identity="['managed','authors','reviewer','FIO']"
+                 :disabled="$store.state.rpd.locked"/>
       <TextInput class="my-2 author-input"
                  placeholder='Должность'
                  ref="reviewerPosition"
                  @input="validate()"
-                 :identity="['managed','authors','reviewer','position']"/>
+                 :identity="['managed','authors','reviewer','position']"
+                 :disabled="$store.state.rpd.locked"/>
     </div>
   </div>
 </template>

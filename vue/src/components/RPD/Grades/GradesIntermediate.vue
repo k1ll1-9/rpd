@@ -9,14 +9,16 @@
           <VisualEditor class="rte"
                         :ref="`semester_${semester}_type_${index}_${type}`"
                         @input="validate()"
-                        :identity="['managed', 'intermediateControl', semester, index , type]"/>
+                        :identity="['managed', 'intermediateControl', semester, index , type]"
+                        :readonly="$store.state.rpd.locked"/>
         </div>
         <div class="my-3">
           <h4 class="my-3">Критерии оценки</h4>
           <VisualEditor class="rte"
                         :ref="`semester_${semester}_type_${index}_criterion`"
                         @input="validate()"
-                        :identity="['managed', 'intermediateControl', semester, index , 'criterion']"/>
+                        :identity="['managed', 'intermediateControl', semester, index , 'criterion']"
+                        :readonly="$store.state.rpd.locked"/>
         </div>
       </div>
     </div>

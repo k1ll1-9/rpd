@@ -10,19 +10,6 @@ import { BootstrapIconsPlugin } from 'bootstrap-icons-vue';
 import router from './router/router'
 import dayjs from 'dayjs'
 
-//import SockJS from "sockjs-client";
-//import Stomp from "webstomp-client";
-
-/*const webstomp = {
-  methods: {
-    connect() {
-      let client = Stomp.client( "wss://rabbitmq.vavt.ru:15673/ws")
-      client.connect('webstomp', 'test',function (){
-      })
-    }
-  }
-}*/
-
 store.axios = axios
 
 const app = createApp(

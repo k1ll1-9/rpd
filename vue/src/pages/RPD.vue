@@ -27,7 +27,7 @@
       <GradesIntermediate/>
     </div>
     <PDFButton/>
-    <ApprovalButton v-if="visible"/>
+    <ApprovalButton :disabled="visible/*!isValid || $store.state.rpd.locked*/"/>
     <NoticeWindow v-if="!isValid"/>
   </div>
   <Preloader v-else style="margin-top: 200px"/>
@@ -104,8 +104,6 @@ export default {
     this.ready = await this.$store.dispatch('rpd/initData', this.$route.query)
     this.visible = this.$store.state.user?.role === 'admin' || process.env.NODE_ENV === 'development'
     this.$watch('isValid', (val) => {
-      console.log(val ? 'valid' : 'invalid')
-      //  if (oldVal !== undefined){ console.log(oldVal)
       this.$store.dispatch('rpd/setStatus', {
         statusName: 'valid',
         status: val ? 'valid' : 'invalid'
@@ -117,10 +115,11 @@ export default {
 </script>
 
 <style>
-.invalid,.invalid.form-control:focus  {
+.invalid, .invalid.form-control:focus {
   border-color: #FF2400 !important;
-  box-shadow: 0 0 0 0.25rem rgb(253, 13 ,13,0.25) !important;
+  box-shadow: 0 0 0 0.25rem rgb(253, 13, 13, 0.25) !important;
 }
+
 .error {
   color: #FF2400;
   font-weight: 700;
@@ -128,34 +127,40 @@ export default {
 
 /*кастомизация верстки селектов - не работают scoped компонетов*/
 .e-input-group:has(> .invalid.e-dropdownlist),
-.e-multi-select-wrapper.invalid{
+.e-multi-select-wrapper.invalid {
   border: 1px solid #FF2400 !important;
   border-radius: 5px;
-  box-shadow: 0 0 0 0.25rem rgb(253, 13 ,13,0.25) !important;
+  box-shadow: 0 0 0 0.25rem rgb(253, 13, 13, 0.25) !important;
 }
-.e-input-group:has(>.e-dropdownlist){
+
+.e-input-group:has(>.e-dropdownlist) {
   top: 2px;
 }
+
 .defaults.e-ddl.e-input-group.e-control-wrapper .e-input {
   text-align: center;
 }
-.defaults .e-list-item{
+
+.defaults .e-list-item {
   color: #000000;
 }
+
 .defaults .e-dropdownbase .e-list-item:active {
   color: #0b66c3;
 }
+
 .defaults.e-input-group:not(.e-float-icon-left):not(.e-float-input)::before,
 .defaults.e-input-group:not(.e-float-icon-left):not(.e-float-input)::after {
   height: 2px;
   background: #0b66c3;
 }
+
 .defaults .e-dropdownbase .e-list-item.e-active,
 .defaults .e-dropdownbase .e-list-item.e-active.e-hover {
   color: #0b66c3;
 }
-.e-input-group:not(.e-float-icon-left):not(.e-float-input)::before, .e-input-group:not(.e-float-icon-left):not(.e-float-input)::after, .e-input-group.e-float-icon-left:not(.e-float-input) .e-input-in-wrap::before, .e-input-group.e-float-icon-left:not(.e-float-input) .e-input-in-wrap::after, .e-input-group.e-control-wrapper:not(.e-float-icon-left):not(.e-float-input)::before, .e-input-group.e-control-wrapper:not(.e-float-icon-left):not(.e-float-input)::after, .e-input-group.e-control-wrapper.e-float-icon-left:not(.e-float-input) .e-input-in-wrap::before, .e-input-group.e-control-wrapper.e-float-icon-left:not(.e-float-input) .e-input-in-wrap::after
-{
+
+.e-input-group:not(.e-float-icon-left):not(.e-float-input)::before, .e-input-group:not(.e-float-icon-left):not(.e-float-input)::after, .e-input-group.e-float-icon-left:not(.e-float-input) .e-input-in-wrap::before, .e-input-group.e-float-icon-left:not(.e-float-input) .e-input-in-wrap::after, .e-input-group.e-control-wrapper:not(.e-float-icon-left):not(.e-float-input)::before, .e-input-group.e-control-wrapper:not(.e-float-icon-left):not(.e-float-input)::after, .e-input-group.e-control-wrapper.e-float-icon-left:not(.e-float-input) .e-input-in-wrap::before, .e-input-group.e-control-wrapper.e-float-icon-left:not(.e-float-input) .e-input-in-wrap::after {
   color: blueviolet !important;
 }
 

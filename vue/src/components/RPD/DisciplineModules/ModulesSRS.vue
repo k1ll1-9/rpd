@@ -28,17 +28,20 @@
                   rows="3"
                   :ref="`theme_${index}_SRSType_${id}`"
                   @input="validate()"
-                  :identity="module.identity.concat([id,'title'])"/>
+                  :identity="module.identity.concat([id,'title'])"
+                  :disabled="$store.state.rpd.locked"/>
               <button type="button"
                       v-if="module.SRSTypes.length > 1"
                       @click="removeResult(module.identity,id)"
-                      class="btn btn-danger m-2">
+                      class="btn btn-danger m-2"
+                      :class="{'disabled' : $store.state.rpd.locked}">
                 <BIconX-octagon class="cross"/>
               </button>
             </div>
             <button type="button"
                     @click="addResult(module.identity)"
-                    class="btn btn-primary my-2">
+                    class="btn btn-primary my-2"
+                    :class="{'disabled' : $store.state.rpd.locked}">
               Добавить вид работы
             </button>
           </div>
@@ -60,7 +63,8 @@
               :ref="`semester_${index}_theme_${id}_SRSDesc_${SRSid}`"
               @input="validate()"
               class="my-5"
-              :identity="type.identity"/>
+              :identity="type.identity"
+              :readonly="$store.state.rpd.locked"/>
         </div>
       </div>
     </div>

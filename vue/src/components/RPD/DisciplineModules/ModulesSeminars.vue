@@ -13,7 +13,8 @@
               :ref="`semester_${index}_theme_${number}_seminar_${seminarIndex}`"
               @input="validate()"
               class="my-5"
-              :identity="[...theme.identity, seminarIndex]"/>
+              :identity="[...theme.identity, seminarIndex]"
+              :readonly="$store.state.rpd.locked"/>
         </div>
       </div>
     </div>

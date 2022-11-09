@@ -33,7 +33,7 @@
           </router-link>
         </td>
         <td :class="rpd.valid === 'valid' ? 'text-success' : 'text-danger'"><b>{{getValidationStatus(rpd)}}</b></td>
-        <td :class="rpd.approval === 'approved' ? 'text-success' : 'text-danger'"><b>{{getApprovalStatus(rpd)}}</b></td>
+        <td :class="getApprovalClass(rpd)"><b>{{getApprovalStatus(rpd)}}</b></td>
         <td>
           <div v-if="(rpd.status !== 'blank')" @click="exportRPD(rpd.query)" class="btn-import">
             <BIconDownload width="25" height="25"/>
@@ -133,7 +133,7 @@ export default {
         case'valid':
           return 'Заполнена'
         case'needCheck':
-          return 'Нужна проверка'
+          return 'Необходима проверка'
         default:
           return 'Не заполнена'
       }
@@ -146,6 +146,16 @@ export default {
           return 'На согласовании'
         default:
           return 'Не согласована'
+      }
+    },
+    getApprovalClass(rpd){
+      switch (rpd.approval){
+        case'approved':
+          return 'text-success'
+        case'inProcess':
+          return 'text-warning'
+        default:
+          return 'text-danger'
       }
     },
     getButtonClass(rpd){

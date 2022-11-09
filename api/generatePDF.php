@@ -60,6 +60,20 @@ foreach ($disciplineStructure as $key => $ds) {
     }
 }
 
+$path = '/mnt/synology_nfs/syllabuses/' . $static['syllabusData']['syllabusID'] . '/rpd/' . $static['code'] . '/' . $static['kafedra'] . '/';
+$res = @\mkdir($path, 0775, true);
+
+if (isset($json['PDFType']) && $json['PDFType'] === 'approval') {
+    @\mkdir($path . 'submitted/', 0775, true);
+    $fileName = $json['static']['disciplineIndex'] . '_' . \date('d-m-Y', \strtotime($json['static']['syllabusData']['year'])) . '.pdf';
+    $link = 'https://lk.vavt.ru/helpers/getFile.php?file64=' . \rawurldecode($path. 'submitted/' . $fileName);
+} else {
+    $fileName = $json['static']['disciplineIndex'] . '_draft' . '.pdf';
+    $link = 'https://lk.vavt.ru/helpers/getFile.php?openPDF=' . \rawurldecode($path . $fileName);
+}
+
+
+
 $html = '<style>
 table{
     width: 100%!important
@@ -123,6 +137,7 @@ $html .= '
                 </td>
             </tr>
         </table>';
+
 
 $discTarget = escape4PDF($managed["disciplineTarget"]['target']);
 $discTask = escape4PDF($managed["disciplineTarget"]['task']);
@@ -738,12 +753,11 @@ $pdf->setHtmlVSpace($tagvs);
 $pdf->AddPage();
 $pdf->PageNo();
 $pdf->writeHTML($html, true, false, true, false, '');
+$pdf->Output($path . $fileName, 'I');
 
-$fileName = $json['static']['disciplineIndex'] . '_' . \date('d-m-Y', \strtotime($json['static']['syllabusData']['year'])) . '.pdf';
-$path = $_SERVER['DOCUMENT_ROOT'] . 'oplyuyko_test/rpd/' . $fileName;
-$link = 'https://lk.vavt.ru/oplyuyko_test/rpd/' . $fileName;
-
-$pdf->Output($path, 'I');
+if (!\file_exists($path . $fileName)){
+    $link = false;
+}
 
 //die(\json_encode(['link' => $link], JSON_UNESCAPED_UNICODE));
 

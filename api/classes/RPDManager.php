@@ -27,6 +27,7 @@ class RPDManager
             if ($res) {
                 $data['static'] = \json_decode($res['json'], true);
                 $data['status'] = $res['status'];
+                $data['locked'] = $res['approval'] === 'inProcess';
             }
         } catch (\PDOException $e) {
             echo $e->getMessage();
@@ -393,7 +394,7 @@ class RPDManager
         return $arFiles;
     }
 
-    public static function setStatus(string $statusName, string $status, array $params)
+    public static function setStatus(string $statusName, ?string $status, array $params)
     {
         try {
             $pdo = Postgres::getInstance()->connect('pgsql:host=' . DB_HOST . ';port=5432;dbname=' . DB_NAME . ';', DB_USER, DB_PASSWORD);

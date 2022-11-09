@@ -6,13 +6,15 @@
       <h4 class="my-4" :id="$store.state.rpd.static.unitTitles[1].subUnits[1].code">1.1 {{ $store.state.rpd.static.unitTitles[1].subUnits[1].title }}</h4>
       <VisualEditor :identity="['managed','disciplineTarget','target']"
                     @input="validate"
-                    ref="target"/>
+                    ref="target"
+                    :readonly="$store.state.rpd.locked"/>
     </div>
     <div class="my-4">
       <h4 class="my-4" :id="$store.state.rpd.static.unitTitles[1].subUnits[2].code">1.2 {{ $store.state.rpd.static.unitTitles[1].subUnits[2].title }}</h4>
       <VisualEditor :identity="['managed','disciplineTarget','task']"
                     @input="validate"
-                    ref="task"/>
+                    ref="task"
+                    :readonly="$store.state.rpd.locked"/>
     </div>
   </div>
 </template>

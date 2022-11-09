@@ -8,7 +8,8 @@
         <VisualEditor class="rte"
                       :ref="`theme_${index}_description_${i}`"
                       @input="validate()"
-                      :identity="['managed', 'disciplineStructure', index,'currentControl',i,'value']"/>
+                      :identity="['managed', 'disciplineStructure', index,'currentControl',i,'value']"
+                      :readonly="$store.state.rpd.locked"/>
       </template>
     </div>
   </div>

@@ -4,7 +4,8 @@
     <VisualEditor
         ref="annotation"
         @input="validate()"
-        :identity="['managed','annotation']"/>
+        :identity="['managed','annotation']"
+        :readonly="$store.state.rpd.locked"/>
   </div>
 </template>
 

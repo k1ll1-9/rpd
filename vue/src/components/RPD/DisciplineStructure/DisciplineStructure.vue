@@ -29,7 +29,8 @@
             <td>
               <TextInput :identity="['managed','disciplineStructure',index,'title']"
                          :ref="`disc_title_${index}`"
-                         @input="validateFull();checkAllHours()"/>
+                         @input="validateFull();checkAllHours()"
+                         :disabled="$store.state.rpd.locked"/>
             </td>
             <td>
               <Select :identity="['managed','disciplineStructure',index,'semester']"
@@ -37,34 +38,40 @@
                       cssClass="defaults"
                       :ref="`disc_semester_${index}`"
                       @change="validateFull();checkAllHours()"
-                      width="60%"/>
+                      width="60%"
+                      :readonly="$store.state.rpd.locked"/>
             </td>
             <td>
               <DigitInput
                   :class="[{'invalid' : errors.lectures?.[disciplineStructure[index].semester] === true},'text-center']"
                   @input="checkHours(disciplineStructure[index].semester,['lectures'],index,$event)"
-                  :identity="['managed','disciplineStructure',index,'load','lectures']"/>
+                  :identity="['managed','disciplineStructure',index,'load','lectures']"
+                  :disabled="$store.state.rpd.locked"/>
             </td>
             <td>
               <DigitInput
                   :class="[{'invalid' : errors.practice?.[disciplineStructure[index].semester] === true},'text-center']"
                   @input="checkHours(disciplineStructure[index].semester,['practice'],index,$event)"
-                  :identity="['managed','disciplineStructure',index,'load','practice']"/>
+                  :identity="['managed','disciplineStructure',index,'load','practice']"
+                  :disabled="$store.state.rpd.locked"/>
             </td>
             <td>
               <DigitInput
                   :class="[{'invalid' : errors.SRS?.[disciplineStructure[index].semester] === true},'text-center']"
                   @input="checkHours(disciplineStructure[index].semester,['SRS'],index,$event)"
-                  :identity="['managed','disciplineStructure',index,'load','SRS']"/>
+                  :identity="['managed','disciplineStructure',index,'load','SRS']"
+                  :disabled="$store.state.rpd.locked"/>
             </td>
             <td>
               <DigitInput class='text-center'
-                          :identity="['managed','disciplineStructure',index,'load','practicePrepare']"/>
+                          :identity="['managed','disciplineStructure',index,'load','practicePrepare']"
+                          :disabled="$store.state.rpd.locked"/>
             </td>
             <td style="min-width: 62px">
               <button type="button" v-show="disciplineStructure.length > 1"
                       @click="removeRow(index);checkAllHours()"
-                      class="btn btn-danger px-3 ">
+                      class="btn btn-danger px-3"
+                      :class="{'disabled' : $store.state.rpd.locked}">
                 <BIconX-octagon class="cross"/>
               </button>
             </td>
@@ -74,7 +81,8 @@
         <div>
           <button type="button"
                   @click="addRow"
-                  class="btn btn-primary mt-4">
+                  class="btn btn-primary mt-4"
+                  :class="{'disabled' : $store.state.rpd.locked}">
             Добавить строку
           </button>
         </div>
@@ -181,7 +189,7 @@ export default {
           .filter(([k, v]) => k.includes('disc') && v !== null)
           .map(([, v]) => v)
     },
-    validateFull(){
+    validateFull() {
       this.validate();
       if (this.isValid && this.isValidHours) {
         this.$store.commit('rpd/REMOVE_ERROR', this.noticeData);

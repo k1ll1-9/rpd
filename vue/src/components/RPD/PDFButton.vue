@@ -21,7 +21,7 @@ export default {
   methods: {
     async getPDF() {
       this.loading = true
-      this.PDFLink = await this.$store.dispatch('rpd/initPDF')
+      this.PDFLink = await this.$store.dispatch('rpd/initPDF','draft')
       this.loading = false
     }
   }
@@ -29,5 +29,7 @@ export default {
 </script>
 
 <style scoped>
-
+.btn{
+  width: 275px;
+}
 </style>

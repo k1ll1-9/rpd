@@ -47,6 +47,7 @@ export const rpd = {
       state.static = res.data.static
       state.managed = res.data.managed || {}
       state.status = res.data.status
+      state.locked = res.data.locked
 
       //создаем копии сложных объектов из шаблонов, если они еще не заполнены
       if (state.managed.competencies === undefined) {
@@ -76,10 +77,13 @@ export const rpd = {
 
       await this.axios.post(rootState.APIurl, data);
     },
-    async initPDF({state}) {
+    async initPDF({state},type) {
       const res = await this.axios.post(process.env.VUE_APP_PDF_URL,
         {
-          data: state
+          data: {
+            ...state,
+            PDFType: type
+          }
         });
       return res.data.link
     },

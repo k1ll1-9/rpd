@@ -33,17 +33,20 @@
                           rows="3"
                           @input="validate()"
                           :ref="`comp_${i}_ind_${indicatorIndex}_know_${resultID}`"
-                          :identity="getTextAreaIdentity(index,id,'know',resultID)"/>
+                          :identity="getTextAreaIdentity(index,id,'know',resultID)"
+                          :disabled="$store.state.rpd.locked"/>
                 <button type="button"
                         @click="removeResult(index,id,'know',resultID)"
                         v-if="Object.keys(managedCompetencies[index].nextLvl[id].results.know).length > 1"
-                        class="btn btn-danger m-2">
+                        class="btn btn-danger m-2"
+                        :class="{'disabled' : $store.state.rpd.locked }">
                   <BIconX-octagon class="cross"/>
                 </button>
               </div>
               <button type="button"
                       @click="addResult(index,id,'know')"
-                      class="btn btn-primary my-2">
+                      class="btn btn-primary my-2"
+                      :class="{'disabled' : $store.state.rpd.locked }">
                 Добавить результат
               </button>
             </div>
@@ -56,17 +59,20 @@
                           rows="3"
                           @input="validate()"
                           :ref="`comp_${i}_ind_${indicatorIndex}_able_${resultID}`"
-                          :identity="getTextAreaIdentity(index,id,'able',resultID)"/>
+                          :identity="getTextAreaIdentity(index,id,'able',resultID)"
+                          :disabled="$store.state.rpd.locked"/>
                 <button type="button"
                         @click="removeResult(index,id,'able',resultID)"
                         v-if="Object.keys(managedCompetencies[index].nextLvl[id].results.able).length > 1"
-                        class="btn btn-danger m-2">
+                        class="btn btn-danger m-2"
+                        :class="{'disabled' : $store.state.rpd.locked }">
                   <BIconX-octagon class="cross"/>
                 </button>
               </div>
               <button type="button"
                       @click="addResult(index,id,'able')"
-                      class="btn btn-primary my-2">
+                      class="btn btn-primary my-2"
+                      :class="{'disabled' : $store.state.rpd.locked }">
                 Добавить результат
               </button>
             </div>
@@ -79,17 +85,20 @@
                           rows="3"
                           @input="validate()"
                           :ref="`comp_${i}_ind_${indicatorIndex}_master_${resultID}`"
-                          :identity="getTextAreaIdentity(index,id,'master',resultID)"/>
+                          :identity="getTextAreaIdentity(index,id,'master',resultID)"
+                          :disabled="$store.state.rpd.locked"/>
                 <button type="button"
                         @click="removeResult(index,id,'master',resultID)"
                         v-if="Object.keys(managedCompetencies[index].nextLvl[id].results.master).length > 1"
-                        class="btn btn-danger m-2">
+                        class="btn btn-danger m-2"
+                        :class="{'disabled' : $store.state.rpd.locked }">
                   <BIconX-octagon class="cross"/>
                 </button>
               </div>
               <button type="button"
                       @click="addResult(index,id,'master')"
-                      class="btn btn-primary my-2">
+                      class="btn btn-primary my-2"
+                      :class="{'disabled' : $store.state.rpd.locked }">
                 Добавить результат
               </button>
             </div>

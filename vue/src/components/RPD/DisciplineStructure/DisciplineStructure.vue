@@ -50,9 +50,9 @@
             </td>
             <td>
               <DigitInput
-                  :class="[{'invalid' : errors.practice?.[disciplineStructure[index].semester] === true},'text-center']"
-                  @input="checkHours(disciplineStructure[index].semester,['practice'],index,$event)"
-                  :identity="['managed','disciplineStructure',index,'load','practice']"
+                  :class="[{'invalid' : errors.seminars?.[disciplineStructure[index].semester] === true},'text-center']"
+                  @input="checkHours(disciplineStructure[index].semester,['seminars'],index,$event)"
+                  :identity="['managed','disciplineStructure',index,'load','seminars']"
                   :disabled="$store.state.rpd.locked"/>
             </td>
             <td>
@@ -105,7 +105,7 @@ export default {
   mixins: [required],
   data() {
     return {
-      loadTypes: ['lectures', 'SRS', 'practice'],
+      loadTypes: ['lectures', 'SRS', 'seminars'],
       errors: {},
       requiredFields: [],
       noticeData: {
@@ -118,7 +118,19 @@ export default {
   computed: {
     ...mapState({
       disciplineStructure: state => state.rpd.managed.disciplineStructure,
-      value: state => state.rpd.static.disciplineValue,
+      value: state => Object.fromEntries(Object.entries(state.rpd.static.disciplineValue).map(([k, v]) => {
+        //если тип нагрузки в семестре не задан - назначаем его равным 0
+        v.semesters = Object.fromEntries(Object.entries(v.semesters).map(([k, v]) => [k, {
+          ...v,
+          quantity: v.quantity ??= 0
+        }]))
+        //костыль для разрешения несоответствия названий нагрузки семинаров
+        if (k === 'practice') {
+          return ['seminars', v]
+        } else {
+          return [k, v]
+        }
+      })),
     }),
     semesters: ctx => Object.keys(Object.values(ctx.value)[0].semesters),
     isValidHours: ctx => Object.values(ctx.errors).filter((el) => Object.values(el).includes(true)).length === 0
@@ -167,6 +179,8 @@ export default {
               }
             }, 0)
 
+
+        console.log(this.value[type].semesters[semester])
         if (currentHours !== this.value[type].semesters[semester]?.quantity) {
           (this.errors[type] ??= {})[semester] = true
         } else {

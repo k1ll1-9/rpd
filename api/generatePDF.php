@@ -3,6 +3,7 @@
 require_once(__DIR__ . "/../vendor/autoload.php");
 
 use VAVT\UP\PDF;
+use VAVT\UP\Cipher;
 
 \ini_set('display_errors', 1);
 \error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING);
@@ -66,13 +67,13 @@ $res = @\mkdir($path, 0775, true);
 if (isset($json['PDFType']) && $json['PDFType'] === 'approval') {
     @\mkdir($path . 'submitted/', 0775, true);
     $fileName = $json['static']['disciplineIndex'] . '_' . \date('d-m-Y', \strtotime($json['static']['syllabusData']['year'])) . '.pdf';
-    $link = 'https://lk.vavt.ru/helpers/getFile.php?file64=' . \rawurldecode($path. 'submitted/' . $fileName);
+    $link = 'https://lk.vavt.ru/helpers/getFile.php?file64=' . Cipher::encryptSSL($path. 'submitted/' . $fileName);
 } else {
     $fileName = $json['static']['disciplineIndex'] . '_draft' . '.pdf';
-    $link = 'https://lk.vavt.ru/helpers/getFile.php?openPDF=' . \rawurldecode($path . $fileName);
+    $link = 'https://lk.vavt.ru/helpers/getFile.php?fileSSL=' . Cipher::encryptSSL($path . $fileName);
 }
 
-
+var_dump($link); die();
 
 $html = '<style>
 table{

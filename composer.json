@@ -14,7 +14,8 @@
     "require": {
       "ext-json": "*",
       "ext-curl": "*",
-        "tecnickcom/tcpdf": "^6.5"
+        "tecnickcom/tcpdf": "^6.5",
+      "ext-openssl": "*"
     },
     "require-dev": {
         "k1ll1/helpers": "^1.0"

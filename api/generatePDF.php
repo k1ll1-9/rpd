@@ -67,10 +67,10 @@ $res = @\mkdir($path, 0775, true);
 if (isset($json['PDFType']) && $json['PDFType'] === 'approval') {
     @\mkdir($path . 'submitted/', 0775, true);
     $fileName = $json['static']['disciplineIndex'] . '_' . \date('d-m-Y', \strtotime($json['static']['syllabusData']['year'])) . '.pdf';
-    $link = 'https://lk.vavt.ru/helpers/getFile.php?file64=' . Cipher::encryptSSL($path. 'submitted/' . $fileName);
+    $link = 'https://lk.vavt.ru/helpers/getFile.php?fileSSL=' . Cipher::encryptSSL($path. 'submitted/' . $fileName);
 } else {
     $fileName = $json['static']['disciplineIndex'] . '_draft' . '.pdf';
-    $link = 'https://lk.vavt.ru/helpers/getFile.php?fileSSL=' . Cipher::encryptSSL($path . $fileName);
+    $link = 'https://lk.vavt.ru/helpers/getFile.php?openPDF=' . Cipher::encryptSSL($path . $fileName);
 }
 
 var_dump($link); die();

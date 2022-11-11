@@ -15,7 +15,7 @@ export default {
         }
 
         if (ref.$el?.ej2_instances !== undefined && ref.$el?.ej2_instances[0]?.listData !== undefined) {
-          ref.$el.value = ref.$el?.ej2_instances[0].value.length === 0 ? '' : ref.$el.ej2_instances[0].value
+          ref.$el.value = ref.$el?.ej2_instances[0].value?.length === 0 ? '' : ref.$el.ej2_instances[0].value
         }
 
         if (ref.$el.value === undefined || ref.$el.value.trim() === '') {

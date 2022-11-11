@@ -172,6 +172,7 @@ export default {
                   const val = parseInt($event.target.value) || 0
                   return acc + val
                 } else {
+                  v.load[type] ??= 0
                   return acc + v.load[type]
                 }
               } else {
@@ -179,8 +180,6 @@ export default {
               }
             }, 0)
 
-
-        console.log(this.value[type].semesters[semester])
         if (currentHours !== this.value[type].semesters[semester]?.quantity) {
           (this.errors[type] ??= {})[semester] = true
         } else {

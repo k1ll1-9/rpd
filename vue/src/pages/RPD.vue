@@ -27,7 +27,7 @@
       <GradesIntermediate/>
     </div>
     <PDFButton/>
-    <ApprovalButton :disabled="visible/*!isValid || $store.state.rpd.locked*/"/>
+    <ApprovalButton v-if="visible" :disabled="!visible/*!isValid || $store.state.rpd.locked*/"/>
     <NoticeWindow v-if="!isValid"/>
   </div>
   <Preloader v-else style="margin-top: 200px"/>

@@ -1,6 +1,6 @@
 <template>
   <div>
-  <button :class="[{'disabled': false},'btn btn-lg btn-primary mb-4']" @click="requestApprove()">
+  <button :class="[{'disabled': disabled},'btn btn-lg btn-primary mb-4']" @click="requestApprove()">
     Отправить на согласование
   </button>
   </div>

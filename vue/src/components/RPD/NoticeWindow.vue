@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="container" :style="{top: top}">
     <div class="wrapper d-flex ms-2">
       <div class="fw-bold">
         РПД содержит ошибки в следующих блоках:
@@ -29,7 +29,8 @@ export default {
   name: "NoticeWindow",
   data() {
     return {
-      opened: false
+      opened: false,
+      top: window.scrollY > 136 ? '30px' : 166 - window.scrollY + 'px'
     }
   },
   methods: {
@@ -41,6 +42,16 @@ export default {
     ...mapState({
       errors: state => state.rpd.errors.sort((a,b) => a.order - b.order)
     })
+  },
+  created(){
+    console.log(scrollY)
+    window.addEventListener('scroll',()=>{
+      if (scrollY > 136) {
+        this.$el.style.top = '30px'
+      } else {
+        this.$el.style.top = 166 - scrollY + 'px'
+      }
+    })
   }
 }
 </script>
@@ -51,7 +62,6 @@ export default {
   padding: 15px;
   width: 500px;
   position: fixed;
-  top: 30px;
   right: 100px;
   background-color: rgb(246, 134, 140,0.9);
   border-radius: 5px;

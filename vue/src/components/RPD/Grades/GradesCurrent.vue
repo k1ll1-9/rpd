@@ -24,7 +24,7 @@
                        :dataSource="indicators"
                        placeholder="Выберите индикаторы"
                        :ref="`comps_${index}`"
-                       @change="updateCompetence($event,index);validate()"
+                       @change="updateCompetence($event,index);validate(fullIndicators)"
                        :readonly="$store.state.rpd.locked"/>
         </td>
         <td>
@@ -35,7 +35,7 @@
               <TextArea class="my-2"
                         rows="3"
                         :ref="`theme_${index}_control_${id}`"
-                        @input="validate()"
+                        @input="validate(fullIndicators)"
                         :identity="getTextAreaIdentity(discipline.identity, id)"
                         :disabled="$store.state.rpd.locked"/>
               <button type="button"
@@ -198,21 +198,9 @@ export default {
   },
   updated() {
     this.checkRequired()
-    this.validate()
-    if (this.fullIndicators && this.isValid) {
-      this.$store.commit('rpd/REMOVE_ERROR', this.noticeData);
-    } else {
-      this.$store.commit('rpd/ADD_ERROR', this.noticeData);
-    }
   },
   mounted() {
     this.checkRequired()
-    this.validate()
-    if (this.fullIndicators && this.isValid) {
-      this.$store.commit('rpd/REMOVE_ERROR', this.noticeData);
-    } else {
-      this.$store.commit('rpd/ADD_ERROR', this.noticeData);
-    }
   }
 }
 </script>

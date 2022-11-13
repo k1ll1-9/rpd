@@ -1,7 +1,7 @@
 <template>
   <div class="my-5">
     <h3 class="my-4" :id="$store.state.rpd.static.unitTitles[1].code">1. {{ $store.state.rpd.static.unitTitles[1].title }}</h3>
-    <span v-if="!isValid" class="error">Должны быть запролнены все поля</span>
+    <span v-if="!isValid" class="error">Должны быть заполнены все поля</span>
     <div class="my-4">
       <h4 class="my-4" :id="$store.state.rpd.static.unitTitles[1].subUnits[1].code">1.1 {{ $store.state.rpd.static.unitTitles[1].subUnits[1].title }}</h4>
       <VisualEditor :identity="['managed','disciplineTarget','target']"

@@ -47,13 +47,16 @@ export default {
   },
   computed: {
     ...mapState({
-      controlTypes: (state) => Object.fromEntries(Object.entries(state.rpd.static.disciplineValue.control.semesters).map(([k, v]) => {
+      controlTypes: (state) => Object.fromEntries(Object.entries(state.rpd.static.disciplineValue.control.semesters)
+          .map(([k, v]) => {
 
             const name = (Array.isArray(v.controlName)) ? v.controlName : [v.controlName]
 
             return [k, {controlName: name}]
 
           })
+          .filter(([,v]) => v.controlName[0] !== undefined)
+
       ),
     })
   },

@@ -29,7 +29,7 @@
             <td>
               <TextInput :identity="['managed','disciplineStructure',index,'title']"
                          :ref="`disc_title_${index}`"
-                         @input="validateFull();checkAllHours()"
+                         @input="validate(isValidHours);checkAllHours()"
                          :disabled="$store.state.rpd.locked"/>
             </td>
             <td>
@@ -37,7 +37,7 @@
                       :dataSource="$store.state.rpd.static.semesters"
                       cssClass="defaults"
                       :ref="`disc_semester_${index}`"
-                      @change="validateFull();checkAllHours()"
+                      @change="validate(isValidHours);checkAllHours()"
                       width="60%"
                       :readonly="$store.state.rpd.locked"/>
             </td>
@@ -82,7 +82,7 @@
           <button type="button"
                   @click="addRow"
                   class="btn btn-primary mt-4"
-                  :class="{'disabled' : $store.state.rpd.locked}">
+                  :class="{'disabled' : $store.state.rpd.locked || isEmptyDiscs}">
             Добавить строку
           </button>
         </div>
@@ -133,7 +133,9 @@ export default {
       })),
     }),
     semesters: ctx => Object.keys(Object.values(ctx.value)[0].semesters),
-    isValidHours: ctx => Object.values(ctx.errors).filter((el) => Object.values(el).includes(true)).length === 0
+    isValidHours: ctx => Object.values(ctx.errors).filter((el) => Object.values(el).includes(true)).length === 0,
+    isEmptyDiscs: ctx => Object.values(ctx.disciplineStructure).filter((el) => el.semester === null || el.title === null).length > 0,
+    EmptyDiscs: ctx => Object.values(ctx.disciplineStructure).filter((el) => el.semesters === null || el.title === null)
   },
   methods: {
     ...mapActions({
@@ -186,13 +188,6 @@ export default {
           (this.errors[type] ??= {})[semester] = false
         }
       })
-
-      if (this.isValidHours && this.isValid) {
-        this.$store.commit('rpd/REMOVE_ERROR', this.noticeData);
-      } else {
-        this.$store.commit('rpd/ADD_ERROR', this.noticeData);
-      }
-
     },
     checkAllHours() {
       this.semesters.forEach((el) => this.checkHours(el, this.loadTypes))
@@ -202,14 +197,6 @@ export default {
           .filter(([k, v]) => k.includes('disc') && v !== null)
           .map(([, v]) => v)
     },
-    validateFull() {
-      this.validate();
-      if (this.isValid && this.isValidHours) {
-        this.$store.commit('rpd/REMOVE_ERROR', this.noticeData);
-      } else if (!this.isValid && this.isValidHours) {
-        this.$store.commit('rpd/ADD_ERROR', this.noticeData);
-      }
-    }
   },
   updated() {
     this.checkRequired()

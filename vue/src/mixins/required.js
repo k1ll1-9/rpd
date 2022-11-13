@@ -5,7 +5,7 @@ export default {
     }
   },
   methods: {
-    validate() {
+    validate(extraValidation = null) {
       let valid = true
 
       this.requiredFields.forEach((ref) => {
@@ -37,6 +37,10 @@ export default {
           }
         }
       })
+
+      if (extraValidation !== null){
+        valid = valid && extraValidation
+      }
 
       if (this.isValid !== valid) {
 

@@ -108,7 +108,6 @@ export default {
         statusName: 'valid',
         status: val ? 'valid' : 'invalid'
       })
-      //    }
     })
   },
 }

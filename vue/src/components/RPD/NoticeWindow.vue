@@ -4,7 +4,8 @@
       <div class="fw-bold">
         РПД содержит ошибки в следующих блоках:
       </div>
-      <div class="arrow-wrapper ms-2 d-flex position-absolute justify-content-center" @click="toggle">
+      <div class="arrow-wrapper ms-2 d-flex position-absolute justify-content-center"
+           @click="toggle">
         <div class="open-text fw-bold">
           {{ opened ? 'Свернуть' : 'Развернуть' }}
         </div>
@@ -44,13 +45,8 @@ export default {
     })
   },
   created(){
-    console.log(scrollY)
     window.addEventListener('scroll',()=>{
-      if (scrollY > 136) {
-        this.$el.style.top = '30px'
-      } else {
-        this.$el.style.top = 166 - scrollY + 'px'
-      }
+      this.top = window.scrollY > 136 ? '30px' : 166 - window.scrollY + 'px'
     })
   }
 }

@@ -73,7 +73,7 @@ if (isset($json['PDFType']) && $json['PDFType'] === 'approval') {
     $link = 'https://lk.vavt.ru/helpers/getFile.php?openPDF=' . Cipher::encryptSSL($path . $fileName);
 }
 
-var_dump($link); die();
+
 
 $html = '<style>
 table{
@@ -443,6 +443,7 @@ foreach ($modules as $number => $semester) {
     }
 }
 $html .= '</div>';
+
 if (!empty($sModules)) {
 
     $themesSubCount++;
@@ -468,7 +469,7 @@ if (!empty($sModules)) {
 
                     $i++;
 
-                    if ($i > $semester['seminarsCount']) {
+                    if ($i > $theme['seminarsCount']) {
                         break;
                     }
                 }

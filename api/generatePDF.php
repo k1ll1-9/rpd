@@ -67,11 +67,14 @@ $res = @\mkdir($path, 0775, true);
 if (isset($json['PDFType']) && $json['PDFType'] === 'approval') {
     @\mkdir($path . 'submitted/', 0775, true);
     $fileName = $json['static']['disciplineIndex'] . '_' . \date('d-m-Y', \strtotime($json['static']['syllabusData']['year'])) . '.pdf';
-    $link = 'https://lk.vavt.ru/helpers/getFile.php?fileSSL=' . Cipher::encryptSSL($path. 'submitted/' . $fileName);
+    $fullPath = $path . 'submitted/' . $fileName;
+    $link = 'https://lk.vavt.ru/helpers/getFile.php?fileSSL=' . Cipher::encryptSSL($fullPath);
 } else {
     $fileName = $json['static']['disciplineIndex'] . '_draft' . '.pdf';
-    $link = 'https://lk.vavt.ru/helpers/getFile.php?openPDF=' . Cipher::encryptSSL($path . $fileName);
+    $fullPath = $path . $fileName;
+    $link = 'https://lk.vavt.ru/helpers/getFile.php?openPDF=' . Cipher::encryptSSL($fullPath);
 }
+
 
 
 
@@ -755,9 +758,9 @@ $pdf->setHtmlVSpace($tagvs);
 $pdf->AddPage();
 $pdf->PageNo();
 $pdf->writeHTML($html, true, false, true, false, '');
-$pdf->Output($path . $fileName, 'I');
+$pdf->Output($fullPath, 'I');
 
-if (!\file_exists($path . $fileName)){
+if (!\file_exists($fullPath)){
     $link = false;
 }
 

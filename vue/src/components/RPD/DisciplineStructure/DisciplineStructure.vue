@@ -1,7 +1,7 @@
 <template>
   <div id="disciplineStructureTable">
     <h3 class="my-5" id="disciplineStructure">Структура и содержание дисциплины (модуля)</h3>
-    <div v-if="!isValid" class="error mb-4">Необходимо заполнить название темы и номер семестра</div>
+    <div v-if="!isRequiredValid" class="error mb-4">Необходимо заполнить название темы и номер семестра</div>
     <div v-if="!isValidHours" class="error mb-4">Неправильно распределена нагрузка</div>
     <div class="row">
       <div class="col">
@@ -200,12 +200,12 @@ export default {
   },
   updated() {
     this.checkRequired()
-    this.validate()
+    this.validate(this.isValidHours)
   },
   mounted() {
     this.checkAllHours()
     this.checkRequired()
-    this.validate()
+    this.validate(this.isValidHours)
   }
 }
 </script>

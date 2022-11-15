@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="!isValid" class="error mb-4">Должны быть запролнены все поля</div>
+    <div v-if="!isRequiredValid" class="error mb-4">Должны быть запролнены все поля</div>
     <div v-if="!fullIndicators" class="error mb-4">Не распределены индикаторы: {{missedIndicators.join(',')}}</div>
     <table class="table-bordered w-100">
       <thead style="border-bottom: 1px #000000 solid">
@@ -198,9 +198,11 @@ export default {
   },
   updated() {
     this.checkRequired()
+    this.validate(this.fullIndicators)
   },
   mounted() {
     this.checkRequired()
+    this.validate(this.fullIndicators)
   }
 }
 </script>

@@ -1,7 +1,8 @@
 export default {
   data() {
     return {
-      isValid: true
+      isValid: true,
+      isRequiredValid: true
     }
   },
   methods: {
@@ -38,10 +39,11 @@ export default {
         }
       })
 
+      this.isRequiredValid = valid
+
       if (extraValidation !== null){
         valid = valid && extraValidation
       }
-
       if (this.isValid !== valid) {
 
         this.isValid = valid
@@ -49,6 +51,8 @@ export default {
         if (this.isValid) {
           this.$store.commit('rpd/REMOVE_ERROR', this.noticeData);
         } else {
+          console.log(valid)
+          console.log(this.noticeData)
           this.$store.commit('rpd/ADD_ERROR', this.noticeData);
         }
       }

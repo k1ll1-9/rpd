@@ -30,7 +30,7 @@
                   :disabled="$store.state.rpd.locked"/>
               <button type="button"
                       v-if="unit.data.length > 1"
-                      @click="removeResult(['managed','informationalResources',infIndex,'data'],index)"
+                      @click="removeResult(['managed','informationalResources',infIndex,'data'],element.index)"
                       class="btn btn-danger m-2 align-self-center"
                       :class="{'disabled' : $store.state.rpd.locked}">
                 <BIconX-octagon class="cross"/>

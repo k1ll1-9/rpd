@@ -6,24 +6,34 @@
           :label="(file?.arFiles?.length > 0 ? 'Добавить ' : 'Загрузить ') + file.title"
           :options="{action: 'uploadSyllabusFile', params : {id:syllabusID, colName : file.colName} ,disabled: !isEditor}"/>
       <div v-for="(link,i) in file.arFiles" :key="i" class="my-2">
-        <a :href="'https://lk.vavt.ru/helpers/getFile.php?file64='+encodeURIComponent(link.path)" target="_blank">
+        <a :href="'https://lk.vavt.ru/helpers/getFile.php?fileSSL='+link.path" target="_blank">
           {{ link.name }}
         </a>
         <BIconX-octagon v-if="isEditor"
                         class="cross ms-1"
-                        @click="removeFile(syllabus,link,i)"/>
+                        @click="removeFile(file?.colName,link,i)"/>
       </div>
     </div>
   </div>
+  <ModalWarning id="uploadWarning" passive="true">
+    <template v-slot:title>
+      Ошибка загрузки файла
+    </template>
+    <template v-slot:body>
+      Файл ЭЦП не соответсвет ни одному загруженному документу.
+    </template>
+  </ModalWarning>
 </template>
 
 <script>
 import FileButtonInput from "@/components/UI/FileButtonInput";
+import ModalWarning from "../UI/ModalWarning";
+import {Modal} from "bootstrap";
 
 export default {
   name: "SyllabusFiles",
   props: ['files', 'syllabusID'],
-  components: {FileButtonInput},
+  components: {FileButtonInput, ModalWarning},
   data() {
     return {
       isEditor: this.$store.state.user.role === 'editor'
@@ -34,12 +44,18 @@ export default {
   },
   methods: {
     pushFileList(e, index) {
-      this.filesList.map((el, i) => (i === index) ? el.arFiles?.push(e) || (el.arFiles = []).push(e) : el)
-    },
-    async removeFile(syllabus, link, index) {
+      console.log(e)
+      if (e.error === undefined){
+        this.filesList.map((el, i) => (i === index) ? el.arFiles?.push(e) || (el.arFiles = []).push(e) : el)
+      } else if (e.error === 'WS'){
 
-      const exp = link.path.split('/')
-      const colName = exp[exp.length - 2]
+        const modal = new Modal(document.getElementById('uploadWarning'))
+
+        modal.show()
+      }
+    },
+    async removeFile(colName, link, index) {
+
       const res = await this.axios.post(this.$store.state.APIurl,
           {
             action: 'deleteSyllabusFile',
@@ -54,7 +70,6 @@ export default {
       if (res.data.success === true) {
         this.filesList.forEach((el) => {
           if (el.colName === colName) {
-            console.log(el)
             el.arFiles = el.arFiles.filter((el, i) => i !== index)
           }
         })

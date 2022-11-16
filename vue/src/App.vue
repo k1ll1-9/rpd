@@ -42,7 +42,7 @@ export default {
 }
 #app {
   margin-top: 60px;
-  width: 1200px;
+  width: 1400px;
 }
 
 h3, h2, h4 {

@@ -15,8 +15,8 @@
         <th>Кафедра</th>
         <th>РПД</th>
         <th>Статус</th>
-        <th>Согласование</th>
-        <th>Экспорт</th>
+        <th>Статус согласования</th>
+        <th>Согласованная РПД</th>
         <th>Импорт</th>
       </tr>
       </thead>
@@ -32,8 +32,14 @@
             {{ (rpd.status === 'blank') ? 'Создать' : 'Редактировать' }} <br> РПД
           </router-link>
         </td>
-        <td :class="rpd.valid === 'valid' ? 'text-success' : 'text-danger'"><b>{{getValidationStatus(rpd)}}</b></td>
-        <td :class="getApprovalClass(rpd)"><b>{{getApprovalStatus(rpd)}}</b></td>
+        <td :class="rpd.valid === 'valid' ? 'text-success' : 'text-danger'"><b>{{ getValidationStatus(rpd) }}</b></td>
+        <td :class="getApprovalClass(rpd)"><b>{{ getApprovalStatus(rpd) }}</b></td>
+        <td class="fw-bold">
+          <a v-if="rpd.approvedLink"
+             :href="rpd.approvedLink"
+             class="text-success">Ссылка</a>
+          <span v-else class="text-danger">Нет</span>
+        </td>
         <td>
           <div v-if="(rpd.status !== 'blank')" @click="exportRPD(rpd.query)" class="btn-import">
             <BIconDownload width="25" height="25"/>
@@ -110,6 +116,7 @@ export default {
         status: el.status,
         valid: el.valid,
         approval: el.approval,
+        approvedLink: el.approvedLink,
         query: {
           syllabusID: json.syllabusData.syllabusID,
           kafedra: json.kafedra,
@@ -128,8 +135,8 @@ export default {
     }
   },
   methods: {
-    getValidationStatus(rpd){
-      switch (rpd.valid){
+    getValidationStatus(rpd) {
+      switch (rpd.valid) {
         case'valid':
           return 'Заполнена'
         case'needCheck':
@@ -138,8 +145,8 @@ export default {
           return 'Не заполнена'
       }
     },
-    getApprovalStatus(rpd){
-      switch (rpd.approval){
+    getApprovalStatus(rpd) {
+      switch (rpd.approval) {
         case'approved':
           return 'Согласована'
         case'inProcess':
@@ -148,8 +155,8 @@ export default {
           return 'Не согласована'
       }
     },
-    getApprovalClass(rpd){
-      switch (rpd.approval){
+    getApprovalClass(rpd) {
+      switch (rpd.approval) {
         case'approved':
           return 'text-success'
         case'inProcess':
@@ -158,19 +165,22 @@ export default {
           return 'text-danger'
       }
     },
-    getButtonClass(rpd){
+    getButtonClass(rpd) {
       const buttonClass = []
 
-      switch (rpd.status){
-        case 'blank':
-          buttonClass.push('btn-danger')
-          break
-        case 'progress':
-          buttonClass.push('btn-warning')
-          break
+      if (rpd.valid === 'valid'){
+        buttonClass.push('btn-success')
+      } else {
+        switch (rpd.status) {
+          case 'blank':
+            buttonClass.push('btn-danger')
+            break
+          case 'progress':
+            buttonClass.push('btn-warning')
+            break
+        }
       }
-
-      if (!rpd.editable){
+      if (!rpd.editable) {
         buttonClass.push('disabled')
       }
       return buttonClass
@@ -199,7 +209,7 @@ export default {
         window.URL.revokeObjectURL(url)
       }
     },
-    async readRPD(rpd,index) {
+    async readRPD(rpd, index) {
       //читаем JSON из загруженного файла
 
       const readJSON = () => {
@@ -245,12 +255,12 @@ export default {
     async importRPD() {
       const res = await this.axios.post(this.$store.state.APIurl,
           {
-              action: "importRPD",
-              params: this.RPD2import.params,
-              data: this.RPD2import.data
+            action: "importRPD",
+            params: this.RPD2import.params,
+            data: this.RPD2import.data
           })
 
-      if (res.data.success === true){
+      if (res.data.success === true) {
         this.RPDList[this.RPD2import.index].status = 'progress'
       }
     }
@@ -259,7 +269,7 @@ export default {
 </script>
 
 <style scoped>
-td {
+td,th {
   vertical-align: middle;
 }
 

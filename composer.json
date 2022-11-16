@@ -16,7 +16,8 @@
       "ext-curl": "*",
         "tecnickcom/tcpdf": "^6.5",
       "ext-openssl": "*",
-      "ext-pgsql": "*"
+      "ext-pgsql": "*",
+      "ext-pdo": "*"
     },
     "require-dev": {
         "k1ll1/helpers": "^1.0"

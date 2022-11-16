@@ -11,8 +11,11 @@
           <p class="text-center"  ><slot name="body"></slot></p>
         </div>
         <div class="modal-footer d-flex justify-content-center">
+          <template v-if="!passive">
           <button type="button" class="btn btn-danger" @click="$emit('confirm')" data-bs-dismiss="modal">Да</button>
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Нет</button>
+          </template>
+          <button v-else type="button" class="btn btn-secondary" data-bs-dismiss="modal">ОК</button>
         </div>
       </div>
     </div>
@@ -23,7 +26,7 @@
 <script>
 export default {
   name: "ModalWarning",
-  props: ['id'],
+  props: ['id','passive'],
   emits: ["confirm"]
 }
 </script>

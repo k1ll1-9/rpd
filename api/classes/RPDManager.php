@@ -78,7 +78,7 @@ class RPDManager
         $pdo = Postgres::getInstance()->connect('pgsql:host=' . DB_HOST . ';port=5432;dbname=' . DB_NAME . ';', DB_USER, DB_PASSWORD);
 
         try {
-            $sql = "SELECT json,actual,status,valid,approval,kafedra,syllabus_id FROM  disciplines 
+            $sql = "SELECT json,actual,status,valid,approval,kafedra,syllabus_id,rpd_f FROM  disciplines 
                             WHERE syllabus_id = :syllabus_id";
             $stmt = $pdo->prepare($sql);
             $stmt->bindParam(':syllabus_id', $params['id'], \PDO::PARAM_STR);
@@ -86,6 +86,11 @@ class RPDManager
             $res = $stmt->fetchAll(\PDO::FETCH_ASSOC);
         } catch (\PDOException $e) {
             echo $e->getMessage();
+        }
+
+        foreach ($res as $item) {
+            $item['approvedLink'] = ($item['pdf_f']) ? Cipher::encryptSSL($item['pdf_f']) : null;
+
         }
 
         \usort($res, function ($d1, $d2) {
@@ -241,6 +246,30 @@ class RPDManager
 
     public static function uploadSyllabusFile($params, $file)
     {
+        //если загружается ЭЦП, проверяем есть ли соответсвующие ей документы
+        if (\strpos( $file['name'],'.sig')) {
+            $path = '/mnt/synology_nfs/syllabuses/' . \join('/', $params) . '/' . \str_replace('.sig', '', $file['name']);
+            try {
+                $pdo = Postgres::getInstance()->connect('pgsql:host=' . DB_HOST . ';port=5432;dbname=' . DB_NAME . ';', DB_USER, DB_PASSWORD);
+                $sql = "SELECT {$params['colName']} FROM syllabuses 
+                            WHERE id = :id
+                                AND :path = ANY({$params['colName']})";
+                $stmt = $pdo->prepare($sql);
+                $stmt->bindParam(':id', $params['id'], \PDO::PARAM_STR);
+                $stmt->bindParam(':path', $path, \PDO::PARAM_STR);
+                $stmt->execute();
+                $result = $stmt->fetchColumn();
+            } catch (\PDOException $e) {
+                $result = $e->getMessage();
+            }
+
+            if ($result === false) {
+                return [
+                    'error' => 'WS'
+                ];
+            }
+        }
+
         $fp = '/mnt/synology_nfs/syllabuses/' . \join('/', $params);
         \mkdir($fp, 0775, true);
         $fn = '/' . $file['name'];
@@ -264,7 +293,7 @@ class RPDManager
         if ($result === true) {
             $res = [
                 'name' => $file['name'],
-                'path' => $path
+                'path' => Cipher::encryptSSL($path)
             ];
         } else {
             $res = [
@@ -277,6 +306,9 @@ class RPDManager
 
     public static function deleteSyllabusFile($params)
     {
+
+        $path = Cipher::decryptSSL($params['link']);
+
         try {
             $pdo = Postgres::getInstance()->connect('pgsql:host=' . DB_HOST . ';port=5432;dbname=' . DB_NAME . ';', DB_USER, DB_PASSWORD);
             $sql = "UPDATE syllabuses 
@@ -284,14 +316,14 @@ class RPDManager
                             WHERE id = :id";
             $stmt = $pdo->prepare($sql);
             $stmt->bindParam(':id', $params['id'], \PDO::PARAM_STR);
-            $stmt->bindParam(':path', $params['link'], \PDO::PARAM_STR);
+            $stmt->bindParam(':path',$path, \PDO::PARAM_STR);
             $result = $stmt->execute();
         } catch (\PDOException $e) {
             return ['error' => $e->getMessage()];
         }
 
         if ($result === true) {
-            $result = \unlink($params['link']);
+            $result = \unlink($path);
         }
 
         return $result ? ['success' => true] : ['error' => 'file system error'];
@@ -375,7 +407,7 @@ class RPDManager
         return $user;
     }
 
-    public static function getArFiles(?string $JSONpath)
+    public static function getArFiles(?string $JSONpath, bool $ecnryptLinks = true)
     {
         if ($JSONpath === null) {
             return null;
@@ -388,7 +420,7 @@ class RPDManager
         foreach ($arPath as $key => $path) {
             $exp = \explode('/', $path);
             $arFiles[$key]['name'] = $exp[\count($exp) - 1];
-            $arFiles[$key]['path'] = $path;
+            $arFiles[$key]['path'] = $ecnryptLinks ? Cipher::encryptSSL($path) : $path;
         }
 
         return $arFiles;

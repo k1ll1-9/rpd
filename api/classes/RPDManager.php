@@ -88,10 +88,13 @@ class RPDManager
             echo $e->getMessage();
         }
 
-        foreach ($res as $item) {
-            $item['approvedLink'] = ($item['pdf_f']) ? Cipher::encryptSSL($item['pdf_f']) : null;
+        foreach ($res as &$item) {
+            $item['approvedLink'] = ($item['rpd_f'])
+                ? 'https://lk.vavt.ru/helpers/getFile.php?openPDF=' . Cipher::encryptSSL($item['rpd_f'])
+                : null;
 
         }
+        unset($item);
 
         \usort($res, function ($d1, $d2) {
 
@@ -247,8 +250,9 @@ class RPDManager
     public static function uploadSyllabusFile($params, $file)
     {
         //если загружается ЭЦП, проверяем есть ли соответсвующие ей документы
-        if (\strpos( $file['name'],'.sig')) {
+        if (\strpos($file['name'], '.sig')) {
             $path = '/mnt/synology_nfs/syllabuses/' . \join('/', $params) . '/' . \str_replace('.sig', '', $file['name']);
+
             try {
                 $pdo = Postgres::getInstance()->connect('pgsql:host=' . DB_HOST . ';port=5432;dbname=' . DB_NAME . ';', DB_USER, DB_PASSWORD);
                 $sql = "SELECT {$params['colName']} FROM syllabuses 
@@ -274,7 +278,11 @@ class RPDManager
         \mkdir($fp, 0775, true);
         $fn = '/' . $file['name'];
         $path = $fp . $fn;
-        \move_uploaded_file($file['tmp_name'], $path);
+        if (!\move_uploaded_file($file['tmp_name'], $path)) {
+            return [
+                'error' => 'file system error'
+            ];
+        }
 
         try {
             $pdo = Postgres::getInstance()->connect('pgsql:host=' . DB_HOST . ';port=5432;dbname=' . DB_NAME . ';', DB_USER, DB_PASSWORD);
@@ -316,7 +324,7 @@ class RPDManager
                             WHERE id = :id";
             $stmt = $pdo->prepare($sql);
             $stmt->bindParam(':id', $params['id'], \PDO::PARAM_STR);
-            $stmt->bindParam(':path',$path, \PDO::PARAM_STR);
+            $stmt->bindParam(':path', $path, \PDO::PARAM_STR);
             $result = $stmt->execute();
         } catch (\PDOException $e) {
             return ['error' => $e->getMessage()];
@@ -498,6 +506,45 @@ class RPDManager
             }
         } catch (\PDOException $e) {
             $res = ['error' => $e->getMessage()];
+        }
+
+        return $res;
+    }
+
+    public static function getDisciplineData(array $params)
+    {
+        $pdo = Postgres::getInstance()->connect('pgsql:host=' . DB_HOST . ';port=5432;dbname=' . DB_NAME . ';', DB_USER, DB_PASSWORD);
+
+        try {
+            $sql = 'SELECT json FROM  disciplines WHERE (syllabus_id,code,kafedra) = (:syllabus_id,:code,:kafedra)';
+            $stmt = $pdo->prepare($sql);
+            $stmt->bindParam(':syllabus_id', $params['syllabusID'], \PDO::PARAM_STR);
+            $stmt->bindParam(':code', $params['code'], \PDO::PARAM_STR);
+            $stmt->bindParam(':kafedra', $params['kafedra'], \PDO::PARAM_STR);
+            $stmt->execute();
+            $res = $stmt->fetchColumn();
+        } catch (\PDOException $e) {
+            echo $e->getMessage();
+        }
+
+        return $res;
+    }
+
+    public static function saveApprovedRPDtoDB(array $params, $path)
+    {
+        $pdo = Postgres::getInstance()->connect('pgsql:host=' . DB_HOST . ';port=5432;dbname=' . DB_NAME . ';', DB_USER, DB_PASSWORD);
+
+        try {
+            $sql = "UPDATE disciplines SET (rpd_f,approval) = (:path,'approved') 
+                       WHERE (syllabus_id,code,kafedra) = (:syllabus_id,:code,:kafedra)";
+            $stmt = $pdo->prepare($sql);
+            $stmt->bindParam(':syllabus_id', $params['syllabusID'], \PDO::PARAM_STR);
+            $stmt->bindParam(':code', $params['code'], \PDO::PARAM_STR);
+            $stmt->bindParam(':kafedra', $params['kafedra'], \PDO::PARAM_STR);
+            $stmt->bindParam(':path', $path, \PDO::PARAM_STR);
+            $res = $stmt->execute();
+        } catch (\PDOException $e) {
+            echo $e->getMessage();
         }
 
         return $res;

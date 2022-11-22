@@ -7,7 +7,7 @@ if (!$_SERVER['DOCUMENT_ROOT']) {
 define('NOT_CHECK_PERMISSIONS', true);
 
 require $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_before.php";
-require "../../../config.php";
+require $_SERVER["DOCUMENT_ROOT"] . "/update_external/config.php";
 
 use VAVT\Main\MUP;
 use VAVT\Services\Postgres;
@@ -15,16 +15,25 @@ use VAVT\Main\Cipher;
 
 // импорт из Матрицы 2.0
 
-function getFileLink($JSON, $planLink)
+function getFileLink($JSON, $planLink, $getSigns = false)
 {
-    $arFiles = \json_decode($JSON);
+    $arFiles = \array_filter(\json_decode($JSON, true), function ($path) use ($getSigns) {
+        $ext = \mb_substr($path, -4);
+        return $getSigns
+            ? $ext === '.sig'
+            : $ext !== '.sig';
+    });
+
+    if (empty($arFiles) && $getSigns === true) {
+        return null;
+    }
 
     if (empty($arFiles)) {
         $link = $planLink;
     } else {
         $link = '';
         $count = \count($arFiles);
-        $delimiter = '';
+
         $i = 1;
         foreach ($arFiles as $file) {
 
@@ -37,13 +46,13 @@ function getFileLink($JSON, $planLink)
             $exp = \explode('/', $file);
             $name = $exp[\count($exp) - 1];
 
-            $link .= $name . '|https://lk.vavt.ru/helpers/?fileSSL=' . Cipher::encryptSSL($file) . $delimiter;
+            $link .= $name . '|https://lk.vavt.ru/helpers/getFile.php?fileSSL=' . Cipher::encryptSSL($file) . $delimiter;
 
         }
     }
     return $link;
 }
-//TODO заменить ПК новых УП
+
 $pdo = Postgres::getInstance()->connect('pgsql:host=' . DB_HOST . ';port=5432;dbname=' . DB_NAME . ';', DB_USER, DB_PASSWORD);
 
 $sql = 'SELECT array_to_json(pdf_f) as pdf_f,
@@ -69,6 +78,12 @@ $sql = 'SELECT array_to_json(pdf_f) as pdf_f,
 
 $res = $pdo->query($sql)->fetchAll(\PDO::FETCH_ASSOC);
 
+$ch = \curl_init();
+\curl_setopt($ch, CURLOPT_URL, EXTERNAL_API_ENDPOINT);
+\curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+\curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+\curl_setopt($ch, CURLOPT_POST, true);
+
 foreach ($res as $up) {
 
     $arPDF = \json_decode($up['pdf_f']);
@@ -89,23 +104,25 @@ foreach ($res as $up) {
         'eduform' => $up['education_form'],
         'eduplan' => $planLink,
         'giatt' => getFileLink($up['gia_f'], $planLink),
+        'giatt_sign' => getFileLink($up['gia_f'], $planLink,true),
         'edupr' => getFileLink($up['practice_f'], $planLink),
+        'edupr_sign' => getFileLink($up['practice_f'], $planLink,true),
         'opmain' => getFileLink($up['oop_f'], $planLink),
+        'opmain_sign' => getFileLink($up['oop_f'], $planLink,true),
         'eduschd' => getFileLink($up['schedule_f'], $planLink),
+        'eduschd_sign' => getFileLink($up['schedule_f'], $planLink,true),
         'meth' => getFileLink($up['methodical_f'], $planLink),
-        'eduel' => getFileLink($up['distant_f'], $planLink)
+        'meth_sign' => getFileLink($up['methodical_f'], $planLink,true),
+        'eduel' => getFileLink($up['distant_f'], $planLink),
+        'eduel_sign' => getFileLink($up['distant_f'], $planLink,true)
     ];
 
     $data = \http_build_query($data);
-    $ch = \curl_init();
-    \curl_setopt($ch, CURLOPT_URL, EXTERNAL_API_ENDPOINT);
-    \curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     \curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-    \curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-    \curl_setopt($ch, CURLOPT_VERBOSE, true);
-    \curl_setopt($ch, CURLOPT_POST, true);
     $res = \curl_exec($ch);
 }
+
+\curl_close($ch);
 
 // импорт из Матрицы 1.0
 
@@ -118,6 +135,12 @@ $stmt = "SELECT *
 $res = \pg_query($conn, $stmt);
 $res = \pg_fetch_all($res);
 $i = 0;
+
+$ch = \curl_init();
+\curl_setopt($ch, CURLOPT_URL, EXTERNAL_API_ENDPOINT);
+\curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+\curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+\curl_setopt($ch, CURLOPT_POST, true);
 
 foreach ($res as $row) {
 
@@ -292,18 +315,18 @@ foreach ($res as $row) {
         'opmain' => $OOPLink,
         'eduschd' => $scheduleLink,
         'meth' => $MethodicalLink,
-        'eduel' => $eduelLink
+        'eduel' => $eduelLink,
+        'giatt_sign' => null,
+        'edupr_sign' => null,
+        'opmain_sign' => null,
+        'eduschd_sign' => null,
+        'meth_sign' => null,
+        'eduel_sign' => null,
     ];
 
-        $data = \http_build_query($data);
-        $ch = \curl_init();
-        \curl_setopt($ch, CURLOPT_URL, EXTERNAL_API_ENDPOINT);
-        \curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        \curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-        \curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        \curl_setopt($ch, CURLOPT_VERBOSE, true);
-        \curl_setopt($ch, CURLOPT_POST, true);
-        $res = \curl_exec($ch);
+    $data = \http_build_query($data);
+    \curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+    $res = \curl_exec($ch);
 }
 
-
+\curl_close($ch);

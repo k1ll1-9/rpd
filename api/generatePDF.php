@@ -66,7 +66,7 @@ $res = @\mkdir($path, 0775, true);
 
 if (isset($json['PDFType']) && $json['PDFType'] === 'approval') {
     @\mkdir($path . 'submitted/', 0775, true);
-    $fileName = $json['static']['disciplineIndex'] . '_' . \date('d-m-Y', \strtotime($json['static']['syllabusData']['year'])) . '.pdf';
+    $fileName = $json['static']['disciplineIndex'] . '_' . \date('s:i:H d-m-Y', \strtotime($json['static']['syllabusData']['year'])) . '.pdf';
     $fullPath = $path . 'submitted/' . $fileName;
     $link = 'https://lk.vavt.ru/helpers/getFile.php?fileSSL=' . Cipher::encryptSSL($fullPath);
 } else {

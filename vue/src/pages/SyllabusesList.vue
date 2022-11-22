@@ -1,5 +1,8 @@
 <template>
   <div class="container-fluid">
+    <div class="d-flex align-items-center justify-content-center">
+      <a class="btn btn-primary mb-5 btn-lg" href="https://lk.vavt.ru/doc/rpd/">Активные согласования</a>
+    </div>
     <h2 class="my-2">Список учебных планов</h2>
     <table v-if="syllabuses" class="table my-5">
       <thead>

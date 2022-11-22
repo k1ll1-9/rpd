@@ -37,6 +37,7 @@
         <td class="fw-bold">
           <a v-if="rpd.approvedLink"
              :href="rpd.approvedLink"
+             target="_blank"
              class="text-success">Ссылка</a>
           <span v-else class="text-danger">Нет</span>
         </td>

@@ -299,6 +299,9 @@ class RPDManager
         }
 
         if ($result === true) {
+
+            self::uploadUPToRemote($params['id']);
+;
             $res = [
                 'name' => $file['name'],
                 'path' => Cipher::encryptSSL($path)
@@ -331,6 +334,7 @@ class RPDManager
         }
 
         if ($result === true) {
+            self::uploadUPToRemote($params['id']);
             $result = \unlink($path);
         }
 
@@ -550,4 +554,169 @@ class RPDManager
         return $res;
     }
 
+    public static function uploadRPDToRemote($params)
+    {
+        $pdo = Postgres::getInstance()->connect('pgsql:host=' . DB_HOST . ';port=5432;dbname=' . DB_NAME . ';', DB_USER, DB_PASSWORD);
+
+        try {
+            $sql = 'SELECT json FROM  disciplines WHERE (syllabus_id,code,kafedra) = (:syllabus_id,:code,:kafedra)';
+            $stmt = $pdo->prepare($sql);
+            $stmt->bindParam(':syllabus_id', $params['syllabusID'], \PDO::PARAM_STR);
+            $stmt->bindParam(':code', $params['code'], \PDO::PARAM_STR);
+            $stmt->bindParam(':kafedra', $params['kafedra'], \PDO::PARAM_STR);
+            $stmt->execute();
+            $res = $stmt->fetchColumn();
+        } catch (\PDOException $e) {
+            echo $e->getMessage();
+        }
+
+        $json = \json_decode($res['json'], true);
+
+        $exp = \explode('/',$res['rpd_f']);
+        $name = $exp[\count($exp) -1];
+
+        $link = $name . '|https://lk.vavt.ru/helpers/getFile.php?fileSSL=' . Cipher::encryptSSL($res['rpd_f']);
+        $linkSign = $name . '.sig' . '|https://lk.vavt.ru/helpers/getFile.php?fileSSL=' . Cipher::encryptSSL($res['rpd_f'] . '.sig');
+
+        $data = [
+            "srcid" => "rpd",
+            'opgid' => $res['syllabus_id'],
+            'rpdcode' => $json['disciplineIndex'],
+            'upidyr' => $res['code'],
+            'rpdcnt' => $name,
+            'rpdname' => $res['name'],
+            'rpdannot' => $json['annotation'],
+            'meth' => $link,
+            'meth_sign' => $linkSign
+        ];
+
+        $ch = \curl_init();
+        \curl_setopt($ch, CURLOPT_URL, EXTERNAL_API_ENDPOINT);
+        \curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        \curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        \curl_setopt($ch, CURLOPT_POST, true);
+        \curl_setopt($ch, CURLOPT_POSTFIELDS, \http_build_query($data));
+        \curl_exec($ch);
+        \curl_close($ch);
+    }
+
+    public static function uploadUPToRemote($syllabusID)
+    {
+        $pdo = Postgres::getInstance()->connect('pgsql:host=' . DB_HOST . ';port=5432;dbname=' . DB_NAME . ';', DB_USER, DB_PASSWORD);
+
+        $sql = 'SELECT array_to_json(pdf_f) as pdf_f,
+               array_to_json(competencies_f) as competencies_f,
+               array_to_json(schedule_f) as schedule_f,
+               array_to_json(gia_f) as gia_f,
+               array_to_json(practice_f) as practice_f,
+               array_to_json(oop_f) as oop_f,
+               array_to_json(methodical_f) as methodical_f,
+               array_to_json(distant_f) as distant_f,
+               id,
+               special_code,
+               education_form,
+               syllabus_year,
+               qualification,
+               profile,
+               special
+            FROM syllabuses
+            WHERE id = :syllabus_id
+            ORDER BY qualification,
+                     education_form,
+                     special,
+                     profile';
+
+        $stmt = $pdo->prepare($sql);
+        $stmt->bindParam(':syllabus_id', $syllabusID, \PDO::PARAM_STR);
+        $stmt->execute();
+        $res = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+        if ($res['pdf_f'] !== null){
+
+            $arPDF = \json_decode($res['pdf_f']);
+
+            if (!empty($arPDF) && $arPDF !== null) {
+                $exp = \explode('/', $arPDF[0]);
+                $name = $exp[\count($exp) - 1];
+                $planLink = $name . '|https://lk.vavt.ru/helpers/getFile.php?fileSSL=' . Cipher::encryptSSL($arPDF[0]);
+            }
+        } else {
+            $planLink = null;
+        }
+
+        $data = [
+            "srcid" => "edu_prg_yr",
+            'upid' => $res['id'],
+            'educode' => $res['special_code'],
+            'begyear' => $res['syllabus_year'],
+            'eduname' => $res['profile'],
+            'edulevel' => $res['qualification'],
+            'eduform' => $res['education_form'],
+            'eduplan' => $planLink,
+            'giatt' => self::getFileLinksForUpload($res['gia_f'], $planLink),
+            'giatt_sign' => self::getFileLinksForUpload($res['gia_f'], $planLink,true),
+            'edupr' => self::getFileLinksForUpload($res['practice_f'], $planLink),
+            'edupr_sign' => self::getFileLinksForUpload($res['practice_f'], $planLink,true),
+            'opmain' => self::getFileLinksForUpload($res['oop_f'], $planLink),
+            'opmain_sign' => self::getFileLinksForUpload($res['oop_f'], $planLink,true),
+            'eduschd' => self::getFileLinksForUpload($res['schedule_f'], $planLink),
+            'eduschd_sign' => self::getFileLinksForUpload($res['schedule_f'], $planLink,true),
+            'meth' => self::getFileLinksForUpload($res['methodical_f'], $planLink),
+            'meth_sign' => self::getFileLinksForUpload($res['methodical_f'], $planLink,true),
+            'eduel' => self::getFileLinksForUpload($res['distant_f'], $planLink),
+            'eduel_sign' => self::getFileLinksForUpload($res['distant_f'], $planLink,true)
+        ];
+
+        $ch = \curl_init();
+        \curl_setopt($ch, CURLOPT_URL, EXTERNAL_API_ENDPOINT);
+        \curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        \curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        \curl_setopt($ch, CURLOPT_POST, true);
+        \curl_setopt($ch, CURLOPT_POSTFIELDS, \http_build_query($data));
+        \curl_exec($ch);
+
+    }
+
+    public static function getFileLinksForUpload($JSON, $planLink = null, $getSigns = false)
+    {
+
+        if ($JSON === null){
+            return null;
+        }
+
+        $arFiles = \array_filter(\json_decode($JSON, true), function ($path) use ($getSigns) {
+            $ext = \mb_substr($path, -4);
+            return $getSigns
+                ? $ext === '.sig'
+                : $ext !== '.sig';
+        });
+
+        if (empty($arFiles) && $getSigns === true) {
+            return null;
+        }
+
+        if (empty($arFiles)) {
+            $link = $planLink;
+        } else {
+            $link = '';
+            $count = \count($arFiles);
+
+            $i = 1;
+            foreach ($arFiles as $file) {
+
+                if ((($i === 1 && $count === 1) || $i === $count)) {
+                    $delimiter = '';
+                } else {
+                    $delimiter = ';';
+                }
+
+                $exp = \explode('/', $file);
+                $name = $exp[\count($exp) - 1];
+
+                $link .= $name . '|https://lk.vavt.ru/helpers/getFile.php?fileSSL=' . Cipher::encryptSSL($file) . $delimiter;
+
+            }
+        }
+        return $link;
+    }
 }

@@ -9,6 +9,7 @@ require_once(__DIR__ . "/../config.php");
 
 use Bitrix\Main\Context;
 use VAVT\Services\Postgres;
+use VAVT\UP\RPDManager;
 use VAVT\UP\UploadManager;
 
 $request = Context::getCurrent()->getRequest();
@@ -144,6 +145,8 @@ try {
 } catch (\PDOException $e) {
     echo $e->getMessage();
 }
+
+RPDManager::uploadUPToRemote($res[0]['syllabusData']['syllabusID']);
 
 die(\json_encode(['success' => true]));
 

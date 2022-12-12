@@ -653,9 +653,16 @@ foreach ($intermediateControl as $n => $semester) {
 
     $html .= '<h3 style="text-align: center">Семестр ' . $n . '</h3>';
 
+
     foreach ($semester as $controlType) {
+
         \uksort($controlType, fn($a, $b) => $a === 'criterion' ? 1 : -1);
+
         foreach ($controlType as $type => $value) {
+            // проверка на соответствие актуальным данным дисциплины
+            if ($type !== 'criterion' && $type !== $static["disciplineValue"]['control']['semesters'][$n]['controlName']){
+                continue;
+            }
 
             $title = ($type === 'criterion') ? 'Критерии оценки' : $type;
             $html .= '<h3 style="text-align: center">' . $title . '</h3>';

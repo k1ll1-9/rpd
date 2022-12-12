@@ -49,7 +49,11 @@ $callback = function ($msg) {
     $sigSaved = \file_put_contents($path . '.sig', $sign);
 
     if ($sigSaved && $PDFSaved) {
-        return RPDManager::saveApprovedRPDtoDB($params, $path);
+
+        $res = RPDManager::saveApprovedRPDtoDB($params, $path);
+        RPDManager::uploadRPDToRemote($params);
+
+        return $res;
     } else {
         return false;
     }

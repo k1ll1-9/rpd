@@ -1,10 +1,10 @@
 <template>
-  <div>
+  <div class="ms-5">
   <button :class="[{'disabled': disabled},'btn btn-lg btn-primary mb-4']" @click="requestApprove()">
     Отправить на согласование
   </button>
   </div>
-  <div v-if="visible">
+  <div v-if="visible" class="ms-5">
     <button class="btn btn-lg btn-primary mb-4" @click="disapprove()">
       Отозвать
     </button>

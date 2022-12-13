@@ -1,15 +1,43 @@
 <template>
-  <label class="btn btn-primary" :class="{disabled : options.disabled}">{{ label }}
+  <label :class="[buttonClass || 'btn btn-primary',{disabled : options.disabled}]">{{ label }}
     <input type="file" @change="upload" hidden>
   </label>
+  <ModalWarning :id="id" passive="true">
+    <template v-slot:title>
+      Ошибка загрузки файла
+    </template>
+    <template v-slot:body>
+      {{  errorMessage }}
+    </template>
+  </ModalWarning>
 </template>
 
 <script>
+import ModalWarning from "@/components/UI/ModalWarning";
+import {Modal} from "bootstrap";
+
 export default {
   name: "FileButtonInput",
-  props: ['options', 'label','disabled'],
+  components: { ModalWarning},
+  props: ['options', 'label','disabled','allowedTypes','errorMessage','buttonClass','id'],
   methods: {
     async upload(e) {
+
+      if (this.allowedTypes !== undefined){
+
+        const split = e.target.files[0].name.split('.')
+        const ext = split[split.length -1]
+
+        if (!this.allowedTypes.includes(ext)){
+
+          const modal = new Modal(document.getElementById(this.id))
+
+          modal.show()
+
+          return false
+        }
+
+      }
 
       const formData = new FormData();
 

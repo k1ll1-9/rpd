@@ -26,9 +26,23 @@
       <GradesCurrentDescription/>
       <GradesIntermediate/>
     </div>
-    <PDFButton/>
-    <ApprovalButton :disabled="!isValid || $store.state.rpd.locked"/>
-    <NoticeWindow v-if="!isValid"/>
+    <div class="d-flex align-items-center justify-content-center">
+      <div>
+        <PDFButton/>
+      </div>
+      <div class="ms-5">
+      <FileButtonInput
+        :label="'Загрузить приложение'"
+        :id="'RPDAttachment'"
+        :buttonClass="'btn btn-primary btn-lg mb-4'"
+        :allowedTypes="['pdf']"
+        :errorMessage="'Приложение должно быть в формате PDF'"
+        :options="{action: 'uploadRPDAttachment', params : this.$route.query}"
+      />
+      </div>
+        <ApprovalButton :disabled="!isValid || $store.state.rpd.locked"/>
+        <NoticeWindow v-if="!isValid"/>
+    </div>
   </div>
   <Preloader v-else style="margin-top: 200px"/>
 </template>
@@ -55,6 +69,7 @@ import Technologies from "../components/RPD/EducationTechnologies";
 import InformResources from "./../components/RPD/InformResources";
 import Annotation from "@/components/RPD/Annotation";
 import NoticeWindow from "@/components/RPD/NoticeWindow";
+import FileButtonInput from "@/components/UI/FileButtonInput";
 import {mapState} from "vuex";
 
 export default {
@@ -80,7 +95,8 @@ export default {
     InformResources,
     GradesIntermediate,
     ApprovalButton,
-    NoticeWindow
+    FileButtonInput,
+    NoticeWindow,
   },
   data() {
     return {

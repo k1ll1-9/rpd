@@ -95,7 +95,7 @@ switch ($method) {
                     $file = $request->getFile('file');
                     $res = RPDManager::uploadSyllabusFile($params, $file);
                     die(\json_encode($res, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
-                case 'uploadAttachment':
+                case 'uploadRPDAttachment':
                     $params = \json_decode($request->getPost('params'), true);
                     $file = $request->getFile('file');
                     $res = RPDManager::uploadRPDAttachment($params, $file);

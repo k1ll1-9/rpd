@@ -316,14 +316,14 @@ class RPDManager
 
     public static function uploadRPDAttachment($params, $file)
     {
-        $fp = '/mnt/synology_nfs/syllabuses/' . \join('/', $params);
+        $fp = '/mnt/synology_nfs/syllabuses/'.$params['syllabusID'].'/rpd/'.$params['code'].'/'. $params['kafedra'].'/';
         \mkdir($fp, 0775, true);
-        $fn = '/' . $file['name'];
+        $fn = 'attachment.pdf';
         $path = $fp . $fn;
         if (!\move_uploaded_file($file['tmp_name'], $path)) {
-            return [
-                'error' => 'file system error'
-            ];
+            return ['error' => 'file system error'];
+        } else {
+            return ['success' => true];
         }
     }
 

@@ -51,8 +51,6 @@ export default {
         if (this.isValid) {
           this.$store.commit('rpd/REMOVE_ERROR', this.noticeData);
         } else {
-          console.log(valid)
-          console.log(this.noticeData)
           this.$store.commit('rpd/ADD_ERROR', this.noticeData);
         }
       }

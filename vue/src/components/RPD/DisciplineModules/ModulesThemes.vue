@@ -73,7 +73,7 @@ export default {
     checkRequired() {
       this.requiredFields = Object.entries(this.$refs)
           .filter(([k, v]) => {  return  k.includes('theme') && v !== null})
-          .map(([, v]) => v)
+          .map(([, v]) => v[0])
     }
   },
   updated(){

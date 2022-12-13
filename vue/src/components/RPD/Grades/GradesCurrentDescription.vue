@@ -56,7 +56,7 @@ export default {
           .filter(([k, v]) => {
             return k.includes('description') && v !== null
           })
-          .map(([, v]) => v)
+          .map(([, v]) => v[0])
     }
   },
   updated() {

@@ -314,6 +314,19 @@ class RPDManager
         return $res;
     }
 
+    public static function uploadRPDAttachment($params, $file)
+    {
+        $fp = '/mnt/synology_nfs/syllabuses/' . \join('/', $params);
+        \mkdir($fp, 0775, true);
+        $fn = '/' . $file['name'];
+        $path = $fp . $fn;
+        if (!\move_uploaded_file($file['tmp_name'], $path)) {
+            return [
+                'error' => 'file system error'
+            ];
+        }
+    }
+
     public static function deleteSyllabusFile($params)
     {
 

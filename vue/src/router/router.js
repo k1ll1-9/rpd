@@ -1,6 +1,7 @@
 import SyllabusesList from "../pages/SyllabusesList";
 import RPDList from "../pages/RPDList";
 import RPD from "../pages/RPD";
+import Statistics from "../pages/Statistics";
 import {createRouter, createWebHistory} from "vue-router";
 
 const routes = [
@@ -15,6 +16,10 @@ const routes = [
   {
     path: '/rpd',
     component: RPD
+  },
+  {
+    path: '/stat',
+    component: Statistics
   }
 ]
 

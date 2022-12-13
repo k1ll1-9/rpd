@@ -2,6 +2,11 @@
   <div class="container-fluid">
     <div class="d-flex align-items-center justify-content-center">
       <a class="btn btn-primary mb-5 btn-lg" href="https://lk.vavt.ru/doc/rpd/">Активные согласования</a>
+      <router-link
+        class="btn btn-primary mb-5 btn-lg ms-5"
+        to="/stat?type=plans">
+        Статистика
+      </router-link>
     </div>
     <h2 class="my-2">Список учебных планов</h2>
     <table v-if="syllabuses" class="table my-5">
@@ -78,12 +83,12 @@ export default {
     async deleteSyllabus() {
 
       const res = await this.axios.post(this.$store.state.APIurl,
-          {
-            action: "deleteSyllabus",
-            params: {
-              ID: this.currentSyllabus.id,
-            }
-          });
+        {
+          action: "deleteSyllabus",
+          params: {
+            ID: this.currentSyllabus.id,
+          }
+        });
 
       if (res.data.success === true) {
         this.syllabuses = this.syllabuses.filter(el => el.id !== this.currentSyllabus.id)
@@ -93,34 +98,34 @@ export default {
   },
   async mounted() {
     const res = await this.axios.get(this.$store.state.APIurl,
-        {
-          params: {
-            action: "getSyllabusesList",
-          }
-        });
+      {
+        params: {
+          action: "getSyllabusesList",
+        }
+      });
 
     this.syllabuses = res.data
-        .map((el) => {
-          return {
-            ...el,
-            entrance_year: this.$dayjs((new Date(el.entrance_year.replace(/-/g, "/")))).format('DD.MM.YYYY'),
-            query: {
-              id: el.id
-            }
+      .map((el) => {
+        return {
+          ...el,
+          entrance_year: this.$dayjs((new Date(el.entrance_year.replace(/-/g, "/")))).format('DD.MM.YYYY'),
+          query: {
+            id: el.id
           }
-        })
-        .reduce((acc, c) => {
-          const key = `${c.special}_${c.profile}_${c.qualification}_${c.education_form}`
+        }
+      })
+      .reduce((acc, c) => {
+        const key = `${c.special}_${c.profile}_${c.qualification}_${c.education_form}`
 
-          acc[key] = acc[key] ?? []
-          acc[key].push(c)
+        acc[key] = acc[key] ?? []
+        acc[key].push(c)
 
-          return acc
-        }, {})
+        return acc
+      }, {})
 
     this.canDelete = this.$store.state.user.role === 'admin'
-        || this.$store.state.user.role === 'editor'
-        || process.env.NODE_ENV === 'development'
+      || this.$store.state.user.role === 'editor'
+      || process.env.NODE_ENV === 'development'
 
   }
 }

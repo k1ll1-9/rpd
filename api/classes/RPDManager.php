@@ -300,8 +300,7 @@ class RPDManager
 
         if ($result === true) {
 
-            self::uploadUPToRemote($params['id']);
-;
+            self::uploadUPToRemote($params['id']);;
             $res = [
                 'name' => $file['name'],
                 'path' => Cipher::encryptSSL($path)
@@ -572,8 +571,8 @@ class RPDManager
 
         $json = \json_decode($res['json'], true);
 
-        $exp = \explode('/',$res['rpd_f']);
-        $name = $exp[\count($exp) -1];
+        $exp = \explode('/', $res['rpd_f']);
+        $name = $exp[\count($exp) - 1];
 
         $link = $name . '|https://lk.vavt.ru/helpers/getFile.php?fileSSL=' . Cipher::encryptSSL($res['rpd_f']);
         $linkSign = $name . '.sig' . '|https://lk.vavt.ru/helpers/getFile.php?fileSSL=' . Cipher::encryptSSL($res['rpd_f'] . '.sig');
@@ -631,7 +630,7 @@ class RPDManager
         $stmt->execute();
         $res = $stmt->fetch(\PDO::FETCH_ASSOC);
 
-        if ($res['pdf_f'] !== null){
+        if ($res['pdf_f'] !== null) {
 
             $arPDF = \json_decode($res['pdf_f']);
 
@@ -654,17 +653,17 @@ class RPDManager
             'eduform' => $res['education_form'],
             'eduplan' => $planLink,
             'giatt' => self::getFileLinksForUpload($res['gia_f'], $planLink),
-            'giatt_sign' => self::getFileLinksForUpload($res['gia_f'], $planLink,true),
+            'giatt_sign' => self::getFileLinksForUpload($res['gia_f'], $planLink, true),
             'edupr' => self::getFileLinksForUpload($res['practice_f'], $planLink),
-            'edupr_sign' => self::getFileLinksForUpload($res['practice_f'], $planLink,true),
+            'edupr_sign' => self::getFileLinksForUpload($res['practice_f'], $planLink, true),
             'opmain' => self::getFileLinksForUpload($res['oop_f'], $planLink),
-            'opmain_sign' => self::getFileLinksForUpload($res['oop_f'], $planLink,true),
+            'opmain_sign' => self::getFileLinksForUpload($res['oop_f'], $planLink, true),
             'eduschd' => self::getFileLinksForUpload($res['schedule_f'], $planLink),
-            'eduschd_sign' => self::getFileLinksForUpload($res['schedule_f'], $planLink,true),
+            'eduschd_sign' => self::getFileLinksForUpload($res['schedule_f'], $planLink, true),
             'meth' => self::getFileLinksForUpload($res['methodical_f'], $planLink),
-            'meth_sign' => self::getFileLinksForUpload($res['methodical_f'], $planLink,true),
+            'meth_sign' => self::getFileLinksForUpload($res['methodical_f'], $planLink, true),
             'eduel' => self::getFileLinksForUpload($res['distant_f'], $planLink),
-            'eduel_sign' => self::getFileLinksForUpload($res['distant_f'], $planLink,true)
+            'eduel_sign' => self::getFileLinksForUpload($res['distant_f'], $planLink, true)
         ];
 
         $ch = \curl_init();
@@ -680,7 +679,7 @@ class RPDManager
     public static function getFileLinksForUpload($JSON, $planLink = null, $getSigns = false)
     {
 
-        if ($JSON === null){
+        if ($JSON === null) {
             return null;
         }
 
@@ -718,5 +717,21 @@ class RPDManager
             }
         }
         return $link;
+    }
+
+    public static function getStatistics()
+    {
+
+        try {
+            $pdo = Postgres::getInstance()->connect('pgsql:host=' . DB_HOST . ';port=5432;dbname=' . DB_NAME . ';', DB_USER, DB_PASSWORD);
+            $sql = 'SELECT * FROM disciplines
+                             WHERE actual = true';
+            $res = $pdo->query($sql)->fetchAll(\PDO::FETCH_ASSOC);
+        } catch (\PDOException $e) {
+            echo $e->getMessage();
+        }
+
+        return $res;
+
     }
 }

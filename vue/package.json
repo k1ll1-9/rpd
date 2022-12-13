@@ -27,7 +27,8 @@
     "vue-class-component": "^8.0.0-rc.1",
     "vue-router": "^4.0.13",
     "vuedraggable": "^4.1.0",
-    "vuex": "^4.0.2"
+    "vuex": "^4.0.2",
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.19.1/xlsx-0.19.1.tgz"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",

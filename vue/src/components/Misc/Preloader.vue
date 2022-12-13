@@ -1,5 +1,5 @@
 <template>
-  <div class="wrapper d-flex flex-column justify-content-center  align-items-center">
+  <div class="wrapper d-flex flex-column justify-content-center  align-items-center my-5">
   <div class="preloader"></div>
   </div>
 </template>

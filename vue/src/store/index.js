@@ -1,9 +1,11 @@
 import {createStore} from 'vuex'
 import {rpd} from './modules/rpd'
+import {syllabuses} from './modules/syllabuses'
 
 export default createStore({
   modules: {
-    rpd: rpd
+    rpd: rpd,
+    syllabuses: syllabuses
   },
   mutations: {},
   actions: {

@@ -50,6 +50,12 @@ switch ($method) {
 
                 $RPD = RPDManager::getRPDFromDB($params);
                 die(\json_encode($RPD, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+
+            case 'getStatistics':
+
+                $res = RPDManager::getStatistics();
+
+                die(\json_encode($res, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
         }
         break;
     }

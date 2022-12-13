@@ -316,15 +316,34 @@ class RPDManager
 
     public static function uploadRPDAttachment($params, $file)
     {
-        $fp = '/mnt/synology_nfs/syllabuses/'.$params['syllabusID'].'/rpd/'.$params['code'].'/'. $params['kafedra'].'/';
+        $fp = '/mnt/synology_nfs/syllabuses/' . $params['syllabusID'] . '/rpd/' . $params['code'] . '/' . $params['kafedra'] . '/';
         \mkdir($fp, 0775, true);
         $fn = 'attachment.pdf';
         $path = $fp . $fn;
         if (!\move_uploaded_file($file['tmp_name'], $path)) {
             return ['error' => 'file system error'];
         } else {
+            return ['link' =>  'https://lk.vavt.ru/helpers/getFile.php?fileSSL='.Cipher::encryptSSL($path)];
+        }
+    }
+
+    public static function checkRPDFile($params,$name)
+    {
+        $fp = '/mnt/synology_nfs/syllabuses/'.$params['syllabusID'].'/rpd/'.$params['code'].'/'. $params['kafedra'].'/'.$name;
+        if (\file_exists($fp)){
+            return ['link' =>  'https://lk.vavt.ru/helpers/getFile.php?fileSSL='.Cipher::encryptSSL($fp)];
+        }
+    }
+
+    public static function deleteRPDFile($params,$name)
+    {
+        $fp = '/mnt/synology_nfs/syllabuses/'.$params['syllabusID'].'/rpd/'.$params['code'].'/'. $params['kafedra'].'/'.$name;
+        if (!\unlink($fp)) {
+            return ['error' => 'file system error'];
+        } else {
             return ['success' => true];
         }
+
     }
 
     public static function deleteSyllabusFile($params)

@@ -18,7 +18,8 @@
       "ext-openssl": "*",
       "ext-pgsql": "*",
       "ext-pdo": "*",
-      "ext-mbstring": "*"
+      "ext-mbstring": "*",
+        "clegginabox/pdf-merger": "dev-master"
     },
     "require-dev": {
         "k1ll1/helpers": "^1.0"

@@ -2,6 +2,7 @@
 
 require_once(__DIR__ . "/../vendor/autoload.php");
 
+use Clegginabox\PDFMerger\PDFMerger;
 use VAVT\UP\PDF;
 use VAVT\UP\Cipher;
 
@@ -766,6 +767,14 @@ $pdf->AddPage();
 $pdf->PageNo();
 $pdf->writeHTML($html, true, false, true, false, '');
 $pdf->Output($fullPath, 'I');
+//добавляем приложение, если есть
+if (\file_exists($path.'attachment.pdf')){
+
+    $pdf = new PDFMerger;
+    $pdf->addPDF($fullPath)
+        ->addPDF($path.'attachment.pdf')
+        ->merge('file', $fullPath);
+}
 
 if (!\file_exists($fullPath)){
     $link = false;

@@ -52,10 +52,12 @@ switch ($method) {
                 die(\json_encode($RPD, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
 
             case 'getStatistics':
-
                 $res = RPDManager::getStatistics();
-
                 die(\json_encode($res, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+            case 'checkRPDFile':
+                $params = $request->getQueryList()->toArray();
+                $json = \json_encode(RPDManager::checkRPDFile(\json_decode($params['params'], true), $params['name']), JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+                die($json);
         }
         break;
     }
@@ -85,7 +87,10 @@ switch ($method) {
                     $json = \json_encode(RPDManager::importRPD($data['params'], $data['data']), JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
                     die($json);
                 case 'deleteSyllabus':
-                    $json = \json_encode(RPDManager::deleteSyllabus($data['params']['ID'], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+                    $json = \json_encode(RPDManager::deleteSyllabus($data['params']['ID']), JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+                    die($json);
+                case 'deleteRPDFile':
+                    $json = \json_encode(RPDManager::deleteRPDFile($data['params'], $data['name']), JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
                     die($json);
             }
         } else {

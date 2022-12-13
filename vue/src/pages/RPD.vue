@@ -26,22 +26,24 @@
       <GradesCurrentDescription/>
       <GradesIntermediate/>
     </div>
-    <div class="d-flex align-items-center justify-content-center">
+    <div class="d-flex align-items-start justify-content-center">
       <div>
         <PDFButton/>
       </div>
       <div class="ms-5">
-      <FileButtonInput
-        :label="'Загрузить приложение'"
-        :id="'RPDAttachment'"
-        :buttonClass="'btn btn-primary btn-lg mb-4'"
-        :allowedTypes="['pdf']"
-        :errorMessage="'Приложение должно быть в формате PDF'"
-        :options="{action: 'uploadRPDAttachment', params : this.$route.query}"
-      />
+        <FileButtonInput
+          v-if="visible"
+          :name="'attachment.pdf'"
+          :label="'Загрузить приложение'"
+          :id="'RPDAttachment'"
+          :buttonClass="'btn btn-primary btn-lg mb-1'"
+          :allowedTypes="['pdf']"
+          :errorMessage="'Приложение должно быть в формате PDF'"
+          :options="{action: 'uploadRPDAttachment', params : this.$route.query,disabled: $store.state.rpd.locked}"
+        />
       </div>
-        <ApprovalButton :disabled="!isValid || $store.state.rpd.locked"/>
-        <NoticeWindow v-if="!isValid"/>
+      <ApprovalButton :disabled="!isValid || $store.state.rpd.locked"/>
+      <NoticeWindow v-if="!isValid"/>
     </div>
   </div>
   <Preloader v-else style="margin-top: 200px"/>

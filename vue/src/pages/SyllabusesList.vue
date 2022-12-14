@@ -5,7 +5,7 @@
       <router-link
         class="btn btn-primary mb-5 btn-lg ms-5"
         to="/stat?type=plans">
-        Статистика
+        Статистика по учебным планам
       </router-link>
     </div>
     <h2 class="my-2">Список учебных планов</h2>

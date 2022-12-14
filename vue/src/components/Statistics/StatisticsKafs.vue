@@ -22,21 +22,21 @@
       <thead>
       <tr>
         <th>Кафедра</th>
+        <th>Всего</th>
         <th>Заполнено</th>
         <th>На согласовании</th>
         <th>Согласовано</th>
         <th>Загружено на сайт</th>
-        <th>Всего</th>
       </tr>
       </thead>
       <tbody>
       <tr v-for="(kafedra, name) in syllabuses" :key="name">
         <td class="text-start">{{ name }}</td>
+        <td>{{ kafedra.total }}</td>
         <td>{{ kafedra.valid }}</td>
         <td>{{ kafedra.inProcess }}</td>
         <td>{{ kafedra.approved }}</td>
         <td>{{ kafedra.uploaded }}</td>
-        <td>{{ kafedra.total }}</td>
       </tr>
       </tbody>
     </table>

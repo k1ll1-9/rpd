@@ -26,11 +26,11 @@
         <th>Направление</th>
         <th>Профиль</th>
         <th>Дата начала обучения</th>
+        <th>Всего</th>
         <th>Заполнено</th>
         <th>На согласовании</th>
         <th>Согласовано</th>
         <th>Загружено на сайт</th>
-        <th>Всего</th>
       </tr>
       </thead>
       <tbody>
@@ -47,11 +47,11 @@
               {{ syllabus.year }}
             </router-link>
           </td>
+          <td>{{ syllabus.total }}</td>
           <td>{{ syllabus.valid }}</td>
           <td>{{ syllabus.inProcess }}</td>
           <td>{{ syllabus.approved }}</td>
           <td>{{ syllabus.uploaded }}</td>
-          <td>{{ syllabus.total }}</td>
         </tr>
       </template>
       </tbody>

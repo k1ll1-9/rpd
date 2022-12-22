@@ -1,15 +1,7 @@
 <template>
-  <div class="container-fluid">
-    <div class="d-flex align-items-center justify-content-center">
-      <a class="btn btn-primary mb-5 btn-lg" href="https://lk.vavt.ru/doc/rpd/">Активные согласования</a>
-      <router-link
-        class="btn btn-primary mb-5 btn-lg ms-5"
-        to="/stat?type=plans">
-        Статистика по учебным планам
-      </router-link>
-    </div>
+  <div v-if="syllabuses" class="container-fluid">
     <h2 class="my-2">Список учебных планов</h2>
-    <table v-if="syllabuses" class="table my-5">
+    <table  class="table my-5">
       <thead>
       <tr>
         <th>Уровень подготовки</th>
@@ -30,7 +22,14 @@
             <td :rowspan="syllabusGroup.length">{{ syllabus.profile }}</td>
           </template>
           <td>
-            <router-link :to="{path : '/list', query : syllabus.query}" class="btn btn-primary">
+            <router-link
+              :to="{
+                path : '/list',
+                query : {
+                  type: 'plans',
+                  ...syllabus.query
+              }}"
+              class="btn btn-primary">
               {{ syllabus.entrance_year }}
             </router-link>
           </td>
@@ -47,19 +46,19 @@
       </template>
       </tbody>
     </table>
-    <Preloader v-else style="margin-top: 200px"/>
-    <ModalWarning id="deleteSyllabus" @confirm="deleteSyllabus()">
-      <template v-slot:title>
-        Удаление учебного плана
-      </template>
-      <template v-if="currentSyllabus" v-slot:body>
-        Вы действительно хотите удалить учебный план <br>
-        <strong>{{
-            `"${currentSyllabus.special} ${currentSyllabus.profile}  ${(new Date(currentSyllabus.syllabus_year)).getFullYear()}"`
-          }}</strong>?
-      </template>
-    </ModalWarning>
   </div>
+  <Preloader v-else style="margin-top: 200px"/>
+  <ModalWarning id="deleteSyllabus" @confirm="deleteSyllabus()">
+    <template v-slot:title>
+      Удаление учебного плана
+    </template>
+    <template v-if="currentSyllabus" v-slot:body>
+      Вы действительно хотите удалить учебный план <br>
+      <strong>{{
+          `"${currentSyllabus.special} ${currentSyllabus.profile}  ${(new Date(currentSyllabus.syllabus_year)).getFullYear()}"`
+        }}</strong>?
+    </template>
+  </ModalWarning>
 </template>
 
 <script>
@@ -70,11 +69,11 @@ export default {
   name: "SyllabusesList",
   components: {
     Preloader,
-    ModalWarning
+    ModalWarning,
   },
   data() {
     return {
-      syllabuses: false,
+      syllabuses: null,
       currentSyllabus: null,
       canDelete: null
     }
@@ -96,7 +95,7 @@ export default {
       }
     }
   },
-  async mounted() {
+  async created() {
     const res = await this.axios.get(this.$store.state.APIurl,
       {
         params: {

@@ -1,18 +1,8 @@
 <template>
   <div class="container-fluid">
     <div class="d-flex align-items-center justify-content-center">
-      <router-link
-        class="btn btn-primary mb-5 btn-lg ms-5"
-        to="/">
-        Список Учебных Планов
-      </router-link>
-      <router-link
-        class="btn btn-primary mb-5 btn-lg ms-5"
-        to="/stat?type=kafs">
-        Статистика по кафедрам
-      </router-link>
       <button
-        class="btn btn-primary mb-5 btn-lg ms-5"
+        class="btn btn-primary btn-lg"
         @click="downloadXLSX"
       >
         Скачать xlsx файл
@@ -43,7 +33,13 @@
             <td :rowspan="Object.keys(syllabusGroup).length">{{ syllabus.profile }}</td>
           </template>
           <td>
-            <router-link :to="{path : '/list', query : syllabus.query}" class="btn btn-primary">
+            <router-link :to="{
+                path : '/list',
+                query : {
+                  type: 'plans',
+                  ...syllabus.query
+              }}"
+                         class="btn btn-primary">
               {{ syllabus.year }}
             </router-link>
           </td>

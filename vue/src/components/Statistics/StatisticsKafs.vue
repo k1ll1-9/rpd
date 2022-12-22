@@ -1,18 +1,8 @@
 <template>
   <div class="container-fluid">
     <div class="d-flex align-items-center justify-content-center">
-      <router-link
-        class="btn btn-primary mb-5 btn-lg ms-5"
-        to="/">
-        Список Учебных Планов
-      </router-link>
-      <router-link
-        class="btn btn-primary mb-5 btn-lg ms-5"
-        to="/stat?type=plans">
-        Статистика по учебным планам
-      </router-link>
       <button
-        class="btn btn-primary mb-5 btn-lg ms-5"
+        class="btn btn-primary btn-lg"
         @click="downloadXLSX"
       >
         Скачать xlsx файл
@@ -31,7 +21,20 @@
       </thead>
       <tbody>
       <tr v-for="(kafedra, name) in syllabuses" :key="name">
-        <td class="text-start">{{ name }}</td>
+        <td class="text-start">
+          <router-link
+            :to="{
+            path : '/list',
+            query : {
+              type: 'kafs',
+              name: name
+            }
+          }"
+            class="btn btn-primary"
+          >
+            {{ name }}
+          </router-link>
+        </td>
         <td>{{ kafedra.total }}</td>
         <td>{{ kafedra.valid }}</td>
         <td>{{ kafedra.inProcess }}</td>

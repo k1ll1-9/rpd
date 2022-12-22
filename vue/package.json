@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "-": "0.0.1",
+    "@innologica/vue-dropdown-menu": "^0.1.4",
     "@popperjs/core": "^2.9.2",
     "@syncfusion/ej2-vue-dropdowns": "^19.4.56",
     "@syncfusion/ej2-vue-grids": "^19.4.55",

@@ -35,13 +35,25 @@ switch ($method) {
                 $res = RPDManager::getSyllabusesList();
 
                 die(\json_encode($res, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+            case 'getKafsList':
 
+                $res = RPDManager::getKafsList();
+
+                die(\json_encode($res, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
             case 'getRPDList':
                 $params = $request->getQueryList()->toArray();
                 $params = \json_decode($params['params'], true);
 
                 $res['list'] = RPDManager::getRPDList($params);
                 $res['syllabusFiles'] = RPDManager::getSyllabusFiles($params);
+
+                die(\json_encode($res, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+            case 'getRPDListByKaf':
+                $params = $request->getQueryList()->toArray();
+                $params = \json_decode($params['params'], true);
+
+                $res['list'] = RPDManager::getRPDListByKaf($params);
+
                 die(\json_encode($res, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
 
             case 'getRPDData':

@@ -154,6 +154,30 @@ class RPDManager
         return $res;
     }
 
+    public static function getRPDListByKaf($params){
+
+        $pdo = Postgres::getInstance()->connect('pgsql:host=' . DB_HOST . ';port=5432;dbname=' . DB_NAME . ';', DB_USER, DB_PASSWORD);
+
+        try {
+            $sql = "SELECT json,actual,status,valid,approval,kafedra,syllabus_id,rpd_f FROM  disciplines 
+                            WHERE json->>'kafedra' = :kafedra";
+            $stmt = $pdo->prepare($sql);
+            $stmt->bindParam(':kafedra', $params['name'], \PDO::PARAM_STR);
+            $stmt->execute();
+            $res = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        } catch (\PDOException $e) {
+            echo $e->getMessage();
+        }
+
+        foreach ($res as &$item) {
+            $item['approvedLink'] = ($item['rpd_f'])
+                ? 'https://lk.vavt.ru/helpers/getFile.php?openPDF=' . Cipher::encryptSSL($item['rpd_f'])
+                : null;
+        }
+
+        return $res;
+    }
+
     public static function getSyllabusesList()
     {
         try {
@@ -165,6 +189,20 @@ class RPDManager
                                     education_form ASC,
                                     special ASC,
                                     profile ASC';
+            $res = $pdo->query($sql)->fetchAll(\PDO::FETCH_ASSOC);
+        } catch (\PDOException $e) {
+            echo $e->getMessage();
+        }
+        return $res;
+    }
+
+    public static function getKafsList()
+    {
+        try {
+            $pdo = Postgres::getInstance()->connect('pgsql:host=' . DB_HOST . ';port=5432;dbname=' . DB_NAME . ';', DB_USER, DB_PASSWORD);
+            $sql = 'SELECT DISTINCT ON (kafedra) kafedra 
+                           FROM disciplines
+                           WHERE actual = true';
             $res = $pdo->query($sql)->fetchAll(\PDO::FETCH_ASSOC);
         } catch (\PDOException $e) {
             echo $e->getMessage();
@@ -332,6 +370,8 @@ class RPDManager
         $fp = '/mnt/synology_nfs/syllabuses/'.$params['syllabusID'].'/rpd/'.$params['code'].'/'. $params['kafedra'].'/'.$name;
         if (\file_exists($fp)){
             return ['link' =>  'https://lk.vavt.ru/helpers/getFile.php?fileSSL='.Cipher::encryptSSL($fp)];
+        } else {
+            return ['link' =>  null];
         }
     }
 
@@ -483,8 +523,11 @@ class RPDManager
             $stmt->bindParam(':code', $params['code'], \PDO::PARAM_STR);
             $stmt->bindParam(':kafedra', $params['kafedra'], \PDO::PARAM_STR);
             $stmt->bindParam(':status', $status, \PDO::PARAM_STR);
-            if ($stmt->execute()) {
+            $stmt->execute();
+            if ($stmt->rowCount() > 0) {
                 $res = ['success' => true];
+            } else {
+                $res = ['error' => 'Error updating DB'];
             }
         } catch (\PDOException $e) {
             $res = ['error' => $e->getMessage()];

@@ -50,6 +50,7 @@ export default {
 
 #app {
   width: 100%;
+  min-height: 70vh;
 }
 .main-wrapper{
   margin: 20px 50px;

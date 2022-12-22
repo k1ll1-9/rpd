@@ -1,7 +1,8 @@
 <template>
-  <div class="container-fluid d-flex justify-content-center flex-column align-items-center">
+  <div class="container-fluid">
+    <div  v-if="list" class="d-flex justify-content-center flex-column align-items-center">
     <h2 class="my-2">Список кафедр</h2>
-    <table v-if="list" class="table my-5 w-50">
+    <table class="table my-5 w-50">
       <tbody>
       <tr v-for="(kafedra, index) in list" :key="index">
         <td>
@@ -21,6 +22,7 @@
       </tr>
       </tbody>
     </table>
+    </div>
     <Preloader v-else style="margin-top: 200px"/>
   </div>
 </template>

@@ -131,8 +131,6 @@ export default {
         }
       });
 
-    console.log(res.data)
-
     this.RPDList = res.data.list.map((el) => {
       const json = JSON.parse(el.json)
       return {

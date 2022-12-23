@@ -42,9 +42,12 @@
           :options="{action: 'uploadRPDAttachment', params : this.$route.query,disabled: $store.state.rpd.locked}"
         />
       </div>
-      <ApprovalButton :disabled="!isValid || $store.state.rpd.locked"/>
-      <NoticeWindow v-if="!isValid"/>
+      <ApprovalButton :disabled="!isValid || !canSubmit || $store.state.rpd.locked"/>
     </div>
+    <div>
+      <span v-if="!canSubmit" class="error mt-2 d-inline-block">На согласование РПД отправить может только её автор</span>
+    </div>
+    <NoticeWindow v-if="!isValid"/>
   </div>
   <Preloader v-else style="margin-top: 200px"/>
 </template>
@@ -116,6 +119,21 @@ export default {
           return state.rpd.errors.length === 0
         }
       },
+      canSubmit: state => {
+
+        if (state.user.lastName === null){
+          return false
+        }
+
+        const authors =  state.rpd.managed.authors?.author?.FIO.toLowerCase()
+        const currentUser = state.user.lastName.toLowerCase()
+
+        if (authors === undefined){
+          return false
+        }
+
+        return authors.includes(currentUser)
+      }
     })
   },
   async mounted() {

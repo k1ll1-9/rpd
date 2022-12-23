@@ -7,7 +7,6 @@ require_once(__DIR__ . "/../../config.php");
 require_once(__DIR__ . "/../../vendor/autoload.php");
 
 use VAVT\Services\Postgres;
-use Bitrix\Main\Web\HttpClient;
 
 class RPDManager
 {
@@ -461,6 +460,7 @@ class RPDManager
 
         $res = \CUser::GetByID($user['ID'])->fetch();
         $user['uniID'] = $res['UF_VAVT1CUNIID'];
+        $user['lastName'] = $res['LAST_NAME'];
 
         $res = \Bitrix\Iblock\SectionTable::getList(
             [

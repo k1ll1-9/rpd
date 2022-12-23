@@ -20,6 +20,7 @@ export default createStore({
       })
 
       state.user = res.data.user
+
       console.log(state.user)
     }
   }

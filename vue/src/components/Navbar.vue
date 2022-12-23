@@ -111,9 +111,6 @@ export default {
 
       }
     }
-  },
-  updated() {
-    console.log(this.$route)
   }
 }
 </script>

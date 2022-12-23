@@ -5,7 +5,7 @@
   </button>
   </div>
   <div v-if="visible" class="ms-5">
-    <button class="btn btn-lg btn-primary mb-4" @click="disapprove()">
+    <button :class="[{'disabled': disabled},'btn btn-lg btn-primary mb-4']" @click="disapprove()">
       Отозвать
     </button>
   </div>

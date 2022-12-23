@@ -158,7 +158,7 @@ class RPDManager
         $pdo = Postgres::getInstance()->connect('pgsql:host=' . DB_HOST . ';port=5432;dbname=' . DB_NAME . ';', DB_USER, DB_PASSWORD);
 
         try {
-            $sql = "SELECT json,actual,status,valid,approval,kafedra,syllabus_id,rpd_f FROM  disciplines 
+            $sql = "SELECT json,actual,status,valid,approval,kafedra,syllabus_id,rpd_f,name FROM  disciplines 
                             WHERE json->>'kafedra' = :kafedra";
             $stmt = $pdo->prepare($sql);
             $stmt->bindParam(':kafedra', $params['name'], \PDO::PARAM_STR);
@@ -173,6 +173,16 @@ class RPDManager
                 ? 'https://lk.vavt.ru/helpers/getFile.php?openPDF=' . Cipher::encryptSSL($item['rpd_f'])
                 : null;
         }
+
+        \usort($res, function ($d1, $d2) {
+
+            $actual1 = ($d1['actual']) ? 0 : 1;
+            $actual2 = ($d2['actual']) ? 0 : 1;
+
+            return
+                ($actual1 <=> $actual2) * 10 +
+                ($d1['name'] <=> $d2['name']);
+        });
 
         return $res;
     }

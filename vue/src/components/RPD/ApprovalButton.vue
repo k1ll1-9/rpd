@@ -33,6 +33,8 @@ export default {
         disciplineCode: this.$store.state.rpd.static.code,
         disciplineName: this.$store.state.rpd.static.name,
         educationLevel: this.$store.state.rpd.static.syllabusData.educationLevel,
+        formOfTraining: this.$store.state.rpd.static.syllabusData.formOfTraining,
+        syllabusYear: this.$store.state.rpd.static.syllabusData.syllabusYear,
         profile: this.$store.state.rpd.static.syllabusData.profile,
         special: this.$store.state.rpd.static.syllabusData.special,
         kafedra: this.$store.state.rpd.static.kafedra,

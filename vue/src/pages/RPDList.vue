@@ -28,10 +28,28 @@
       </tr>
       </thead>
       <tbody>
-      <tr v-for="(rpd, index) in RPDList" :key="index" :class="{ outdated : !rpd.actual }">
+      <tr v-for="(rpd, index) in RPDList" :key="index" :class="{ 'text-decoration-line-through' : !rpd.actual }">
         <td>{{ index + 1 }}</td>
         <td>{{ rpd.disciplineIndex }}</td>
-        <td>{{ rpd.name }}</td>
+        <td>
+          {{ rpd.name }}
+          <div v-if="type === 'kafs'">
+            <router-link
+              v-if="rpd.actual"
+              :to="{path : '/list', query : { type: 'plans', id: rpd.syllabusData.syllabusID}}"
+              class="btn btn-primary h-auto w-100 my-2"
+            >
+              {{ rpd.syllabusData.educationForm[0] }} {{ rpd.syllabusData.formOfTraining[0] }}
+              {{ rpd.syllabusData.special[0] }} {{ rpd.syllabusData.profile }}
+              {{ (new Date(rpd.syllabusData.year)).getFullYear() }}
+            </router-link>
+            <span v-else class="btn btn-primary h-auto w-100 my-2 disabled">
+                  {{ rpd.syllabusData.educationForm[0] }} {{ rpd.syllabusData.formOfTraining[0] }}
+              {{ rpd.syllabusData.special[0] }} {{ rpd.syllabusData.profile }}
+              {{ (new Date(rpd.syllabusData.year)).getFullYear() }}
+            </span>
+          </div>
+        </td>
         <td v-if="type === 'plans'">{{ rpd.kafedra }}</td>
         <td>
           <router-link :to="{path : '/rpd', query : rpd.query}"
@@ -312,10 +330,6 @@ td, th {
   vertical-align: middle;
 }
 
-.outdated {
-  text-decoration: line-through;
-}
-
 .btn-primary {
   height: 60px;
   width: 145px;
@@ -329,5 +343,6 @@ td, th {
 .file-label {
   cursor: pointer;
 }
+
 </style>
 

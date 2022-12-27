@@ -32,7 +32,6 @@
       </div>
       <div class="ms-5">
         <FileButtonInput
-          v-if="visible"
           :name="'attachment.pdf'"
           :label="'Загрузить приложение'"
           :id="'RPDAttachment'"

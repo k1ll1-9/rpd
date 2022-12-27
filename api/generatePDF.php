@@ -166,12 +166,17 @@ $html .= <<<HTML
 <p>Год набора – $year г.</p>
 </div>
 <br pagebreak="true"/>
-<span style="text-align: left">Разработчик программы: <br></span>
-<span style="text-align: left"><i>{$managed['authors']['author']['FIO']}</i>, {$managed['authors']['author']['position']}</span>
+<span style="text-align: left" >Разработчик(и) программы: <br></span>
+<br>
+<span style="text-align: left;">{$managed['authors']['author']['FIO']}</span><br>
+<span style="text-align: left;"> {$managed['authors']['author']['position']}</span>
 <br>
 <br>
-<span style="text-align: left">Рецензенты: <br></span>
-<span style="text-align: left"><i>{$managed['authors']['reviewer']['FIO']}</i>, {$managed['authors']['reviewer']['position']}</span>
+<br>
+<span style="text-align: left">Рецензент(ы): <br></span>
+<br>
+<span style="text-align: left">{$managed['authors']['reviewer']['FIO']}</span><br>
+<span> {$managed['authors']['reviewer']['position']}</span>
 <div></div>
 <table  style="width: 65% !important;">
     <tr>
@@ -679,9 +684,6 @@ if ($json['static']['kafedra'] === 'Кафедра физической куль
 } else {
     $html .= \file_get_contents('include/MTO_common.html');
 }
-
-/*$fn = tempnam('/tmp/upload', 'sl7_');
-ob_end_clean();*/
 
 /*echo $html;
 die();*/

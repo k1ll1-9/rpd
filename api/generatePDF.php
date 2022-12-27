@@ -2,6 +2,7 @@
 
 require_once(__DIR__ . "/../vendor/autoload.php");
 
+use Clegginabox\PDFMerger\PDFMerger;
 use VAVT\UP\PDF;
 use VAVT\UP\Cipher;
 
@@ -653,9 +654,16 @@ foreach ($intermediateControl as $n => $semester) {
 
     $html .= '<h3 style="text-align: center">Семестр ' . $n . '</h3>';
 
+
     foreach ($semester as $controlType) {
+
         \uksort($controlType, fn($a, $b) => $a === 'criterion' ? 1 : -1);
+
         foreach ($controlType as $type => $value) {
+            // проверка на соответствие актуальным данным дисциплины
+            if ($type !== 'criterion' && $type !== $static["disciplineValue"]['control']['semesters'][$n]['controlName']){
+                continue;
+            }
 
             $title = ($type === 'criterion') ? 'Критерии оценки' : $type;
             $html .= '<h3 style="text-align: center">' . $title . '</h3>';
@@ -694,6 +702,14 @@ $pdf->AddPage();
 $pdf->PageNo();
 $pdf->writeHTML($html, true, false, true, false, '');
 $pdf->Output($fullPath, 'I');
+//добавляем приложение, если есть
+if (\file_exists($path.'attachment.pdf')){
+
+    $pdf = new PDFMerger;
+    $pdf->addPDF($fullPath)
+        ->addPDF($path.'attachment.pdf')
+        ->merge('file', $fullPath);
+}
 
 if (!\file_exists($fullPath)){
     $link = false;

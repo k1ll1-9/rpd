@@ -1,11 +1,11 @@
 <template>
-  <div>
+  <div class="ms-5">
   <button :class="[{'disabled': disabled},'btn btn-lg btn-primary mb-4']" @click="requestApprove()">
     Отправить на согласование
   </button>
   </div>
-  <div v-if="visible">
-    <button class="btn btn-lg btn-primary mb-4" @click="disapprove()">
+  <div v-if="visible" class="ms-5">
+    <button :class="[{'disabled': disabled},'btn btn-lg btn-primary mb-4']" @click="disapprove()">
       Отозвать
     </button>
   </div>
@@ -33,6 +33,8 @@ export default {
         disciplineCode: this.$store.state.rpd.static.code,
         disciplineName: this.$store.state.rpd.static.name,
         educationLevel: this.$store.state.rpd.static.syllabusData.educationLevel,
+        formOfTraining: this.$store.state.rpd.static.syllabusData.formOfTraining,
+        syllabusYear: this.$store.state.rpd.static.syllabusData.syllabusYear,
         profile: this.$store.state.rpd.static.syllabusData.profile,
         special: this.$store.state.rpd.static.syllabusData.special,
         kafedra: this.$store.state.rpd.static.kafedra,

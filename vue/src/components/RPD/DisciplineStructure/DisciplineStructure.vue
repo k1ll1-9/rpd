@@ -195,7 +195,7 @@ export default {
     checkRequired() {
       this.requiredFields = Object.entries(this.$refs)
           .filter(([k, v]) => k.includes('disc') && v !== null)
-          .map(([, v]) => v)
+          .map(([, v]) => v[0])
     },
   },
   updated() {

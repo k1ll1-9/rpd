@@ -1,6 +1,6 @@
 <template>
   <div class="wrapper d-flex flex-column justify-content-center  align-items-center">
-  <div class="preloader"></div>
+    <div class="preloader"></div>
   </div>
 </template>
 
@@ -11,6 +11,10 @@ export default {
 </script>
 
 <style scoped>
+
+.wrapper{
+  margin: auto;
+}
 
 .preloader {
   animation: rotateY-anim 2s linear infinite;

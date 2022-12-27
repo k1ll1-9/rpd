@@ -118,7 +118,7 @@ export default {
           .filter(([k, v]) => {
             return k.includes('resource') && v !== null
           })
-          .map(([, v]) => v)
+          .map(([, v]) => v[0])
     }
   },
   mounted() {

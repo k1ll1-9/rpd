@@ -35,13 +35,25 @@ switch ($method) {
                 $res = RPDManager::getSyllabusesList();
 
                 die(\json_encode($res, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+            case 'getKafsList':
 
+                $res = RPDManager::getKafsList();
+
+                die(\json_encode($res, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
             case 'getRPDList':
                 $params = $request->getQueryList()->toArray();
                 $params = \json_decode($params['params'], true);
 
                 $res['list'] = RPDManager::getRPDList($params);
                 $res['syllabusFiles'] = RPDManager::getSyllabusFiles($params);
+
+                die(\json_encode($res, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+            case 'getRPDListByKaf':
+                $params = $request->getQueryList()->toArray();
+                $params = \json_decode($params['params'], true);
+
+                $res['list'] = RPDManager::getRPDListByKaf($params);
+
                 die(\json_encode($res, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
 
             case 'getRPDData':
@@ -50,6 +62,14 @@ switch ($method) {
 
                 $RPD = RPDManager::getRPDFromDB($params);
                 die(\json_encode($RPD, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+
+            case 'getStatistics':
+                $res = RPDManager::getStatistics();
+                die(\json_encode($res, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+            case 'checkRPDFile':
+                $params = $request->getQueryList()->toArray();
+                $json = \json_encode(RPDManager::checkRPDFile(\json_decode($params['params'], true), $params['name']), JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+                die($json);
         }
         break;
     }
@@ -79,7 +99,10 @@ switch ($method) {
                     $json = \json_encode(RPDManager::importRPD($data['params'], $data['data']), JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
                     die($json);
                 case 'deleteSyllabus':
-                    $json = \json_encode(RPDManager::deleteSyllabus($data['params']['ID'], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+                    $json = \json_encode(RPDManager::deleteSyllabus($data['params']['ID']), JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+                    die($json);
+                case 'deleteRPDFile':
+                    $json = \json_encode(RPDManager::deleteRPDFile($data['params'], $data['name']), JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
                     die($json);
             }
         } else {
@@ -88,6 +111,11 @@ switch ($method) {
                     $params = \json_decode($request->getPost('params'), true);
                     $file = $request->getFile('file');
                     $res = RPDManager::uploadSyllabusFile($params, $file);
+                    die(\json_encode($res, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+                case 'uploadRPDAttachment':
+                    $params = \json_decode($request->getPost('params'), true);
+                    $file = $request->getFile('file');
+                    $res = RPDManager::uploadRPDAttachment($params, $file);
                     die(\json_encode($res, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
             }
         }

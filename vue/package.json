@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "-": "0.0.1",
+    "@innologica/vue-dropdown-menu": "^0.1.4",
     "@popperjs/core": "^2.9.2",
     "@syncfusion/ej2-vue-dropdowns": "^19.4.56",
     "@syncfusion/ej2-vue-grids": "^19.4.55",
@@ -27,7 +28,8 @@
     "vue-class-component": "^8.0.0-rc.1",
     "vue-router": "^4.0.13",
     "vuedraggable": "^4.1.0",
-    "vuex": "^4.0.2"
+    "vuex": "^4.0.2",
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.19.1/xlsx-0.19.1.tgz"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",

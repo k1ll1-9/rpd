@@ -26,8 +26,27 @@
       <GradesCurrentDescription/>
       <GradesIntermediate/>
     </div>
-    <PDFButton/>
-    <ApprovalButton :disabled="!isValid || $store.state.rpd.locked"/>
+    <div class="d-flex align-items-start justify-content-center">
+      <div>
+        <PDFButton/>
+      </div>
+      <div class="ms-5">
+        <FileButtonInput
+          v-if="visible"
+          :name="'attachment.pdf'"
+          :label="'Загрузить приложение'"
+          :id="'RPDAttachment'"
+          :buttonClass="'btn btn-primary btn-lg mb-1'"
+          :allowedTypes="['pdf']"
+          :errorMessage="'Приложение должно быть в формате PDF'"
+          :options="{action: 'uploadRPDAttachment', params : this.$route.query,disabled: $store.state.rpd.locked}"
+        />
+      </div>
+      <ApprovalButton :disabled="!isValid || !canSubmit || $store.state.rpd.locked"/>
+    </div>
+    <div>
+      <span v-if="!canSubmit" class="error mt-2 d-inline-block">На согласование РПД отправить может только её автор</span>
+    </div>
     <NoticeWindow v-if="!isValid"/>
   </div>
   <Preloader v-else style="margin-top: 200px"/>
@@ -55,6 +74,7 @@ import Technologies from "../components/RPD/EducationTechnologies";
 import InformResources from "./../components/RPD/InformResources";
 import Annotation from "@/components/RPD/Annotation";
 import NoticeWindow from "@/components/RPD/NoticeWindow";
+import FileButtonInput from "@/components/UI/FileButtonInput";
 import {mapState} from "vuex";
 
 export default {
@@ -80,7 +100,8 @@ export default {
     InformResources,
     GradesIntermediate,
     ApprovalButton,
-    NoticeWindow
+    FileButtonInput,
+    NoticeWindow,
   },
   data() {
     return {
@@ -98,6 +119,21 @@ export default {
           return state.rpd.errors.length === 0
         }
       },
+      canSubmit: state => {
+
+        if (state.user.lastName === null){
+          return false
+        }
+
+        const authors =  state.rpd.managed.authors?.author?.FIO.toLowerCase()
+        const currentUser = state.user.lastName.toLowerCase()
+
+        if (authors === undefined){
+          return false
+        }
+
+        return authors.includes(currentUser)
+      }
     })
   },
   async mounted() {

@@ -1,12 +1,19 @@
 import SyllabusesList from "../pages/SyllabusesList";
 import RPDList from "../pages/RPDList";
 import RPD from "../pages/RPD";
+import Statistics from "../pages/Statistics";
+import KafsList from "@/pages/KafsList";
 import {createRouter, createWebHistory} from "vue-router";
 
 const routes = [
   {
     path: '/',
-    component: SyllabusesList
+    component: SyllabusesList,
+    alias: '/plans'
+  },
+  {
+    path: '/kafs',
+    component: KafsList,
   },
   {
     path: '/list',
@@ -15,6 +22,10 @@ const routes = [
   {
     path: '/rpd',
     component: RPD
+  },
+  {
+    path: '/stat',
+    component: Statistics
   }
 ]
 

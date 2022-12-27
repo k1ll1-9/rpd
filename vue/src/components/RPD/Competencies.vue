@@ -167,8 +167,9 @@ export default {
     },
     checkRequired(){
       this.requiredFields = Object.entries(this.$refs)
-          .filter(([k,v]) => k.includes('comp') && v !== null)
-          .map(([, v]) => v)
+          .filter(([k,v]) => {return  k.includes('comp') && v !== null })
+          .map(([, v]) => v[0])
+
     }
   },
   mounted() {

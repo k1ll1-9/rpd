@@ -1,10 +1,7 @@
 <template>
-  <div class="container-fluid">
-    <div class="d-flex align-items-center justify-content-center">
-      <a class="btn btn-primary mb-5 btn-lg" href="https://lk.vavt.ru/doc/rpd/">Активные согласования</a>
-    </div>
+  <div v-if="syllabuses" class="container-fluid">
     <h2 class="my-2">Список учебных планов</h2>
-    <table v-if="syllabuses" class="table my-5">
+    <table  class="table my-5">
       <thead>
       <tr>
         <th>Уровень подготовки</th>
@@ -25,7 +22,14 @@
             <td :rowspan="syllabusGroup.length">{{ syllabus.profile }}</td>
           </template>
           <td>
-            <router-link :to="{path : '/list', query : syllabus.query}" class="btn btn-primary">
+            <router-link
+              :to="{
+                path : '/list',
+                query : {
+                  type: 'plans',
+                  ...syllabus.query
+              }}"
+              class="btn btn-primary">
               {{ syllabus.entrance_year }}
             </router-link>
           </td>
@@ -42,19 +46,19 @@
       </template>
       </tbody>
     </table>
-    <Preloader v-else style="margin-top: 200px"/>
-    <ModalWarning id="deleteSyllabus" @confirm="deleteSyllabus()">
-      <template v-slot:title>
-        Удаление учебного плана
-      </template>
-      <template v-if="currentSyllabus" v-slot:body>
-        Вы действительно хотите удалить учебный план <br>
-        <strong>{{
-            `"${currentSyllabus.special} ${currentSyllabus.profile}  ${(new Date(currentSyllabus.syllabus_year)).getFullYear()}"`
-          }}</strong>?
-      </template>
-    </ModalWarning>
   </div>
+  <Preloader v-else style="margin-top: 200px"/>
+  <ModalWarning id="deleteSyllabus" @confirm="deleteSyllabus()">
+    <template v-slot:title>
+      Удаление учебного плана
+    </template>
+    <template v-if="currentSyllabus" v-slot:body>
+      Вы действительно хотите удалить учебный план <br>
+      <strong>{{
+          `"${currentSyllabus.special} ${currentSyllabus.profile}  ${(new Date(currentSyllabus.syllabus_year)).getFullYear()}"`
+        }}</strong>?
+    </template>
+  </ModalWarning>
 </template>
 
 <script>
@@ -65,11 +69,11 @@ export default {
   name: "SyllabusesList",
   components: {
     Preloader,
-    ModalWarning
+    ModalWarning,
   },
   data() {
     return {
-      syllabuses: false,
+      syllabuses: null,
       currentSyllabus: null,
       canDelete: null
     }
@@ -78,12 +82,12 @@ export default {
     async deleteSyllabus() {
 
       const res = await this.axios.post(this.$store.state.APIurl,
-          {
-            action: "deleteSyllabus",
-            params: {
-              ID: this.currentSyllabus.id,
-            }
-          });
+        {
+          action: "deleteSyllabus",
+          params: {
+            ID: this.currentSyllabus.id,
+          }
+        });
 
       if (res.data.success === true) {
         this.syllabuses = this.syllabuses.filter(el => el.id !== this.currentSyllabus.id)
@@ -91,36 +95,36 @@ export default {
       }
     }
   },
-  async mounted() {
+  async created() {
     const res = await this.axios.get(this.$store.state.APIurl,
-        {
-          params: {
-            action: "getSyllabusesList",
-          }
-        });
+      {
+        params: {
+          action: "getSyllabusesList",
+        }
+      });
 
     this.syllabuses = res.data
-        .map((el) => {
-          return {
-            ...el,
-            entrance_year: this.$dayjs((new Date(el.entrance_year.replace(/-/g, "/")))).format('DD.MM.YYYY'),
-            query: {
-              id: el.id
-            }
+      .map((el) => {
+        return {
+          ...el,
+          entrance_year: this.$dayjs((new Date(el.entrance_year.replace(/-/g, "/")))).format('DD.MM.YYYY'),
+          query: {
+            id: el.id
           }
-        })
-        .reduce((acc, c) => {
-          const key = `${c.special}_${c.profile}_${c.qualification}_${c.education_form}`
+        }
+      })
+      .reduce((acc, c) => {
+        const key = `${c.special}_${c.profile}_${c.qualification}_${c.education_form}`
 
-          acc[key] = acc[key] ?? []
-          acc[key].push(c)
+        acc[key] = acc[key] ?? []
+        acc[key].push(c)
 
-          return acc
-        }, {})
+        return acc
+      }, {})
 
     this.canDelete = this.$store.state.user.role === 'admin'
-        || this.$store.state.user.role === 'editor'
-        || process.env.NODE_ENV === 'development'
+      || this.$store.state.user.role === 'editor'
+      || process.env.NODE_ENV === 'development'
 
   }
 }

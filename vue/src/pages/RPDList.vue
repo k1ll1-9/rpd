@@ -23,8 +23,8 @@
         <th>Статус</th>
         <th>Статус согласования</th>
         <th>Согласованная РПД</th>
-        <th>Загрузить РПД на сайт</th>
         <th>Скачать РПД</th>
+        <th>Загрузить РПД</th>
       </tr>
       </thead>
       <tbody>
@@ -88,8 +88,14 @@
             <label :for="`RPD_file_${rpd.code}`" class="file-label">
               <BIconUpload width="25" height="25"/>
             </label>
-            <input @change="readRPD(rpd,index)" type="file" :name="`RPD_file_${rpd.code}`" class="d-none"
-                   :id="`RPD_file_${rpd.code}`">
+            <input
+              accept=".json"
+              type="file"
+              class="d-none"
+              :name="`RPD_file_${rpd.code}`"
+              :id="`RPD_file_${rpd.code}`"
+              @change="readRPD(rpd,index)"
+            >
           </div>
         </td>
       </tr>

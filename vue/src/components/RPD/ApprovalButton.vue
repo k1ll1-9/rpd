@@ -4,8 +4,8 @@
     Отправить на согласование
   </button>
   </div>
-  <div v-if="visible" class="ms-5">
-    <button :class="[{'disabled': disabled},'btn btn-lg btn-primary mb-4']" @click="disapprove()">
+  <div v-if="canRecall" class="ms-5">
+    <button class="btn btn-lg btn-primary mb-4" @click="disapprove()">
       Отозвать
     </button>
   </div>
@@ -14,7 +14,7 @@
 <script>
 
 export default {
-  props: ['disabled'],
+  props: ['disabled','canRecall'],
   name: "ApprovalButton",
   data() {
     return {
@@ -60,10 +60,12 @@ export default {
         statusName: 'approval',
         status: null
       })
+
+      this.$store.commit('rpd/UNLOCK_RPD')
     }
   },
   mounted() {
-    this.visible = this.$store.state.user?.role === 'admin' || process.env.NODE_ENV === 'development'
+
   }
 }
 </script>

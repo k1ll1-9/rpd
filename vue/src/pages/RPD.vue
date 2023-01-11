@@ -41,7 +41,10 @@
           :options="{action: 'uploadRPDAttachment', params : this.$route.query,disabled: $store.state.rpd.locked}"
         />
       </div>
-      <ApprovalButton :disabled="!isValid || !canSubmit || $store.state.rpd.locked"/>
+      <ApprovalButton
+        :disabled="!isValid || !canSubmit || $store.state.rpd.locked"
+        :canRecall="canSubmit && $store.state.rpd.locked || visible"
+      />
     </div>
     <div>
       <span v-if="!canSubmit" class="error mt-2 d-inline-block">На согласование РПД отправить может только её автор</span>
@@ -124,7 +127,7 @@ export default {
           return false
         }
 
-        const authors =  state.rpd.managed.authors?.author?.FIO.toLowerCase()
+        const authors =  state.rpd.managed.authors?.author?.FIO?.toLowerCase()
         const currentUser = state.user.lastName.toLowerCase()
 
         if (authors === undefined){

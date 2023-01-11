@@ -1,6 +1,6 @@
 <template>
   <Navbar/>
-  <div class="main-wrapper">
+  <div v-if="ready" class="main-wrapper">
   <router-view :key="$route.fullPath" />
   </div>
 </template>

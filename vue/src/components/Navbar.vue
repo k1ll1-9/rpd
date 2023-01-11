@@ -1,6 +1,6 @@
 <template>
 
-  <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-5 rounded">
+  <nav class="navbar navbar-expand navbar-dark bg-primary mb-5 rounded">
     <div class="container-fluid">
       <div class="collapse navbar-collapse" id="navbarNavDropdown">
         <ul class="navbar-nav">

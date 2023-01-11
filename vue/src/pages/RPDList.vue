@@ -85,15 +85,15 @@
             data-bs-placement="bottom"
             title="загрузить РПД из файла"
           >
-            <label :for="`RPD_file_${rpd.code}`" class="file-label">
+            <label :for="`RPD_file_${rpd.code}_${index}`" class="file-label">
               <BIconUpload width="25" height="25"/>
             </label>
             <input
               accept=".json"
               type="file"
               class="d-none"
-              :name="`RPD_file_${rpd.code}`"
-              :id="`RPD_file_${rpd.code}`"
+              :name="`RPD_file_${rpd.code}_${index}`"
+              :id="`RPD_file_${rpd.code}_${index}`"
               @change="readRPD(rpd,index)"
             >
           </div>
@@ -306,6 +306,7 @@ export default {
           syllabusID: rpd.syllabusData.syllabusID,
           kafedra: rpd.kafedra
         }
+
         this.RPD2import.index = index
 
         const modal = new Modal(document.getElementById('importRPDModal'))

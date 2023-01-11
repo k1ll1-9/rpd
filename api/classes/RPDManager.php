@@ -316,7 +316,74 @@ class RPDManager
 
             if ($result === false) {
                 return [
-                    'error' => 'WS'
+                    'error' => 'WrongSign'
+                ];
+            }
+        }
+
+        $fp = '/mnt/synology_nfs/syllabuses/' . \join('/', $params);
+        \mkdir($fp, 0775, true);
+        $fn = '/' . $file['name'];
+        $path = $fp . $fn;
+        if (!\move_uploaded_file($file['tmp_name'], $path)) {
+            return [
+                'error' => 'file system error'
+            ];
+        }
+
+        try {
+            $pdo = Postgres::getInstance()->connect('pgsql:host=' . DB_HOST . ';port=5432;dbname=' . DB_NAME . ';', DB_USER, DB_PASSWORD);
+            $sql = "UPDATE syllabuses 
+                            SET {$params['colName']} = array_append({$params['colName']}, :path)
+                            WHERE id = :id
+                                AND (:path <> ALL ({$params['colName']}) OR {$params['colName']} IS NULL)";
+            $stmt = $pdo->prepare($sql);
+            $stmt->bindParam(':id', $params['id'], \PDO::PARAM_STR);
+            $stmt->bindParam(':path', $path, \PDO::PARAM_STR);
+            $result = $stmt->execute();
+        } catch (\PDOException $e) {
+            $result = $e->getMessage();
+        }
+
+        if ($result === true) {
+
+            self::uploadUPToRemote($params['id']);;
+            $res = [
+                'name' => $file['name'],
+                'path' => Cipher::encryptSSL($path)
+            ];
+        } else {
+            $res = [
+                'error' => $result
+            ];
+        }
+
+        return $res;
+    }
+
+    public static function uploadExternalRPD($params, $file)
+    {
+        //если загружается ЭЦП, проверяем есть ли соответсвующие ей документы
+        if (\strpos($file['name'], '.sig')) {
+            $path = '/mnt/synology_nfs/syllabuses/' . $params['syllabusID'] . '/rpd/' . $params['code'] . '/' . $params['kafedra'] . '/';
+
+            try {
+                $pdo = Postgres::getInstance()->connect('pgsql:host=' . DB_HOST . ';port=5432;dbname=' . DB_NAME . ';', DB_USER, DB_PASSWORD);
+                $sql = "SELECT {$params['colName']} FROM syllabuses 
+                            WHERE id = :id
+                                AND :path = ANY({$params['colName']})";
+                $stmt = $pdo->prepare($sql);
+                $stmt->bindParam(':id', $params['id'], \PDO::PARAM_STR);
+                $stmt->bindParam(':path', $path, \PDO::PARAM_STR);
+                $stmt->execute();
+                $result = $stmt->fetchColumn();
+            } catch (\PDOException $e) {
+                $result = $e->getMessage();
+            }
+
+            if ($result === false) {
+                return [
+                    'error' => 'WrongSign'
                 ];
             }
         }

@@ -31,6 +31,9 @@ export const rpd = {
     REMOVE_ERROR(state, payload) {
       state.errors = state.errors || []
       state.errors = state.errors.filter((el) => el.id !== payload.id)
+    },
+    UNLOCK_RPD(state) {
+      state.locked = false
     }
   },
   actions: {

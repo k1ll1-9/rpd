@@ -26,7 +26,7 @@
 </template>
 
 <script>
-import FileButtonInput from "@/components/UI/FileButtonInput";
+import FileButtonInput from "@/components/UI/FileInputs/FileButtonInput.vue";
 import ModalWarning from "../UI/ModalWarning";
 import {Modal} from "bootstrap";
 

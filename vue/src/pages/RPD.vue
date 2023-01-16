@@ -38,7 +38,12 @@
           :buttonClass="'btn btn-primary btn-lg mb-1'"
           :allowedTypes="['pdf']"
           :errorMessage="'Приложение должно быть в формате PDF'"
-          :options="{action: 'uploadRPDAttachment', params : this.$route.query,disabled: $store.state.rpd.locked}"
+          :options="{
+            addAction: 'uploadRPDAttachment',
+            deleteAction: 'deleteRPDFile',
+            params : this.$route.query,
+            disabled: $store.state.rpd.locked
+          }"
         />
       </div>
       <ApprovalButton
@@ -76,7 +81,7 @@ import Technologies from "../components/RPD/EducationTechnologies";
 import InformResources from "./../components/RPD/InformResources";
 import Annotation from "@/components/RPD/Annotation";
 import NoticeWindow from "@/components/RPD/NoticeWindow";
-import FileButtonInput from "@/components/UI/FileButtonInput";
+import FileButtonInput from "@/components/UI/FileInputs/FileButtonInput.vue";
 import {mapState} from "vuex";
 
 export default {
@@ -147,6 +152,11 @@ export default {
         status: val ? 'valid' : 'invalid'
       })
     })
+
+    if (this.$route.query?.validationCycle === 'true'){
+      window.location.href = 'https://lk.vavt.ru/local/components/syllabuses/main/templates/.default/api/validator.php'
+    }
+
   },
 }
 </script>

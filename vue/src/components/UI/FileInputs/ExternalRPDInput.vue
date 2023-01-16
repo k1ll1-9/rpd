@@ -1,23 +1,17 @@
 <template>
-  <label :class="[buttonClass || 'btn btn-primary w-100',{disabled : options.disabled}]">{{ label }}
+  <label
+    :class="[
+      'btn',
+      {
+        disabled : options.disabled,
+        'btn-success': link,
+        'btn-danger': !link
+      }
+    ]"
+  >
+    {{ !link ? 'Загрузить РПД' : 'Заменить РПД' }}
     <input type="file" @change="upload" hidden>
   </label>
-  <div v-if="link" class="d-flex flex-flow justify-content-between">
-    <a :href="link"
-       target="_blank"
-       class="btn btn-success w-100 me-1"
-       :class="{disabled : options.disabled}"
-    >
-      Скачать
-    </a>
-    <button
-      class="btn btn-danger w-100 ms-1"
-      :class="{disabled : options.disabled}"
-      @click="deleteFile"
-    >
-      Удалить
-    </button>
-  </div>
   <ModalWarning :id="id" passive="true">
     <template v-slot:title>
       Ошибка загрузки файла
@@ -29,11 +23,11 @@
 </template>
 
 <script>
-import ModalWarning from "@/components/UI/ModalWarning";
+import ModalWarning from "@/components/UI/ModalWarning.vue";
 import {Modal} from "bootstrap";
 
 export default {
-  name: "FileButtonInput",
+  name: "ExternalRPDInput",
   emits: ["uploaded"],
   components: {ModalWarning},
   props: ['options', 'label', 'disabled', 'allowedTypes', 'errorMessage', 'buttonClass', 'id', 'name'],
@@ -64,7 +58,7 @@ export default {
       const formData = new FormData();
 
       formData.append('file', e.target.files[0]);
-      formData.append('action', this.options.action);
+      formData.append('action', this.options.addAction);
       formData.append('params', JSON.stringify(this.options.params));
 
       const res = await this.axios.post(this.$store.state.APIurl,
@@ -85,7 +79,7 @@ export default {
     async deleteFile() {
       const res = await this.axios.post(this.$store.state.APIurl,
         {
-          action: 'deleteRPDFile',
+          action: this.options.deleteAction,
           params: this.options.params,
           name: this.name
         }
@@ -102,7 +96,7 @@ export default {
           params: {
             action: "checkRPDFile",
             params: this.options.params,
-            name: this.name
+            name: this.options.params.discIndex
           }
         });
       this.link = res.data.link

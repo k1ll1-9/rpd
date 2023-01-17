@@ -31,7 +31,6 @@ const routes = [
 
 const base = process.env.VUE_APP_BASE_ROUTER_URL
 const router = createRouter({
-  mode:'history',
   routes,
   history: createWebHistory(base),
 

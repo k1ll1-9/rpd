@@ -142,6 +142,7 @@ export default {
         return authors.includes(currentUser)
       }
     })
+
   },
   async mounted() {
     this.ready = await this.$store.dispatch('rpd/initData', this.$route.query)

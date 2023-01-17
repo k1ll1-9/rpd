@@ -3,10 +3,10 @@
     <h2 class="my-4">Оглавление</h2>
     <ol class="w-75 m-auto">
       <li v-for="(item,code) in $store.state.rpd.static.unitTitles" :key="code" class="text-start my-1">
-        <a :href="'#' + item.code">{{ item.title }}</a>
+        <a :href="'#' + item.code" @click.prevent="scrollTo">{{ item.title }}</a>
         <ol v-if="item.subUnits">
           <li v-for="(subItem,subCode) in item.subUnits" :key="subCode" class="text-start my-1">
-            <a :href="'#' + subItem.code" @click.stop.prevent="scrollTo">{{ subItem.title }}</a>
+            <a :href="'#' + subItem.code" @click.prevent="scrollTo">{{ subItem.title }}</a>
           </li>
         </ol>
       </li>
@@ -38,7 +38,6 @@ export default {
       });
     },
     scrollTo: function ($event) {
-      $event.preventDefault()
 
       const id = $event.target.getAttribute('href').substring(1)
       const elY = document.getElementById(id)?.getBoundingClientRect()?.top

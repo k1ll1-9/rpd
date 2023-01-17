@@ -15,7 +15,7 @@
     <div class="list-wrapper mt-2" v-if="opened">
       <ul>
         <li v-for="(item,index) in errors" :key="index">
-          <a :href="`#${item.id}`">{{item.desc}}</a>
+          <a :href="`#${item.id}`" @click.prevent="scrollTo">{{item.desc}}</a>
         </li>
       </ul>
     </div>
@@ -37,6 +37,20 @@ export default {
   methods: {
     toggle(){
       this.opened = !this.opened
+    },
+    scrollTo: function ($event) {
+
+      const id = $event.target.getAttribute('href').substring(1)
+      const elY = document.getElementById(id)?.getBoundingClientRect()?.top
+
+      if (elY === undefined){
+        return
+      }
+
+      window.scrollTo({
+        top: elY,
+        behavior: "smooth"
+      });
     }
   },
   computed: {

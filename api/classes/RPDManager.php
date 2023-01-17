@@ -7,6 +7,9 @@ require_once(__DIR__ . "/../../config.php");
 require_once(__DIR__ . "/../../vendor/autoload.php");
 
 use VAVT\Services\Postgres;
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
+use Monolog\Formatter\LineFormatter;
 
 class RPDManager
 {
@@ -726,8 +729,21 @@ class RPDManager
         \curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         \curl_setopt($ch, CURLOPT_POST, true);
         \curl_setopt($ch, CURLOPT_POSTFIELDS, \http_build_query($data));
-        \curl_exec($ch);
+        $res = \curl_exec($ch);
         \curl_close($ch);
+
+        $log = new Logger('Учебные планы');
+        $formatter = new LineFormatter(null, null, false, true);
+        $handler = new StreamHandler('upload/logs/Syllabuses.log', Logger::ERROR);
+        $handler->setFormatter($formatter);
+        $log->pushHandler($handler);
+
+        $data = \json_decode($res,true);
+
+        if ($data['status'] === 'Error'){
+            $log->error($data['message']);
+        }
+
     }
 
     public static function uploadUPToRemote($syllabusID)
@@ -803,7 +819,20 @@ class RPDManager
         \curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         \curl_setopt($ch, CURLOPT_POST, true);
         \curl_setopt($ch, CURLOPT_POSTFIELDS, \http_build_query($data));
-        \curl_exec($ch);
+        $res =  \curl_exec($ch);
+        \curl_close($ch);
+
+        $log = new Logger('Учебные планы');
+        $formatter = new LineFormatter(null, null, false, true);
+        $handler = new StreamHandler('upload/logs/Syllabuses.log', Logger::ERROR);
+        $handler->setFormatter($formatter);
+        $log->pushHandler($handler);
+
+        $data = \json_decode($res,true);
+
+        if ($data['status'] === 'Error'){
+            $log->error($data['message']);
+        }
 
     }
 

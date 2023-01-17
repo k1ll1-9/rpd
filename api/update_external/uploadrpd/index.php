@@ -2,6 +2,9 @@
 
 use VAVT\Main\Cipher;
 use VAVT\Services\Postgres;
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
+use Monolog\Formatter\LineFormatter;
 
 if (!$_SERVER['DOCUMENT_ROOT']) {
     $_SERVER['DOCUMENT_ROOT'] = '/home/bitrix/www';
@@ -12,12 +15,19 @@ define('NOT_CHECK_PERMISSIONS', true);
 require $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_before.php";
 require $_SERVER["DOCUMENT_ROOT"] . "/update_external/config.php";
 
+$log = new Logger('Учебные планы');
+$formatter = new LineFormatter(null, null, false, true);
+$handler = new StreamHandler('upload/logs/Syllabuses.log', Logger::ERROR);
+$handler->setFormatter($formatter);
+$log->pushHandler($handler);
+
+
 // импорт из Матрицы 2.0
 
 
-$pdo = Postgres::getInstance()->connect('pgsql:host=' . DB_HOST . ';port=5432;dbname=' . DB_NAME . ';', DB_USER, DB_PASSWORD);
+/*$pdo = Postgres::getInstance()->connect('pgsql:host=' . DB_HOST . ';port=5432;dbname=' . DB_NAME . ';', DB_USER, DB_PASSWORD);
 
-$sql = 'SELECT syllabus_id, name, code, json, rpd_f FROM disciplines';
+$sql = 'SELECT syllabus_id, name, code, json, rpd_f, kafedra FROM disciplines';
 
 $res = $pdo->query($sql)->fetchAll(\PDO::FETCH_ASSOC);
 
@@ -41,6 +51,19 @@ foreach ($res as $disc) {
         $link = $linkSign = null;
     }
 
+    try {
+        $sql = 'SELECT json FROM  disciplines_history
+                            WHERE (syllabus_id,code,kafedra) = (:syllabus_id,:code,:kafedra)';
+        $stmt = $pdo->prepare($sql);
+        $stmt->bindParam(':syllabus_id', $disc['syllabus_id'], \PDO::PARAM_STR);
+        $stmt->bindParam(':code', $disc['code'], \PDO::PARAM_STR);
+        $stmt->bindParam(':kafedra', $disc['kafedra'], \PDO::PARAM_STR);
+        $stmt->execute();
+        $json = $stmt->fetchColumn();
+    } catch (\PDOException $e) {
+        echo $e->getMessage();
+    }
+
     $data = [
         "srcid" => "rpd",
         'opgid' => $disc['syllabus_id'],
@@ -48,7 +71,7 @@ foreach ($res as $disc) {
         'upidyr' => $disc['code'],
         'rpdcnt' => $name,
         'rpdname' => $disc['name'],
-        'rpdannot' => $data['annotation'],
+        'rpdannot' => \json_decode($json, true)['annotation'],
         'meth' => $link,
         'meth_sign' => $linkSign
     ];
@@ -59,7 +82,7 @@ foreach ($res as $disc) {
 }
 
 
-\curl_close($ch);
+\curl_close($ch);*/
 
 // импорт из Матрицы 1.0
 
@@ -108,6 +131,12 @@ foreach ($res as $row) {
             \curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
             $res = \curl_exec($ch);
 
+
+            $data = \json_decode($res,true);
+
+            if ($data['status'] === 'Error'){
+                $log->error($data['message']);
+            }
         }
     }
 }

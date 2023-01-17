@@ -711,14 +711,27 @@ class RPDManager
         $link = $name . '|https://lk.vavt.ru/helpers/getFile.php?fileSSL=' . Cipher::encryptSSL($res['rpd_f']);
         $linkSign = $name . '.sig' . '|https://lk.vavt.ru/helpers/getFile.php?fileSSL=' . Cipher::encryptSSL($res['rpd_f'] . '.sig');
 
+        try {
+            $sql = 'SELECT json FROM  disciplines_history 
+                            WHERE (syllabus_id,code,kafedra) = (:syllabus_id,:code,:kafedra)';
+            $stmt = $pdo->prepare($sql);
+            $stmt->bindParam(':syllabus_id', $params['syllabusID'], \PDO::PARAM_STR);
+            $stmt->bindParam(':code', $params['code'], \PDO::PARAM_STR);
+            $stmt->bindParam(':kafedra', $params['kafedra'], \PDO::PARAM_STR);
+            $stmt->execute();
+            $jsonManaged = $stmt->fetchColumn();
+        } catch (\PDOException $e) {
+            echo $e->getMessage();
+        }
+
         $data = [
-            "srcid" => "rpd",
+            "srcid" => "rpd_2022",
             'opgid' => $res['syllabus_id'],
             'rpdcode' => $json['disciplineIndex'],
             'upidyr' => $res['code'],
             'rpdcnt' => $name,
             'rpdname' => $res['name'],
-            'rpdannot' => $json['annotation'],
+            'rpdannot' => \json_decode($jsonManaged, true)['annotation'],
             'meth' => $link,
             'meth_sign' => $linkSign
         ];
@@ -791,7 +804,7 @@ class RPDManager
         }
 
         $data = [
-            "srcid" => "edu_prg_yr",
+            "srcid" => "edu_prg_yr_2022",
             'upid' => $res['id'],
             'educode' => $res['special_code'],
             'begyear' => $res['syllabus_year'],

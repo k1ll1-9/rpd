@@ -4,7 +4,7 @@
       <FileButtonInput
           @uploaded="pushFileList($event,index)"
           :label="(file?.arFiles?.length > 0 ? 'Добавить ' : 'Загрузить ') + file.title"
-          :options="{action: 'uploadSyllabusFile', params : {id:syllabusID, colName : file.colName} ,disabled: !isEditor}"/>
+          :options="{addAction: 'uploadSyllabusFile', params : {id:syllabusID, colName : file.colName} ,disabled: !isEditor}"/>
       <div v-for="(link,i) in file.arFiles" :key="i" class="my-2">
         <a :href="'https://lk.vavt.ru/helpers/getFile.php?fileSSL='+link.path" target="_blank">
           {{ link.name }}

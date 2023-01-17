@@ -6,7 +6,7 @@
         <a :href="'#' + item.code">{{ item.title }}</a>
         <ol v-if="item.subUnits">
           <li v-for="(subItem,subCode) in item.subUnits" :key="subCode" class="text-start my-1">
-            <a :href="'#' + subItem.code">{{ subItem.title }}</a>
+            <a :href="'#' + subItem.code" @click.stop.prevent="scrollTo">{{ subItem.title }}</a>
           </li>
         </ol>
       </li>
@@ -37,6 +37,21 @@ export default {
         behavior: "smooth"
       });
     },
+    scrollTo: function ($event) {
+      $event.preventDefault()
+
+      const id = $event.target.getAttribute('href').substring(1)
+      const elY = document.getElementById(id)?.getBoundingClientRect()?.top
+
+      if (elY === undefined){
+        return
+      }
+
+      window.scrollTo({
+        top: elY,
+        behavior: "smooth"
+      });
+    }
   }
 }
 </script>
@@ -49,6 +64,7 @@ a:hover {
 a {
   color: #000000 !important;
 }
+
 ul {
   list-style: none;
 }
@@ -70,8 +86,8 @@ h2 {
 .arrow-wrapper {
   width: 60px;
   height: 60px;
-  background: rgb(35, 120, 231,0.6);
-  border: 1px solid rgb(0, 0, 0,0.5);
+  background: rgb(35, 120, 231, 0.6);
+  border: 1px solid rgb(0, 0, 0, 0.5);
   background-clip: padding-box;
   border-radius: 100px;
   cursor: pointer;

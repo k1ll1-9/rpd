@@ -1,4 +1,4 @@
-<?
+<?php
 
 if (!$_SERVER['DOCUMENT_ROOT']) {
     $_SERVER['DOCUMENT_ROOT'] = '/home/bitrix/www';
@@ -12,6 +12,15 @@ require $_SERVER["DOCUMENT_ROOT"] . "/update_external/config.php";
 use VAVT\Main\MUP;
 use VAVT\Services\Postgres;
 use VAVT\Main\Cipher;
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
+use Monolog\Formatter\LineFormatter;
+
+$log = new Logger('Учебные планы');
+$formatter = new LineFormatter(null, null, false, true);
+$handler = new StreamHandler('upload/logs/Syllabuses.log', Logger::ERROR);
+$handler->setFormatter($formatter);
+$log->pushHandler($handler);
 
 // импорт из Матрицы 2.0
 
@@ -120,6 +129,13 @@ foreach ($res as $up) {
     $data = \http_build_query($data);
     \curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
     $res = \curl_exec($ch);
+
+    $data = \json_decode($res,true);
+
+    if ($data['status'] === 'Error'){
+        $log->error($data['message']);
+    }
+
 }
 
 \curl_close($ch);
@@ -327,6 +343,13 @@ foreach ($res as $row) {
     $data = \http_build_query($data);
     \curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
     $res = \curl_exec($ch);
+
+    $data = \json_decode($res,true);
+
+    if ($data['status'] === 'Error'){
+        $log->error($data['message']);
+    }
 }
 
 \curl_close($ch);
+

@@ -152,7 +152,6 @@ export default {
         status: val ? 'valid' : 'invalid'
       })
     })
-
     if (this.$route.query?.validationCycle === 'true'){
       window.location.href = 'https://lk.vavt.ru/local/components/syllabuses/main/templates/.default/api/validator.php'
     }

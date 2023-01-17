@@ -79,7 +79,7 @@ export const rpd = {
 
       await this.axios.post(rootState.APIurl, data);
     },
-    async initPDF({state},type) {
+    async initPDF({state}, type) {
       const res = await this.axios.post(process.env.VUE_APP_PDF_URL,
         {
           data: {

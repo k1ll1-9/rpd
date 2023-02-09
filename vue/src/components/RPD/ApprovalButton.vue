@@ -19,7 +19,7 @@
 import Preloader from "@/components/Misc/Preloader.vue";
 
 export default {
-  props: ['disabled', 'canRecall'],
+  props: ['disabled', 'canRecall','approvalType'],
   name: "ApprovalButton",
   components: {Preloader},
   data() {
@@ -33,7 +33,7 @@ export default {
     async requestApprove() {
       this.loading = true
       const action = (this.external) ? 'approvalExternal' : 'approval'
-      const approvalURL = (this.external) ? '/doc/rpd/rpdext.php?perm=' : '/doc/rpd/rpd.php?perm='
+      const approvalURL = (this.approvalType === 'self') ? '/doc/rpd/rpd.php?perm=' : '/doc/rpd/rpdext.php?perm='
       const PDFLink = await this.$store.dispatch('rpd/initPDF', action)
 
       const data = {

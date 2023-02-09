@@ -18,7 +18,10 @@ use Monolog\Formatter\LineFormatter;
 
 $log = new Logger('Учебные планы');
 $formatter = new LineFormatter(null, null, false, true);
-$handler = new StreamHandler($_SERVER["DOCUMENT_ROOT"] . '/upload/logs/syllabuses.log', Logger::ERROR);
+$handler = new StreamHandler($_SERVER['DOCUMENT_ROOT'] . '/upload/logs/syllabuses_error.log', Logger::ERROR);
+$handler->setFormatter($formatter);
+$log->pushHandler($handler);
+$handler = new StreamHandler($_SERVER['DOCUMENT_ROOT'] . '/upload/logs/syllabuses.log', Logger::INFO);
 $handler->setFormatter($formatter);
 $log->pushHandler($handler);
 
@@ -384,6 +387,10 @@ foreach ($res as $row) {
             'rpdID' => [
                 'upID' => $res['id']
             ]
+        ]);
+    } else {
+        $log->info('UP uploaded successfully', [
+            'upID' => $res['id']
         ]);
     }
 

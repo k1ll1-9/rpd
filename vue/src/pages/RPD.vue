@@ -56,6 +56,7 @@
           || $store.state.rpd.locked
           || (external && !$store.state.rpd.attachment)"
         :canRecall="canSubmit && $store.state.rpd.locked"
+        :approvalType="getApprovalType()"
       />
     </div>
     <div>
@@ -120,7 +121,8 @@ export default {
   data() {
     return {
       ready: false,
-      external: this.$route.query.external === 'true'
+      external: this.$route.query.external === 'true',
+      externalApproval: ['МИФИ','РАНХиГС']
     }
   },
   computed: {
@@ -154,6 +156,11 @@ export default {
       }
     })
 
+  },
+  methods:{
+    getApprovalType(){
+      return this.externalApproval.includes(this.$route.query.kafedra) ? 'extApproval' : 'self'
+    }
   },
   async mounted() {
     this.ready = await this.$store.dispatch('rpd/initData', this.$route.query)

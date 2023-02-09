@@ -17,10 +17,12 @@ require $_SERVER["DOCUMENT_ROOT"] . "/update_external/config.php";
 
 $log = new Logger('РПД');
 $formatter = new LineFormatter(null, null, false, true);
-$handler = new StreamHandler($_SERVER["DOCUMENT_ROOT"] . '/upload/logs/syllabuses.log', Logger::ERROR);
+$handler = new StreamHandler($_SERVER['DOCUMENT_ROOT'] . '/upload/logs/rpd_error.log', Logger::ERROR);
 $handler->setFormatter($formatter);
 $log->pushHandler($handler);
-
+$handler = new StreamHandler($_SERVER['DOCUMENT_ROOT'] . '/upload/logs/rpd.log', Logger::INFO);
+$handler->setFormatter($formatter);
+$log->pushHandler($handler);
 $i = 0;
 
 /*
@@ -187,6 +189,13 @@ foreach ($res as $row) {
             if ($data['status'] === 'Error') {
                 $log->error('Error on ADB server', [
                     'error' => $data['message'],
+                    'rpdID' => [
+                        'upID' => $res['syllabus_id'],
+                        'code' => $res['code']
+                    ]
+                ]);
+            } else {
+                $log->info('RPD uploaded successfully', [
                     'rpdID' => [
                         'upID' => $res['syllabus_id'],
                         'code' => $res['code']

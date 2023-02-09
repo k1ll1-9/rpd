@@ -46,7 +46,7 @@ class RPDManager
         DataManager::getUnitTitles($data);
         DataManager::getControlShortNames($data);
 
-        $fp = '/mnt/synology_nfs/syllabuses/'.$params['syllabusID'].'/rpd/'.$params['code'].'/'. $params['kafedra'].'/'.'attachment.pdf';
+        $fp = '/mnt/synology_nfs/syllabuses/' . $params['syllabusID'] . '/rpd/' . $params['code'] . '/' . $params['kafedra'] . '/' . 'attachment.pdf';
         $data['attachment'] = (\file_exists($fp)) ? $fp : null;
 
         $data['version'] = '2022041501';
@@ -164,7 +164,8 @@ class RPDManager
         return $res;
     }
 
-    public static function getRPDListByKaf($params){
+    public static function getRPDListByKaf($params)
+    {
 
         $pdo = Postgres::getInstance()->connect('pgsql:host=' . DB_HOST . ';port=5432;dbname=' . DB_NAME . ';', DB_USER, DB_PASSWORD);
 
@@ -381,23 +382,23 @@ class RPDManager
         if (!\move_uploaded_file($file['tmp_name'], $path)) {
             return ['error' => 'file system error'];
         } else {
-            return ['link' =>  'https://lk.vavt.ru/helpers/getFile.php?fileSSL='.Cipher::encryptSSL($path)];
+            return ['link' => 'https://lk.vavt.ru/helpers/getFile.php?fileSSL=' . Cipher::encryptSSL($path)];
         }
     }
 
-    public static function checkRPDFile($params,$name)
+    public static function checkRPDFile($params, $name)
     {
-        $fp = '/mnt/synology_nfs/syllabuses/'.$params['syllabusID'].'/rpd/'.$params['code'].'/'. $params['kafedra'].'/'.$name;
-        if (\file_exists($fp)){
-            return ['link' =>  'https://lk.vavt.ru/helpers/getFile.php?fileSSL='.Cipher::encryptSSL($fp)];
+        $fp = '/mnt/synology_nfs/syllabuses/' . $params['syllabusID'] . '/rpd/' . $params['code'] . '/' . $params['kafedra'] . '/' . $name;
+        if (\file_exists($fp)) {
+            return ['link' => 'https://lk.vavt.ru/helpers/getFile.php?fileSSL=' . Cipher::encryptSSL($fp)];
         } else {
-            return ['link' =>  null];
+            return ['link' => null];
         }
     }
 
-    public static function deleteRPDFile($params,$name)
+    public static function deleteRPDFile($params, $name)
     {
-        $fp = '/mnt/synology_nfs/syllabuses/'.$params['syllabusID'].'/rpd/'.$params['code'].'/'. $params['kafedra'].'/'.$name;
+        $fp = '/mnt/synology_nfs/syllabuses/' . $params['syllabusID'] . '/rpd/' . $params['code'] . '/' . $params['kafedra'] . '/' . $name;
         if (!\unlink($fp)) {
             return ['error' => 'file system error'];
         } else {
@@ -704,14 +705,17 @@ class RPDManager
         \curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         \curl_setopt($ch, CURLOPT_POST, true);
         \curl_setopt($ch, CURLOPT_POSTFIELDS, \http_build_query($data));
-        $res = \curl_exec($ch);
+        $result = \curl_exec($ch);
 
         $log = new Logger('РПД');
         $formatter = new LineFormatter(null, null, false, true);
-        $handler = new StreamHandler($_SERVER['DOCUMENT_ROOT'].'/upload/logs/Syllabuses.log', Logger::ERROR);
+        $handler = new StreamHandler($_SERVER['DOCUMENT_ROOT'] . '/upload/logs/rpd_error.log', Logger::ERROR);
         $handler->setFormatter($formatter);
         $log->pushHandler($handler);
-        $httpOK =  false;
+        $handler = new StreamHandler($_SERVER['DOCUMENT_ROOT'] . '/upload/logs/rpd.log', Logger::INFO);
+        $handler->setFormatter($formatter);
+        $log->pushHandler($handler);
+        $httpOK = false;
         $externalOK = false;
         $responseCode = \curl_getinfo($ch, CURLINFO_HTTP_CODE);
         \curl_close($ch);
@@ -728,9 +732,9 @@ class RPDManager
             $httpOK = true;
         }
 
-        $data = \json_decode($res,true);
+        $data = \json_decode($result, true);
 
-        if ($data['status'] === 'Error'){
+        if ($data['status'] === 'Error') {
             $log->error($data['message']);
         }
 
@@ -742,11 +746,17 @@ class RPDManager
                     'code' => $res['code']
                 ]
             ]);
-        } else{
+        } else {
             $externalOK = true;
+            $log->info('RPD uploaded successfully', [
+                'rpdID' => [
+                    'upID' => $res['syllabus_id'],
+                    'code' => $res['code']
+                ]
+            ]);
         }
 
-        if ($httpOK && $externalOK){
+        if ($httpOK && $externalOK) {
             return true;
         }
 
@@ -825,15 +835,18 @@ class RPDManager
         \curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         \curl_setopt($ch, CURLOPT_POST, true);
         \curl_setopt($ch, CURLOPT_POSTFIELDS, \http_build_query($data));
-        $res =  \curl_exec($ch);
+        $result = \curl_exec($ch);
 
 
         $log = new Logger('Учебные планы');
         $formatter = new LineFormatter(null, null, false, true);
-        $handler = new StreamHandler($_SERVER['DOCUMENT_ROOT'].'/upload/logs/syllabuses.log', Logger::ERROR);
+        $handler = new StreamHandler($_SERVER['DOCUMENT_ROOT'] . '/upload/logs/syllabuses_error.log', Logger::ERROR);
         $handler->setFormatter($formatter);
         $log->pushHandler($handler);
-        $httpOK =  false;
+        $handler = new StreamHandler($_SERVER['DOCUMENT_ROOT'] . '/upload/logs/syllabuses.log', Logger::INFO);
+        $handler->setFormatter($formatter);
+        $log->pushHandler($handler);
+        $httpOK = false;
         $externalOK = false;
         $responseCode = \curl_getinfo($ch, CURLINFO_HTTP_CODE);
         \curl_close($ch);
@@ -841,28 +854,27 @@ class RPDManager
         if ($responseCode !== 200) {
             $log->error('Connection Error', [
                 'error' => $responseCode,
-                'rpdID' => [
-                    'upID' => $res['id']
-                ]
+                'upID' => $res['id']
             ]);
-        }else {
+        } else {
             $httpOK = true;
         }
 
-        $data = \json_decode($res,true);
+        $data = \json_decode($res, true);
 
         if ($data['status'] === 'Error') {
             $log->error('Error on ADB server', [
                 'error' => $data['message'],
-                'rpdID' => [
-                    'upID' => $res['id']
-                ]
+                'upID' => $res['id']
             ]);
-        }else{
+        } else {
+            $log->info('UP uploaded successfully', [
+                'upID' => $res['id']
+            ]);
             $externalOK = true;
         }
 
-        if ($httpOK && $externalOK){
+        if ($httpOK && $externalOK) {
             return true;
         }
 

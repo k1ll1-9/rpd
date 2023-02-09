@@ -3,6 +3,10 @@ declare(strict_types=1);
 
 namespace VAVT\UP;
 
+if (!$_SERVER['DOCUMENT_ROOT']) {
+    $_SERVER['DOCUMENT_ROOT'] = '/home/bitrix/www';
+}
+
 require_once(__DIR__ . "/../../config.php");
 require_once(__DIR__ . "/../../vendor/autoload.php");
 
@@ -41,6 +45,10 @@ class RPDManager
         DataManager::checkInformResources($data);
         DataManager::getUnitTitles($data);
         DataManager::getControlShortNames($data);
+
+        $fp = '/mnt/synology_nfs/syllabuses/'.$params['syllabusID'].'/rpd/'.$params['code'].'/'. $params['kafedra'].'/'.'attachment.pdf';
+        $data['attachment'] = (\file_exists($fp)) ? $fp : null;
+
         $data['version'] = '2022041501';
 
         return $data;
@@ -351,52 +359,6 @@ class RPDManager
         if ($result === true) {
 
             self::uploadUPToRemote($params['id']);;
-            $res = [
-                'name' => $file['name'],
-                'path' => Cipher::encryptSSL($path)
-            ];
-        } else {
-            $res = [
-                'error' => $result
-            ];
-        }
-
-        return $res;
-    }
-
-    public static function uploadExternalRPD($params, $file)
-    {
-        $fp = '/mnt/synology_nfs/syllabuses/' . $params['syllabusID'] . '/rpd/' . $params['code'] . '/' . $params['kafedra'] ;
-        \mkdir($fp, 0775, true);
-        $fn = '/external_rpd.pdf';
-        $path = $fp . $fn;
-
-
-
-       if (!\move_uploaded_file($file['tmp_name'], $path)) {
-            return [
-                'error' => 'file system error'
-            ];
-        }
- var_dump($path); die();
-
-        /*
-               try {
-                   $pdo = Postgres::getInstance()->connect('pgsql:host=' . DB_HOST . ';port=5432;dbname=' . DB_NAME . ';', DB_USER, DB_PASSWORD);
-                   $sql = "UPDATE disciplines SET rpd_f = :path
-                              WHERE (syllabus_id,code,kafedra) = (:syllabus_id,:code,:kafedra)";
-                   $stmt = $pdo->prepare($sql);
-                   $stmt->bindParam(':syllabus_id', $params['syllabusID'], \PDO::PARAM_STR);
-                   $stmt->bindParam(':code', $params['code'], \PDO::PARAM_STR);
-                   $stmt->bindParam(':kafedra', $params['kafedra'], \PDO::PARAM_STR);
-                   $stmt->bindParam(':path', $path, \PDO::PARAM_STR);
-                   $result = $stmt->execute();
-               } catch (\PDOException $e) {
-                   $result = $e->getMessage();
-               }*/
-
-        if ($result === true) {
-
             $res = [
                 'name' => $file['name'],
                 'path' => Cipher::encryptSSL($path)
@@ -743,18 +705,49 @@ class RPDManager
         \curl_setopt($ch, CURLOPT_POST, true);
         \curl_setopt($ch, CURLOPT_POSTFIELDS, \http_build_query($data));
         $res = \curl_exec($ch);
-        \curl_close($ch);
 
-        $log = new Logger('Учебные планы');
+        $log = new Logger('РПД');
         $formatter = new LineFormatter(null, null, false, true);
-        $handler = new StreamHandler('upload/logs/Syllabuses.log', Logger::ERROR);
+        $handler = new StreamHandler($_SERVER['DOCUMENT_ROOT'].'/upload/logs/Syllabuses.log', Logger::ERROR);
         $handler->setFormatter($formatter);
         $log->pushHandler($handler);
+        $httpOK =  false;
+        $externalOK = false;
+        $responseCode = \curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        \curl_close($ch);
+
+        if ($responseCode !== 200) {
+            $log->error('Connection Error', [
+                'error' => $responseCode,
+                'rpdID' => [
+                    'upID' => $res['syllabus_id'],
+                    'rpdID' => $res['code']
+                ]
+            ]);
+        } else {
+            $httpOK = true;
+        }
 
         $data = \json_decode($res,true);
 
         if ($data['status'] === 'Error'){
             $log->error($data['message']);
+        }
+
+        if ($data['status'] === 'Error') {
+            $log->error('Error on ADB server', [
+                'error' => $data['message'],
+                'rpdID' => [
+                    'upID' => $res['syllabus_id'],
+                    'code' => $res['code']
+                ]
+            ]);
+        } else{
+            $externalOK = true;
+        }
+
+        if ($httpOK && $externalOK){
+            return true;
         }
 
     }
@@ -833,18 +826,44 @@ class RPDManager
         \curl_setopt($ch, CURLOPT_POST, true);
         \curl_setopt($ch, CURLOPT_POSTFIELDS, \http_build_query($data));
         $res =  \curl_exec($ch);
-        \curl_close($ch);
+
 
         $log = new Logger('Учебные планы');
         $formatter = new LineFormatter(null, null, false, true);
-        $handler = new StreamHandler('upload/logs/Syllabuses.log', Logger::ERROR);
+        $handler = new StreamHandler($_SERVER['DOCUMENT_ROOT'].'/upload/logs/syllabuses.log', Logger::ERROR);
         $handler->setFormatter($formatter);
         $log->pushHandler($handler);
+        $httpOK =  false;
+        $externalOK = false;
+        $responseCode = \curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        \curl_close($ch);
+
+        if ($responseCode !== 200) {
+            $log->error('Connection Error', [
+                'error' => $responseCode,
+                'rpdID' => [
+                    'upID' => $res['id']
+                ]
+            ]);
+        }else {
+            $httpOK = true;
+        }
 
         $data = \json_decode($res,true);
 
-        if ($data['status'] === 'Error'){
-            $log->error($data['message']);
+        if ($data['status'] === 'Error') {
+            $log->error('Error on ADB server', [
+                'error' => $data['message'],
+                'rpdID' => [
+                    'upID' => $res['id']
+                ]
+            ]);
+        }else{
+            $externalOK = true;
+        }
+
+        if ($httpOK && $externalOK){
+            return true;
         }
 
     }
@@ -907,4 +926,6 @@ class RPDManager
         return $res;
 
     }
+
+
 }

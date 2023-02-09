@@ -11,7 +11,7 @@
 
 export default {
   name: "DigitInput",
-  props: ['identity'],
+  props: ['identity', 'maxVal'],
   data() {
     return {
       lastValid: null
@@ -30,7 +30,7 @@ export default {
     },
     validate(e) {
       const pattern = /^(|\d)+$/g;
-      if (!pattern.test(e.target.value)) {
+      if (!pattern.test(e.target.value) || e.target.value > this.maxVal) {
         e.target.value = this.lastValid;
       } else {
         this.lastValid = e.target.value

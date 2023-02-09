@@ -18,11 +18,13 @@ use Monolog\Formatter\LineFormatter;
 
 $log = new Logger('Учебные планы');
 $formatter = new LineFormatter(null, null, false, true);
-$handler = new StreamHandler('upload/logs/Syllabuses.log', Logger::ERROR);
+$handler = new StreamHandler($_SERVER["DOCUMENT_ROOT"] . '/upload/logs/syllabuses.log', Logger::ERROR);
 $handler->setFormatter($formatter);
 $log->pushHandler($handler);
 
-// импорт из Матрицы 2.0
+/*// импорт из Матрицы 2.0
+
+$j = 0;
 
 function getFileLink($JSON, $planLink, $getSigns = false)
 {
@@ -104,7 +106,7 @@ foreach ($res as $up) {
 
 
     $data = [
-        "srcid" => "edu_prg_yr",
+        "srcid" => "edu_prg_yr_2022",
         'upid' => $up['id'],
         'educode' => $up['special_code'],
         'begyear' => $up['syllabus_year'],
@@ -113,32 +115,51 @@ foreach ($res as $up) {
         'eduform' => $up['education_form'],
         'eduplan' => $planLink,
         'giatt' => getFileLink($up['gia_f'], $planLink),
-        'giatt_sign' => getFileLink($up['gia_f'], $planLink,true),
+        'giatt_sign' => getFileLink($up['gia_f'], $planLink, true),
         'edupr' => getFileLink($up['practice_f'], $planLink),
-        'edupr_sign' => getFileLink($up['practice_f'], $planLink,true),
+        'edupr_sign' => getFileLink($up['practice_f'], $planLink, true),
         'opmain' => getFileLink($up['oop_f'], $planLink),
-        'opmain_sign' => getFileLink($up['oop_f'], $planLink,true),
+        'opmain_sign' => getFileLink($up['oop_f'], $planLink, true),
         'eduschd' => getFileLink($up['schedule_f'], $planLink),
-        'eduschd_sign' => getFileLink($up['schedule_f'], $planLink,true),
+        'eduschd_sign' => getFileLink($up['schedule_f'], $planLink, true),
         'meth' => getFileLink($up['methodical_f'], $planLink),
-        'meth_sign' => getFileLink($up['methodical_f'], $planLink,true),
+        'meth_sign' => getFileLink($up['methodical_f'], $planLink, true),
         'eduel' => getFileLink($up['distant_f'], $planLink),
-        'eduel_sign' => getFileLink($up['distant_f'], $planLink,true)
+        'eduel_sign' => getFileLink($up['distant_f'], $planLink, true)
     ];
 
     $data = \http_build_query($data);
     \curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-    $res = \curl_exec($ch);
+  //  $res = \curl_exec($ch);
 
-    $data = \json_decode($res,true);
+    $responseCode = \curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
-    if ($data['status'] === 'Error'){
-        $log->error($data['message']);
-    }
+        if ($responseCode !== 200) {
+            $log->error('Connection Error', [
+                'error' => $responseCode,
+                'rpdID' => [
+                    'upID' => $res['id']
+                ]
+            ]);
+        }
 
+        $data = \json_decode($res,true);
+
+        if ($data['status'] === 'Error') {
+            $log->error('Error on ADB server', [
+                'error' => $data['message'],
+                'rpdID' => [
+                    'upID' => $res['id']
+                ]
+            ]);
+        }
+
+    echo ++$j . PHP_EOL;
+    echo $res . PHP_EOL;
+    \ob_flush();
 }
 
-\curl_close($ch);
+\curl_close($ch);*/
 
 // импорт из Матрицы 1.0
 
@@ -318,7 +339,7 @@ foreach ($res as $row) {
     }
 
     $data = [
-        "srcid" => "edu_prg_yr",
+        "srcid" => "edu_prg_yr_2022",
         'upid' => $row['id'],
         'educode' => \substr($row['special'], 0, 8),
         'begyear' => (string)$row['year_of_entrance'],
@@ -344,11 +365,32 @@ foreach ($res as $row) {
     \curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
     $res = \curl_exec($ch);
 
+    $responseCode = \curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+    if ($responseCode !== 200) {
+        $log->error('Connection Error', [
+            'error' => $responseCode,
+            'rpdID' => [
+                'upID' => $res['id']
+            ]
+        ]);
+    }
+
     $data = \json_decode($res,true);
 
-    if ($data['status'] === 'Error'){
-        $log->error($data['message']);
+    if ($data['status'] === 'Error') {
+        $log->error('Error on ADB server', [
+            'error' => $data['message'],
+            'rpdID' => [
+                'upID' => $res['id']
+            ]
+        ]);
     }
+
+/*    echo ++$j . PHP_EOL;
+    echo $res . PHP_EOL;
+    \ob_flush();*/
+
 }
 
 \curl_close($ch);

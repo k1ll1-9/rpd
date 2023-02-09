@@ -1,30 +1,40 @@
 <template>
-  <div class="ms-5">
-  <button :class="[{'disabled': disabled},'btn btn-lg btn-primary mb-4']" @click="requestApprove()">
-    Отправить на согласование
-  </button>
+  <div class="ms-5" v-if="!loading">
+    <button :class="[{'disabled': disabled},'btn btn-lg btn-primary mb-4']" @click="requestApprove()">
+      Отправить на согласование
+    </button>
   </div>
-  <div v-if="canRecall" class="ms-5">
-    <button class="btn btn-lg btn-primary mb-4" @click="disapprove()">
+  <div v-else class="ms-5">
+    <Preloader/>
+    <p class="fw-bold fs-5">Ожидайте перенаправления на страницу согласования!</p>
+  </div>
+  <div class="ms-5">
+    <button :class="[{'disabled': !canRecall},'btn btn-lg btn-primary mb-4']" @click="disapprove()">
       Отозвать
     </button>
   </div>
 </template>
 
 <script>
+import Preloader from "@/components/Misc/Preloader.vue";
 
 export default {
-  props: ['disabled','canRecall'],
+  props: ['disabled', 'canRecall'],
   name: "ApprovalButton",
+  components: {Preloader},
   data() {
     return {
-      visible: false
+      visible: false,
+      loading: false,
+      external: this.$route.query?.external === 'true'
     }
   },
   methods: {
     async requestApprove() {
       this.loading = true
-      const PDFLink = await this.$store.dispatch('rpd/initPDF','approval')
+      const action = (this.external) ? 'approvalExternal' : 'approval'
+      const approvalURL = (this.external) ? '/doc/rpd/rpdext.php?perm=' : '/doc/rpd/rpd.php?perm='
+      const PDFLink = await this.$store.dispatch('rpd/initPDF', action)
 
       const data = {
         link: PDFLink,
@@ -41,21 +51,28 @@ export default {
         syllabusID: this.$store.state.rpd.static.syllabusData.syllabusID
       }
 
-      if (PDFLink){
+      if (PDFLink) {
+
+        if (this.external) {
+          await this.$store.dispatch('rpd/setStatus', {
+            statusName: 'status',
+            status: 'valid'
+          })
+        }
 
         const res = await this.$store.dispatch('rpd/setStatus', {
           statusName: 'approval',
           status: 'inProcess'
         })
 
-        if (res.success){
-          window.location.replace('/doc/rpd/rpd.php?perm=' + btoa(encodeURIComponent(JSON.stringify(data))))
+        if (res.success) {
+          window.location.replace(approvalURL + btoa(encodeURIComponent(JSON.stringify(data))))
         }
 
       }
 
     },
-    async disapprove(){
+    async disapprove() {
       await this.$store.dispatch('rpd/setStatus', {
         statusName: 'approval',
         status: null
@@ -64,14 +81,13 @@ export default {
       this.$store.commit('rpd/UNLOCK_RPD')
     }
   },
-  mounted() {
-
+  async mounted() {
   }
 }
 </script>
 
 <style scoped>
-.btn{
+.btn {
   width: 275px;
 }
 </style>

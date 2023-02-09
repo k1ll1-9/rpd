@@ -51,9 +51,11 @@ $callback = function ($msg) {
     if ($sigSaved && $PDFSaved) {
 
         $res = RPDManager::saveApprovedRPDtoDB($params, $path);
-        RPDManager::uploadRPDToRemote($params);
 
-        return $res;
+        if ($res) {
+            return RPDManager::uploadRPDToRemote($params);
+        }
+
     } else {
         return false;
     }

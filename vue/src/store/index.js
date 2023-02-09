@@ -21,6 +21,10 @@ export default createStore({
 
       state.user = res.data.user
 
+      if (process.env.NODE_ENV === 'development'){
+        state.user.role = 'admin'
+      }
+
       console.log(state.user)
     }
   }

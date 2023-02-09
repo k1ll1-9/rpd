@@ -1,43 +1,47 @@
 <template>
   <div v-if="ready">
-    <Navigation/>
+    <template v-if="!external">
+      <Navigation/>
+    </template>
     <EntryBlock/>
-    <Authors/>
-    <Target/>
-    <Place/>
-    <Competencies/>
-    <div class="my-5">
-      <h2 class="my-4" :id="unitTitles[4].code">4. {{ unitTitles[4].title }}</h2>
-      <DisciplineValue/>
-      <DisciplineStructure/>
-    </div>
-    <div class="my-5">
-      <h2 class="my-4" :id="unitTitles[5].code">5. {{ unitTitles[5].title }}</h2>
-      <ModulesThemes/>
-      <ModulesSeminars/>
-      <ModulesSRS/>
-    </div>
-    <Technologies/>
-    <Annotation/>
-    <InformResources/>
-    <div class="my-5">
-      <h2 class="my-4" :id="unitTitles[9].code">9. {{ unitTitles[9].title }}</h2>
-      <GradesCurrent/>
-      <GradesCurrentDescription/>
-      <GradesIntermediate/>
-    </div>
-    <div class="d-flex align-items-start justify-content-center">
+    <template v-if="!external">
+      <Authors/>
+      <Target/>
+      <Place/>
+      <Competencies/>
+      <div class="my-5">
+        <h2 class="my-4" :id="unitTitles[4].code">4. {{ unitTitles[4].title }}</h2>
+        <DisciplineValue/>
+        <DisciplineStructure/>
+      </div>
+      <div class="my-5">
+        <h2 class="my-4" :id="unitTitles[5].code">5. {{ unitTitles[5].title }}</h2>
+        <ModulesThemes/>
+        <ModulesSeminars/>
+        <ModulesSRS/>
+      </div>
+      <Technologies/>
+      <Annotation/>
+      <InformResources/>
+      <div class="my-5">
+        <h2 class="my-4" :id="unitTitles[9].code">9. {{ unitTitles[9].title }}</h2>
+        <GradesCurrent/>
+        <GradesCurrentDescription/>
+        <GradesIntermediate/>
+      </div>
+    </template>
+    <div class="d-flex align-items-start justify-content-center mt-5">
       <div>
-        <PDFButton/>
+        <PDFButton v-if="!external"/>
       </div>
       <div class="ms-5">
-        <FileButtonInput
+        <AttachmentInput
           :name="'attachment.pdf'"
-          :label="'Загрузить приложение'"
+          :label="external ? 'Загрузить РПД' : 'Загрузить приложение'"
           :id="'RPDAttachment'"
           :buttonClass="'btn btn-primary btn-lg mb-1'"
           :allowedTypes="['pdf']"
-          :errorMessage="'Приложение должно быть в формате PDF'"
+          :errorMessage="external ? 'РПД должно быть в формате PDF' : 'Приложение должно быть в формате PDF'"
           :options="{
             addAction: 'uploadRPDAttachment',
             deleteAction: 'deleteRPDFile',
@@ -47,12 +51,15 @@
         />
       </div>
       <ApprovalButton
-        :disabled="!isValid || !canSubmit || $store.state.rpd.locked"
-        :canRecall="canSubmit && $store.state.rpd.locked || visible"
+        :disabled="!isValid
+          || !canSubmit
+          || $store.state.rpd.locked
+          || (external && !$store.state.rpd.attachment)"
+        :canRecall="canSubmit && $store.state.rpd.locked"
       />
     </div>
     <div>
-      <span v-if="!canSubmit" class="error mt-2 d-inline-block">На согласование РПД отправить может только её автор</span>
+      <span v-if="!canSubmit && !external" class="error mt-2 d-inline-block">На согласование РПД отправить может только её автор</span>
     </div>
     <NoticeWindow v-if="!isValid"/>
   </div>
@@ -81,7 +88,7 @@ import Technologies from "../components/RPD/EducationTechnologies";
 import InformResources from "./../components/RPD/InformResources";
 import Annotation from "@/components/RPD/Annotation";
 import NoticeWindow from "@/components/RPD/NoticeWindow";
-import FileButtonInput from "@/components/UI/FileInputs/FileButtonInput.vue";
+import AttachmentInput from "@/components/UI/FileInputs/AttachmentInput.vue";
 import {mapState} from "vuex";
 
 export default {
@@ -107,13 +114,13 @@ export default {
     InformResources,
     GradesIntermediate,
     ApprovalButton,
-    FileButtonInput,
+    AttachmentInput,
     NoticeWindow,
   },
   data() {
     return {
       ready: false,
-      visible: true,
+      external: this.$route.query.external === 'true'
     }
   },
   computed: {
@@ -128,14 +135,18 @@ export default {
       },
       canSubmit: state => {
 
-        if (state.user.lastName === null){
+        if (state.user.role === 'admin') {
+          return true
+        }
+
+        if (state.user.lastName === null) {
           return false
         }
 
-        const authors =  state.rpd.managed.authors?.author?.FIO?.toLowerCase()
+        const authors = state.rpd.managed.authors?.author?.FIO?.toLowerCase()
         const currentUser = state.user.lastName.toLowerCase()
 
-        if (authors === undefined){
+        if (authors === undefined) {
           return false
         }
 
@@ -146,14 +157,14 @@ export default {
   },
   async mounted() {
     this.ready = await this.$store.dispatch('rpd/initData', this.$route.query)
-    this.visible = this.$store.state.user?.role === 'admin' || process.env.NODE_ENV === 'development'
     this.$watch('isValid', (val) => {
       this.$store.dispatch('rpd/setStatus', {
         statusName: 'valid',
         status: val ? 'valid' : 'invalid'
       })
     })
-    if (this.$route.query?.validationCycle === 'true'){
+
+    if (this.$route.query?.validationCycle === 'true') {
       window.location.href = 'https://lk.vavt.ru/local/components/syllabuses/main/templates/.default/api/validator.php'
     }
 

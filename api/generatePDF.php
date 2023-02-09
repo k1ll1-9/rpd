@@ -9,8 +9,8 @@ use VAVT\UP\Cipher;
 \ini_set('display_errors', 1);
 \error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING);
 
-//$json = \json_decode(\file_get_contents('php://input'),true)['data'];
-$json = \json_decode(\file_get_contents('mockRPD.json'), true);
+$json = \json_decode(\file_get_contents('php://input'), true)['data'];
+//$json = \json_decode(\file_get_contents('mockRPD.json'), true);
 
 $static = $json["static"];
 $syllabusData = $static["syllabusData"];
@@ -70,13 +70,20 @@ if (isset($json['PDFType']) && $json['PDFType'] === 'approval') {
     $fileName = $json['static']['disciplineIndex'] . '_' . \date('s:i:H d-m-Y', \strtotime($json['static']['syllabusData']['year'])) . '.pdf';
     $fullPath = $path . 'submitted/' . $fileName;
     $link = 'https://lk.vavt.ru/helpers/getFile.php?fileSSL=' . Cipher::encryptSSL($fullPath);
+} elseif ($json['PDFType'] === 'approvalExternal') {
+    @\mkdir($path . 'submitted/', 0775, true);
+    $fileName = $json['static']['disciplineIndex'] . '_' . \date('s:i:H d-m-Y', \strtotime($json['static']['syllabusData']['year'])) . '.pdf';
+    $fullPath = $path . 'submitted/' . $fileName;
+    $link = 'https://lk.vavt.ru/helpers/getFile.php?fileSSL=' . Cipher::encryptSSL($fullPath);
+    if (\file_exists($path . 'attachment.pdf')) {
+        \copy($path.'attachment.pdf',$fullPath = $path . 'submitted/' . $fileName);
+    }
+    die(\json_encode(['link' => $link], JSON_UNESCAPED_UNICODE));
 } else {
     $fileName = $json['static']['disciplineIndex'] . '_draft' . '.pdf';
     $fullPath = $path . $fileName;
     $link = 'https://lk.vavt.ru/helpers/getFile.php?openPDF=' . Cipher::encryptSSL($fullPath);
 }
-
-
 
 
 $html = '<style>
@@ -666,7 +673,7 @@ foreach ($intermediateControl as $n => $semester) {
 
         foreach ($controlType as $type => $value) {
             // проверка на соответствие актуальным данным дисциплины
-            if ($type !== 'criterion' && $type !== $static["disciplineValue"]['control']['semesters'][$n]['controlName']){
+            if ($type !== 'criterion' && $type !== $static["disciplineValue"]['control']['semesters'][$n]['controlName']) {
                 continue;
             }
 
@@ -679,7 +686,7 @@ foreach ($intermediateControl as $n => $semester) {
 
 $html .= '<div></div><div></div>';
 
-if ($json['static']['kafedra'] === 'Кафедра физической культуры'){
+if ($json['static']['kafedra'] === 'Кафедра физической культуры') {
     $html .= \file_get_contents('include/MTO_sports.html');
 } else {
     $html .= \file_get_contents('include/MTO_common.html');
@@ -703,21 +710,21 @@ $pdf->setHtmlVSpace($tagvs);
 $pdf->AddPage();
 $pdf->PageNo();
 $pdf->writeHTML($html, true, false, true, false, '');
-$pdf->Output($fullPath, 'I');
+$pdf->Output($fullPath, 'F');
 //добавляем приложение, если есть
-if (\file_exists($path.'attachment.pdf')){
+if (\file_exists($path . 'attachment.pdf')) {
 
     $pdf = new PDFMerger;
     $pdf->addPDF($fullPath)
-        ->addPDF($path.'attachment.pdf')
+        ->addPDF($path . 'attachment.pdf')
         ->merge('file', $fullPath);
 }
 
-if (!\file_exists($fullPath)){
+if (!\file_exists($fullPath)) {
     $link = false;
 }
 
-//die(\json_encode(['link' => $link], JSON_UNESCAPED_UNICODE));
+die(\json_encode(['link' => $link], JSON_UNESCAPED_UNICODE));
 
 function escape4PDF($str)
 {

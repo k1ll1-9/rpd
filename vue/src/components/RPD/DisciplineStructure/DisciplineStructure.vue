@@ -46,6 +46,7 @@
                   :class="[{'invalid' : errors.lectures?.[disciplineStructure[index].semester] === true},'text-center']"
                   @input="checkHours(disciplineStructure[index].semester,['lectures'],index,$event)"
                   :identity="['managed','disciplineStructure',index,'load','lectures']"
+                  :maxVal="value.lectures.total"
                   :disabled="$store.state.rpd.locked"/>
             </td>
             <td>
@@ -53,6 +54,7 @@
                   :class="[{'invalid' : errors.seminars?.[disciplineStructure[index].semester] === true},'text-center']"
                   @input="checkHours(disciplineStructure[index].semester,['seminars'],index,$event)"
                   :identity="['managed','disciplineStructure',index,'load','seminars']"
+                  :maxVal="value.seminars.total"
                   :disabled="$store.state.rpd.locked"/>
             </td>
             <td>
@@ -60,6 +62,7 @@
                   :class="[{'invalid' : errors.SRS?.[disciplineStructure[index].semester] === true},'text-center']"
                   @input="checkHours(disciplineStructure[index].semester,['SRS'],index,$event)"
                   :identity="['managed','disciplineStructure',index,'load','SRS']"
+                  :maxVal="value.SRS.total"
                   :disabled="$store.state.rpd.locked"/>
             </td>
             <td>

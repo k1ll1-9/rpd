@@ -15,17 +15,20 @@ define('NOT_CHECK_PERMISSIONS', true);
 require $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_before.php";
 require $_SERVER["DOCUMENT_ROOT"] . "/update_external/config.php";
 
-$log = new Logger('Учебные планы');
+$log = new Logger('РПД');
 $formatter = new LineFormatter(null, null, false, true);
-$handler = new StreamHandler('upload/logs/Syllabuses.log', Logger::ERROR);
+$handler = new StreamHandler($_SERVER["DOCUMENT_ROOT"] . '/upload/logs/syllabuses.log', Logger::ERROR);
 $handler->setFormatter($formatter);
 $log->pushHandler($handler);
 
+$i = 0;
 
+/*
 // импорт из Матрицы 2.0
 
 
-/*$pdo = Postgres::getInstance()->connect('pgsql:host=' . DB_HOST . ';port=5432;dbname=' . DB_NAME . ';', DB_USER, DB_PASSWORD);
+
+$pdo = Postgres::getInstance()->connect('pgsql:host=' . DB_HOST . ';port=5432;dbname=' . DB_NAME . ';', DB_USER, DB_PASSWORD);
 
 $sql = 'SELECT syllabus_id, name, code, json, rpd_f, kafedra FROM disciplines';
 
@@ -42,8 +45,8 @@ foreach ($res as $disc) {
     $data = \json_decode($disc['json'], true);
 
     if ($disc['rpd_f'] !== null) {
-        $exp = \explode('/',$disc['rpd_f']);
-        $name = $exp[\count($exp) -1];
+        $exp = \explode('/', $disc['rpd_f']);
+        $name = $exp[\count($exp) - 1];
 
         $link = $name . '|https://lk.vavt.ru/helpers/getFile.php?fileSSL=' . Cipher::encryptSSL($disc['rpd_f']);
         $linkSign = $name . '.sig' . '|https://lk.vavt.ru/helpers/getFile.php?fileSSL=' . Cipher::encryptSSL($disc['rpd_f'] . '.sig');
@@ -65,7 +68,7 @@ foreach ($res as $disc) {
     }
 
     $data = [
-        "srcid" => "rpd",
+        "srcid" => "rpd_2022",
         'opgid' => $disc['syllabus_id'],
         'rpdcode' => $data['disciplineIndex'],
         'upidyr' => $disc['code'],
@@ -79,6 +82,38 @@ foreach ($res as $disc) {
     $data = \http_build_query($data);
     \curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
     $res = \curl_exec($ch);
+
+    $responseCode = \curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+            if ($responseCode !== 200) {
+                $log->error('Connection Error', [
+                    'error' => $responseCode,
+                    'rpdID' => [
+                        'upID' => $res['syllabus_id'],
+                        'rpdID' => $res['code']
+                    ]
+                ]);
+            }
+
+            $data = \json_decode($res,true);
+
+            if ($data['status'] === 'Error'){
+                $log->error($data['message']);
+            }
+
+            if ($data['status'] === 'Error') {
+                $log->error('Error on ADB server', [
+                    'error' => $data['message'],
+                    'rpdID' => [
+                        'upID' => $res['syllabus_id'],
+                        'code' => $res['code']
+                    ]
+                ]);
+            }
+
+    echo ++$i . PHP_EOL;
+    echo $res . PHP_EOL;
+    \ob_flush();
 }
 
 
@@ -116,7 +151,7 @@ foreach ($res as $row) {
         foreach ($content['annotation'] as $name => $annotation) {
             $link = $name . '|https://lk.vavt.ru/helpers/getFile.php?fileSSL=' . Cipher::encryptSSL(UP_DIR__OLD . $row['special'] . ' Профиль ' . $row['profile'] . '/' . $year . '/' . $item['subject'] . '/' . $name);
             $data = [
-                "srcid" => "rpd",
+                "srcid" => "rpd_2022",
                 'opgid' => $row['id'],
                 'rpdcode' => $item['subject_code'],
                 'upidyr' => $item['id'],
@@ -131,12 +166,36 @@ foreach ($res as $row) {
             \curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
             $res = \curl_exec($ch);
 
+            $responseCode = \curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
-            $data = \json_decode($res,true);
+            if ($responseCode !== 200) {
+                $log->error('Connection Error', [
+                    'error' => $responseCode,
+                    'rpdID' => [
+                        'upID' => $res['syllabus_id'],
+                        'rpdID' => $res['code']
+                    ]
+                ]);
+            }
 
-            if ($data['status'] === 'Error'){
+            $data = \json_decode($res, true);
+
+            if ($data['status'] === 'Error') {
                 $log->error($data['message']);
             }
+
+            if ($data['status'] === 'Error') {
+                $log->error('Error on ADB server', [
+                    'error' => $data['message'],
+                    'rpdID' => [
+                        'upID' => $res['syllabus_id'],
+                        'code' => $res['code']
+                    ]
+                ]);
+            }
+            /*           echo ++$i . PHP_EOL;
+                       echo $res . PHP_EOL;
+                       \ob_flush();*/
         }
     }
 }

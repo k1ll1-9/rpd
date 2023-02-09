@@ -52,36 +52,13 @@
         </td>
         <td v-if="type === 'plans'">{{ rpd.kafedra }}</td>
         <td>
-          <ExternalRPDInput
-            v-if="isExternal(rpd.kafedra)"
-            :name="rpd.disciplineIndex"
-            :id="rpd.disciplineIndex"
-            :allowedTypes="['pdf']"
-            :errorMessage="'Приложение должно быть в формате PDF'"
-            :options="{
-            addAction: 'uploadExternalRPD',
-            params : {
-              ...rpd.query,
-              discIndex: rpd.disciplineIndex,
-              name: rpd.name
-              },
-          }"
-          />
-          <router-link
-            v-else
-            :to="{path : '/rpd', query : rpd.query}"
-            :class="['btn d-flex align-items-center justify-content-center',getButtonClass(rpd)]">
+          <router-link :to="{path : '/rpd', query : rpd.query}"
+                       :class="['btn d-flex align-items-center justify-content-center',getButtonClass(rpd)]">
             {{ (rpd.status === 'blank') ? 'Создать' : 'Редактировать' }} <br> РПД
           </router-link>
         </td>
-        <td
-          :class="rpd.valid === 'valid' ? 'text-success' : 'text-danger'">
-          <b v-if="!isExternal(rpd.kafedra)">{{ getValidationStatus(rpd) }}</b>
-        </td>
-        <td
-          :class="getApprovalClass(rpd)">
-          <b>{{ getApprovalStatus(rpd) }}</b>
-        </td>
+        <td :class="rpd.valid === 'valid' ? 'text-success' : 'text-danger'"><b>{{ getValidationStatus(rpd) }}</b></td>
+        <td :class="getApprovalClass(rpd)"><b>{{ getApprovalStatus(rpd) }}</b></td>
         <td class="fw-bold">
           <a v-if="rpd.approvedLink"
              :href="rpd.approvedLink"
@@ -91,7 +68,7 @@
         </td>
         <td>
           <div
-            v-if="(rpd.status !== 'blank' && !isExternal(rpd.kafedra))"
+            v-if="(rpd.status !== 'blank')"
             @click="exportRPD(rpd.query)"
             class="btn-import"
             data-bs-toggle="tooltip"
@@ -103,7 +80,6 @@
         </td>
         <td>
           <div
-            v-if="!isExternal(rpd.kafedra)"
             class="btn-import"
             data-bs-toggle="tooltip"
             data-bs-placement="bottom"
@@ -143,12 +119,10 @@ import Preloader from "@/components/Misc/Preloader";
 import ModalWarning from "@/components/UI/ModalWarning";
 import {Modal} from 'bootstrap'
 import {Tooltip} from 'bootstrap'
-import ExternalRPDInput from "@/components/UI/FileInputs/ExternalRPDInput.vue";
 
 export default {
   name: "RPDList",
   components: {
-    ExternalRPDInput,
     SyllabusFiles,
     ModalWarning,
     Preloader
@@ -161,7 +135,7 @@ export default {
       syllabus: null, //информация УП для компонетов файла УП и заголовков,
       RPD2import: {},
       type: this.$route.query.type,
-      extSources: ['РАНХиГС','МИФИ']
+      externalKafs: ['Кафедра восточных языков','МИФИ','РАНХиГС']
     }
   },
   async created() {
@@ -184,6 +158,13 @@ export default {
 
     this.RPDList = res.data.list.map((el) => {
       const json = JSON.parse(el.json)
+/*      let external = false
+
+      //РПД с большим количеством часов из-за слишком тяжелого рендеринга грузим отдельным файлом без заполнения
+      if (el.kafedra === 'Кафедра восточных языков'){
+        external = true
+      }*/
+
       return {
         ...json,
         editable: this.$store.state.user.departmentString.includes(json.kafedra)
@@ -198,8 +179,9 @@ export default {
         query: {
           syllabusID: json.syllabusData.syllabusID,
           kafedra: json.kafedra,
-          code: json.code
-        }
+          code: json.code,
+          external: this.externalKafs.includes(json.kafedra)
+        },
       }
     })
 
@@ -225,9 +207,6 @@ export default {
       })
   },
   methods: {
-    isExternal(kafedra){
-      return  this.extSources.includes(kafedra)
-    },
     getValidationStatus(rpd) {
       switch (rpd.valid) {
         case'valid':

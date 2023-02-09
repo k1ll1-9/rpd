@@ -17,6 +17,7 @@ class UploadManager
         self::getCompetencies();
         self::getDisciplineStructure();
         self::getInformResources();
+        self::getEducationLevel();
     }
 
     public function getDisciplineValue()
@@ -244,5 +245,15 @@ class UploadManager
 
     }
 
-
+    public function getEducationLevel()
+    {
+        switch ($this->data['syllabusData']['educationLevel']) {
+            case 'Бакалавр':
+                $this->data['syllabusData']['educationLevel'] = 'Бакалавриат';
+                break;
+            case 'Магистр':
+                $this->data['syllabusData']['educationLevel'] = 'Магистратура';
+                break;
+        }
+    }
 }

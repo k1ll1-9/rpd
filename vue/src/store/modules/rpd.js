@@ -34,6 +34,12 @@ export const rpd = {
     },
     UNLOCK_RPD(state) {
       state.locked = false
+    },
+    ADD_ATTACHMENT(state,link){
+      state.attachment = link
+    },
+    REMOVE_ATTACHMENT(state){
+      state.attachment = null
     }
   },
   actions: {
@@ -50,6 +56,7 @@ export const rpd = {
       state.managed = res.data.managed || {}
       state.status = res.data.status
       state.locked = res.data.locked
+      state.attachment = res.data.attachment
 
       //создаем копии сложных объектов из шаблонов, если они еще не заполнены
       if (state.managed.competencies === undefined) {

@@ -135,9 +135,9 @@ export default {
           return state.rpd.errors.length === 0
         }
       },
-      canSubmit: state => {
+      canSubmit (state)  {
 
-        if (state.user.role === 'admin') {
+        if (state.user.role === 'admin' || this.external) {
           return true
         }
 

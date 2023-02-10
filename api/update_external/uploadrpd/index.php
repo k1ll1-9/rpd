@@ -174,8 +174,8 @@ foreach ($res as $row) {
                 $log->error('Connection Error', [
                     'error' => $responseCode,
                     'rpdID' => [
-                        'upID' => $res['syllabus_id'],
-                        'rpdID' => $res['code']
+                        'upID' => $row['id'],
+                        'rpdID' => $item['id']
                     ]
                 ]);
             }
@@ -190,18 +190,18 @@ foreach ($res as $row) {
                 $log->error('Error on ADB server', [
                     'error' => $data['message'],
                     'rpdID' => [
-                        'upID' => $res['syllabus_id'],
-                        'code' => $res['code']
+                        'upID' => $row['id'],
+                        'rpdID' => $item['id']
                     ]
                 ]);
-            } else {
+            }/* else {
                 $log->info('RPD uploaded successfully', [
                     'rpdID' => [
-                        'upID' => $res['syllabus_id'],
-                        'code' => $res['code']
+                        'upID' => $row['id'],
+                        'rpdID' => $item['id']
                     ]
                 ]);
-            }
+            }*/
             /*           echo ++$i . PHP_EOL;
                        echo $res . PHP_EOL;
                        \ob_flush();*/

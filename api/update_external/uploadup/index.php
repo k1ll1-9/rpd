@@ -373,30 +373,26 @@ foreach ($res as $row) {
     if ($responseCode !== 200) {
         $log->error('Connection Error', [
             'error' => $responseCode,
-            'rpdID' => [
-                'upID' => $res['id']
-            ]
+            'upID' => $row['id']
         ]);
     }
 
-    $data = \json_decode($res,true);
+    $data = \json_decode($res, true);
 
     if ($data['status'] === 'Error') {
         $log->error('Error on ADB server', [
             'error' => $data['message'],
-            'rpdID' => [
-                'upID' => $res['id']
-            ]
+            'upID' => $row['id']
         ]);
-    } else {
+    } /*else {
         $log->info('UP uploaded successfully', [
-            'upID' => $res['id']
+            'upID' => $row['id']
         ]);
-    }
+    }*/
 
-/*    echo ++$j . PHP_EOL;
-    echo $res . PHP_EOL;
-    \ob_flush();*/
+    /*    echo ++$j . PHP_EOL;
+        echo $res . PHP_EOL;
+        \ob_flush();*/
 
 }
 

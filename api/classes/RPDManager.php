@@ -655,13 +655,15 @@ class RPDManager
         $pdo = Postgres::getInstance()->connect('pgsql:host=' . DB_HOST . ';port=5432;dbname=' . DB_NAME . ';', DB_USER, DB_PASSWORD);
 
         try {
-            $sql = 'SELECT json FROM  disciplines WHERE (syllabus_id,code,kafedra) = (:syllabus_id,:code,:kafedra)';
+            $sql = 'SELECT syllabus_id, name, code, json, rpd_f, kafedra 
+                        FROM  disciplines 
+                        WHERE (syllabus_id,code,kafedra) = (:syllabus_id,:code,:kafedra)';
             $stmt = $pdo->prepare($sql);
             $stmt->bindParam(':syllabus_id', $params['syllabusID'], \PDO::PARAM_STR);
             $stmt->bindParam(':code', $params['code'], \PDO::PARAM_STR);
             $stmt->bindParam(':kafedra', $params['kafedra'], \PDO::PARAM_STR);
             $stmt->execute();
-            $res = $stmt->fetchColumn();
+            $res = $stmt->fetch(\PDO::FETCH_ASSOC);;
         } catch (\PDOException $e) {
             echo $e->getMessage();
         }
@@ -707,25 +709,29 @@ class RPDManager
         \curl_setopt($ch, CURLOPT_POSTFIELDS, \http_build_query($data));
         $result = \curl_exec($ch);
 
-        $log = new Logger('РПД');
+        $errLog = new Logger('РПД');
         $formatter = new LineFormatter(null, null, false, true);
         $handler = new StreamHandler($_SERVER['DOCUMENT_ROOT'] . '/upload/logs/rpd_error.log', Logger::ERROR);
         $handler->setFormatter($formatter);
-        $log->pushHandler($handler);
+        $errLog->pushHandler($handler);
+
+        $log = new Logger('РПД');
         $handler = new StreamHandler($_SERVER['DOCUMENT_ROOT'] . '/upload/logs/rpd.log', Logger::INFO);
         $handler->setFormatter($formatter);
         $log->pushHandler($handler);
+
         $httpOK = false;
         $externalOK = false;
+
         $responseCode = \curl_getinfo($ch, CURLINFO_HTTP_CODE);
         \curl_close($ch);
 
         if ($responseCode !== 200) {
-            $log->error('Connection Error', [
+            $errLog->error('Connection Error', [
                 'error' => $responseCode,
                 'rpdID' => [
                     'upID' => $res['syllabus_id'],
-                    'rpdID' => $res['code']
+                    'rpdCode' => $res['code']
                 ]
             ]);
         } else {
@@ -735,15 +741,11 @@ class RPDManager
         $data = \json_decode($result, true);
 
         if ($data['status'] === 'Error') {
-            $log->error($data['message']);
-        }
-
-        if ($data['status'] === 'Error') {
-            $log->error('Error on ADB server', [
+            $errLog->error('Error on ADB server', [
                 'error' => $data['message'],
                 'rpdID' => [
                     'upID' => $res['syllabus_id'],
-                    'code' => $res['code']
+                    'rpdCode' => $res['code']
                 ]
             ]);
         } else {
@@ -751,7 +753,7 @@ class RPDManager
             $log->info('RPD uploaded successfully', [
                 'rpdID' => [
                     'upID' => $res['syllabus_id'],
-                    'code' => $res['code']
+                    'rpdCode' => $res['code']
                 ]
             ]);
         }
@@ -838,21 +840,25 @@ class RPDManager
         $result = \curl_exec($ch);
 
 
-        $log = new Logger('Учебные планы');
+        $errLog = new Logger('Учебные планы');
         $formatter = new LineFormatter(null, null, false, true);
         $handler = new StreamHandler($_SERVER['DOCUMENT_ROOT'] . '/upload/logs/syllabuses_error.log', Logger::ERROR);
         $handler->setFormatter($formatter);
-        $log->pushHandler($handler);
+        $errLog->pushHandler($handler);
+
+        $log = new Logger('Учебные планы');
         $handler = new StreamHandler($_SERVER['DOCUMENT_ROOT'] . '/upload/logs/syllabuses.log', Logger::INFO);
         $handler->setFormatter($formatter);
         $log->pushHandler($handler);
+
         $httpOK = false;
         $externalOK = false;
+
         $responseCode = \curl_getinfo($ch, CURLINFO_HTTP_CODE);
         \curl_close($ch);
 
         if ($responseCode !== 200) {
-            $log->error('Connection Error', [
+            $errLog->error('Connection Error', [
                 'error' => $responseCode,
                 'upID' => $res['id']
             ]);
@@ -860,10 +866,10 @@ class RPDManager
             $httpOK = true;
         }
 
-        $data = \json_decode($res, true);
+        $data = \json_decode($result, true);
 
         if ($data['status'] === 'Error') {
-            $log->error('Error on ADB server', [
+            $errLog->error('Error on ADB server', [
                 'error' => $data['message'],
                 'upID' => $res['id']
             ]);

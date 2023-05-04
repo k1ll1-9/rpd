@@ -724,6 +724,8 @@ if (!\file_exists($fullPath)) {
     $link = false;
 }
 
+\chmod($fullPath, 0775);
+
 die(\json_encode(['link' => $link], JSON_UNESCAPED_UNICODE));
 
 function escape4PDF($str)

@@ -684,10 +684,12 @@ class RPDManager
             $stmt->bindParam(':code', $params['code'], \PDO::PARAM_STR);
             $stmt->bindParam(':kafedra', $params['kafedra'], \PDO::PARAM_STR);
             $stmt->execute();
-            $jsonManaged = $stmt->fetchColumn();
+            $jsonManaged = $stmt->fetch(\PDO::FETCH_ASSOC)['json'];
         } catch (\PDOException $e) {
             echo $e->getMessage();
         }
+
+        $annotation = (!$jsonManaged) ? '' : \json_decode($jsonManaged, true)['annotation'];
 
         $data = [
             "srcid" => "rpd_2022",
@@ -696,7 +698,7 @@ class RPDManager
             'upidyr' => $res['code'],
             'rpdcnt' => $name,
             'rpdname' => $res['name'],
-            'rpdannot' => \json_decode($jsonManaged, true)['annotation'],
+            'rpdannot' => $annotation,
             'meth' => $link,
             'meth_sign' => $linkSign
         ];

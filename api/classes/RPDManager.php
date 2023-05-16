@@ -580,7 +580,9 @@ class RPDManager
             echo $e->getMessage();
         }
 
-        return ['success' => true];
+        $res = self::deleteUPFromRemote($ID);
+
+        return ['success' => $res];
     }
 
     public static function importRPD($params, $data)
@@ -886,6 +888,67 @@ class RPDManager
             return true;
         }
 
+    }
+
+    public static function deleteUPFromRemote($syllabusID)
+    {
+        $data = [
+            "srcid" => "delete_edu_prg_yr_2022",
+            'upid' => $syllabusID,
+        ];
+
+        $ch = \curl_init();
+        \curl_setopt($ch, CURLOPT_URL, EXTERNAL_API_ENDPOINT);
+        \curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        \curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        \curl_setopt($ch, CURLOPT_POST, true);
+        \curl_setopt($ch, CURLOPT_POSTFIELDS, \http_build_query($data));
+        $result = \curl_exec($ch);
+
+
+        $errLog = new Logger('Учебные планы - Удаление');
+        $formatter = new LineFormatter(null, null, false, true);
+        $handler = new StreamHandler($_SERVER['DOCUMENT_ROOT'] . '/upload/logs/syllabuses_error.log', Logger::ERROR);
+        $handler->setFormatter($formatter);
+        $errLog->pushHandler($handler);
+
+        $log = new Logger('Учебные планы - Удаление');
+        $handler = new StreamHandler($_SERVER['DOCUMENT_ROOT'] . '/upload/logs/syllabuses.log', Logger::INFO);
+        $handler->setFormatter($formatter);
+        $log->pushHandler($handler);
+
+        $httpOK = false;
+        $externalOK = false;
+
+        $responseCode = \curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        \curl_close($ch);
+
+        if ($responseCode !== 200) {
+            $errLog->error('Connection Error', [
+                'error' => $responseCode,
+                'upID' => $syllabusID
+            ]);
+        } else {
+            $httpOK = true;
+        }
+
+        $data = \json_decode($result, true);
+
+        if ($data['status'] === 'Error') {
+            $errLog->error('Error on ADB server', [
+                'error' => $data['message'],
+                'upID' => $syllabusID
+            ]);
+        } else {
+            $log->info('UP deleted successfully', [
+                'upID' => $syllabusID
+            ]);
+            $externalOK = true;
+        }
+
+        if ($httpOK && $externalOK) {
+            return true;
+        }
     }
 
     public static function getFileLinksForUpload($JSON, $planLink = null, $getSigns = false)

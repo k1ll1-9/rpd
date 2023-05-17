@@ -898,7 +898,7 @@ class RPDManager
         ];
 
         $ch = \curl_init();
-        \curl_setopt($ch, CURLOPT_URL, EXTERNAL_API_ENDPOINT);
+        \curl_setopt($ch, CURLOPT_URL, EXTERNAL_API_ENDPOINT_DELETE);
         \curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         \curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         \curl_setopt($ch, CURLOPT_POST, true);
@@ -934,7 +934,7 @@ class RPDManager
 
         $data = \json_decode($result, true);
 
-        if ($data['status'] === 'Error') {
+        if ($data['status'] !== 'Все ОК!') {
             $errLog->error('Error on ADB server', [
                 'error' => $data['message'],
                 'upID' => $syllabusID

@@ -9,12 +9,11 @@ define('NOT_CHECK_PERMISSIONS', true);
 require $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_before.php";
 require $_SERVER["DOCUMENT_ROOT"] . "/update_external/config.php";
 
-use VAVT\Main\MUP;
-use VAVT\Services\Postgres;
-use VAVT\Main\Cipher;
-use Monolog\Logger;
-use Monolog\Handler\StreamHandler;
 use Monolog\Formatter\LineFormatter;
+use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
+use VAVT\Main\Cipher;
+use VAVT\MUP;
 
 $log = new Logger('Учебные планы');
 $formatter = new LineFormatter(null, null, false, true);

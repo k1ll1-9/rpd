@@ -9,7 +9,7 @@ define('BX_BUFFER_USED', true);
 require_once $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_before.php";
 require_once $_SERVER["DOCUMENT_ROOT"]. "/local/components/syllabuses/main/templates/.default/vendor/autoload.php";
 
-use VAVT\Services\Rabbit;
+use VAVT\Main\Rabbit;
 use VAVT\UP\Cipher;
 use VAVT\UP\RPDManager;
 
@@ -73,4 +73,4 @@ $callback = function ($msg) {
 
 };
 
-$rabbit->get_infin('VAVT_signedrpd', $callback, 600);
+$rabbit->getInfin('VAVT_signedrpd', $callback, 600);

@@ -1,10 +1,9 @@
 <?php
 
-use VAVT\Main\Cipher;
-use VAVT\Services\Postgres;
-use Monolog\Logger;
-use Monolog\Handler\StreamHandler;
 use Monolog\Formatter\LineFormatter;
+use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
+use VAVT\Main\Cipher;
 
 if (!$_SERVER['DOCUMENT_ROOT']) {
     $_SERVER['DOCUMENT_ROOT'] = '/home/bitrix/www';

@@ -2,7 +2,7 @@
 
 require $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_before.php";
 
-use VAVT\Services\Postgres;
+use VAVT\Main\Postgres;
 
 require_once(__DIR__ . "/config.php");
 

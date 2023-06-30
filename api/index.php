@@ -2,7 +2,6 @@
 /** @global $USER */
 
 use Bitrix\Main\Context;
-use VAVT\Services\Postgres;
 use VAVT\UP\RPDManager;
 
 if (!$_SERVER['DOCUMENT_ROOT']) {

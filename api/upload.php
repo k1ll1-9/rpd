@@ -8,7 +8,7 @@ require_once(__DIR__ . "/../vendor/autoload.php");
 require_once(__DIR__ . "/../config.php");
 
 use Bitrix\Main\Context;
-use VAVT\Services\Postgres;
+use VAVT\Main\Postgres;
 use VAVT\UP\RPDManager;
 use VAVT\UP\UploadManager;
 
@@ -123,15 +123,6 @@ foreach ($res as &$item) {
 
 }
 
-switch ($res[0]['syllabusData']['educationLevel']) {
-    case 'Бакалавр':
-        $qualification = 'Бакалавриат';
-        break;
-    case 'Магистр':
-        $qualification = 'Магистратура';
-        break;
-}
-
 try {
     $sql = 'INSERT INTO syllabuses (id,profile,special,qualification,entrance_year,syllabus_year,last_change,education_form,special_code,actual)
                     VALUES(:syllabus_id,:profile,:special,:qualification,:entrance_year,:syllabus_year,current_timestamp,:education_form,:special_code,true)
@@ -145,7 +136,7 @@ try {
     $stmt->bindParam(':profile', $res[0]['syllabusData']['profile'], PDO::PARAM_STR);
     $stmt->bindParam(':special', $res[0]['syllabusData']['special'], PDO::PARAM_STR);
     $stmt->bindParam(':entrance_year', $res[0]['syllabusData']['year'], PDO::PARAM_STR);
-    $stmt->bindParam(':qualification', $qualification, PDO::PARAM_STR);
+    $stmt->bindParam(':qualification', $res[0]['syllabusData']['educationLevel'], PDO::PARAM_STR);
     $stmt->bindParam(':syllabus_year', $res[0]['syllabusData']['syllabusYear'], PDO::PARAM_STR);
     $stmt->bindParam(':education_form', $res[0]['syllabusData']['formOfTraining'], PDO::PARAM_STR);
     $stmt->bindParam(':special_code', $res[0]['syllabusData']['specialCode'], PDO::PARAM_STR);

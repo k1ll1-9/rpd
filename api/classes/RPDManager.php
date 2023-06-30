@@ -10,10 +10,10 @@ if (!$_SERVER['DOCUMENT_ROOT']) {
 require_once(__DIR__ . "/../../config.php");
 require_once(__DIR__ . "/../../vendor/autoload.php");
 
-use VAVT\Services\Postgres;
-use Monolog\Logger;
-use Monolog\Handler\StreamHandler;
 use Monolog\Formatter\LineFormatter;
+use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
+use VAVT\Main\Postgres;
 
 class RPDManager
 {

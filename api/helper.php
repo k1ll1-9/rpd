@@ -5,7 +5,7 @@ define('NOT_CHECK_PERMISSIONS', true);
 require $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_before.php";
 require_once(__DIR__ . "/../vendor/autoload.php");
 
-use VAVT\Services\Postgres;
+use VAVT\Main\Postgres;
 
 $pdo = Postgres::getInstance()->connect('pgsql:host=172.16.10.59;port=5432;dbname=Syllabuses;', 'umd-web', 'klopik463');
 

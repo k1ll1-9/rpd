@@ -662,18 +662,18 @@ foreach ($disciplineStructure as $key => $disc) {
 
 $html .= '<h2 style="text-align: center">10. Промежуточная аттестация</h2>';
 
-foreach ($intermediateControl as $n => $semester) {
+foreach ($static['semesters'] as  $semester) {
 
-    $html .= '<h3 style="text-align: center">Семестр ' . $n . '</h3>';
+    $html .= '<h3 style="text-align: center">Семестр ' . $semester . '</h3>';
 
 
-    foreach ($semester as $controlType) {
+    foreach ($intermediateControl[$semester] as $controlType) {
 
         \uksort($controlType, fn($a, $b) => $a === 'criterion' ? 1 : -1);
 
         foreach ($controlType as $type => $value) {
             // проверка на соответствие актуальным данным дисциплины
-            if ($type !== 'criterion' && $type !== $static["disciplineValue"]['control']['semesters'][$n]['controlName']) {
+            if ($type !== 'criterion' && $type !== $static["disciplineValue"]['control']['semesters'][$semester]['controlName']) {
                 continue;
             }
 

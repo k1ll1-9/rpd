@@ -1,7 +1,6 @@
 <template>
   <div v-if="RPDList">
     <template v-if="type === 'plans'">
-      <h2 class="my-2">Список РПД учебного плана</h2>
       <h2 class="my-4">{{ syllabus.special }} - {{ syllabus.profile }} -
         {{ (new Date(syllabus.year)).getFullYear() }}</h2>
       <h2 class="my-4">Уровень подготовки: {{ syllabus.qualification }}</h2>
@@ -25,21 +24,14 @@
       <thead>
       <tr>
         <th>№</th>
-        <th>Код</th>
         <th>Дисциплина</th>
         <th v-if="type === 'plans'">Кафедра</th>
         <th>РПД</th>
-        <th>Статус</th>
-        <th>Статус согласования</th>
-        <th>Согласованная РПД</th>
-        <th>Скачать РПД</th>
-        <th>Загрузить РПД</th>
       </tr>
       </thead>
       <tbody>
       <tr v-for="(rpd, index) in RPDList" :key="index" :class="{ 'text-decoration-line-through' : !rpd.actual }">
         <td>{{ index + 1 }}</td>
-        <td>{{ rpd.disciplineIndex }}</td>
         <td>
           {{ rpd.name }}
           <div v-if="type === 'kafs'">
@@ -60,52 +52,12 @@
           </div>
         </td>
         <td v-if="type === 'plans'">{{ rpd.kafedra }}</td>
-        <td>
-          <router-link :to="{path : '/rpd', query : rpd.query}"
-                       :class="['btn d-flex align-items-center justify-content-center',getButtonClass(rpd)]">
-            {{ (rpd.status === 'blank') ? 'Создать' : 'Редактировать' }} <br> РПД
-          </router-link>
-        </td>
-        <td :class="rpd.valid === 'valid' ? 'text-success' : 'text-danger'"><b>{{ getValidationStatus(rpd) }}</b></td>
-        <td :class="getApprovalClass(rpd)"><b>{{ getApprovalStatus(rpd) }}</b></td>
         <td class="fw-bold">
           <a v-if="rpd.approvedLink"
              :href="rpd.approvedLink"
              target="_blank"
              class="text-success">Ссылка</a>
           <span v-else class="text-danger">Нет</span>
-        </td>
-        <td>
-          <div
-              v-if="(rpd.status !== 'blank')"
-              @click="exportRPD(rpd.query)"
-              class="btn-import"
-              data-bs-toggle="tooltip"
-              data-bs-placement="bottom"
-              title="скачать файл РПД"
-          >
-            <BIconDownload width="25" height="25"/>
-          </div>
-        </td>
-        <td>
-          <div
-              class="btn-import"
-              data-bs-toggle="tooltip"
-              data-bs-placement="bottom"
-              title="загрузить РПД из файла"
-          >
-            <label :for="`RPD_file_${rpd.code}_${index}`" class="file-label">
-              <BIconUpload width="25" height="25"/>
-            </label>
-            <input
-                accept=".json"
-                type="file"
-                class="d-none"
-                :name="`RPD_file_${rpd.code}_${index}`"
-                :id="`RPD_file_${rpd.code}_${index}`"
-                @change="readRPD(rpd,index)"
-            >
-          </div>
         </td>
       </tr>
       </tbody>
@@ -140,6 +92,7 @@ export default {
   },
   data() {
     return {
+      syllabusFile: null,
       json: null,
       RPDList: null,
       files: null,
@@ -151,7 +104,7 @@ export default {
     }
   },
   async created() {
-    console.log(this.public)
+
     let action
 
     if (this.type === 'plans') {
@@ -168,38 +121,44 @@ export default {
           }
         });
 
-    this.RPDList = res.data.list.map((el) => {
-      const json = JSON.parse(el.json)
-      /*      let external = false
+    this.files = res.data.syllabusFiles
 
-            //РПД с большим количеством часов из-за слишком тяжелого рендеринга грузим отдельным файлом без заполнения
-            if (el.kafedra === 'Кафедра восточных языков'){
-              external = true
-            }*/
+    this.syllabusFile = this.files.filter((el) => el.colName === 'pdf_f')[0]['arFiles'][0]['path']
 
-      return {
-        ...json,
-        editable: this.$store.state.user.departmentString.includes(json.kafedra)
-            || this.$store.state.user.role === 'admin'
-            || this.$store.state.user.role === 'editor'
-            || process.env.NODE_ENV === 'development',
-        actual: el.actual,
-        status: el.status,
-        valid: el.valid,
-        approval: el.approval,
-        approvedLink: el.approvedLink,
-        query: {
-          syllabusID: json.syllabusData.syllabusID,
-          kafedra: json.kafedra,
-          code: json.code,
-          external: this.externalKafs.includes(json.kafedra)
-        },
-      }
-    })
+    this.RPDList = res.data.list
+        .map((el) => {
+          const json = JSON.parse(el.json)
+          /*      let external = false
+
+                //РПД с большим количеством часов из-за слишком тяжелого рендеринга грузим отдельным файлом без заполнения
+                if (el.kafedra === 'Кафедра восточных языков'){
+                  external = true
+                }*/
+
+          return {
+            ...json,
+            editable: this.$store.state.user.departmentString.includes(json.kafedra)
+                || this.$store.state.user.role === 'admin'
+                || this.$store.state.user.role === 'editor'
+                || process.env.NODE_ENV === 'development',
+            actual: el.actual,
+            status: el.status,
+            valid: el.valid,
+            approval: el.approval,
+            approvedLink: el.approvedLink || `https://lk.vavt.ru/helpers/getFile.php?openPDF=${this.syllabusFile}`,
+            query: {
+              syllabusID: json.syllabusData.syllabusID,
+              kafedra: json.kafedra,
+              code: json.code,
+              external: this.externalKafs.includes(json.kafedra)
+            },
+          }
+        })
+        .filter((el) => el.actual)
+
+    this.RPDList.sort((a, b) => a.name.localeCompare(b.name))
 
     if (this.type === 'plans') {
-
-      this.files = res.data.syllabusFiles
 
       this.syllabus = {
         special: this.RPDList[0].syllabusData.special,

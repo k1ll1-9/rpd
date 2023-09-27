@@ -621,23 +621,27 @@ $html .= <<<HTML
 HTML;
 
 foreach ($disciplineStructure as $key => $disc) {
-    $n = $key + 1;
 
-    $html .= '<tr>';
-    $html .= '<td style="text-align: center; width: 5%">' . $n . '</td>';
-    $html .= '<td style="text-align: center; width: 30%">' . $disc['title'] . '</td>';
-    $html .= '<td style="text-align: center; width: 15%">' . \implode(',', $disc['competences']) . '</td>';
-    $html .= '<td style="text-align: center; width: 20%">' . \implode(',', $disc['indicators']) . '</td>';
-    $html .= '<td style="text-align: left; width: 30%">';
+    if ($disc['competences'] && $disc['indicators']) {
 
-    foreach ($disc["currentControl"] as $k => $type) {
-        $html .= $type['title'];
-        if ($k !== (\count($disc["currentControl"]) - 1)) {
-            $html .= ',<br>';
+        $n = $key + 1;
+
+        $html .= '<tr>';
+        $html .= '<td style="text-align: center; width: 5%">' . $n . '</td>';
+        $html .= '<td style="text-align: center; width: 30%">' . $disc['title'] . '</td>';
+        $html .= '<td style="text-align: center; width: 15%">' . \implode(',', $disc['competences']) . '</td>';
+        $html .= '<td style="text-align: center; width: 20%">' . \implode(',', $disc['indicators']) . '</td>';
+        $html .= '<td style="text-align: left; width: 30%">';
+
+        foreach ($disc["currentControl"] as $k => $type) {
+            $html .= $type['title'];
+            if ($k !== (\count($disc["currentControl"]) - 1)) {
+                $html .= ',<br>';
+            }
         }
+        $html .= '</td>';
+        $html .= '</tr>';
     }
-    $html .= '</td>';
-    $html .= '</tr>';
 }
 
 $html .= <<<HTML

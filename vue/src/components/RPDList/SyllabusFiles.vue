@@ -3,7 +3,7 @@
     <div v-for="(file,index) in files" :key="index" class="col-3 mb-2">
       <FileButtonInput
           @uploaded="pushFileList($event,index)"
-          :label="(file?.arFiles?.length > 0 ? 'Добавить ' : 'Загрузить ') + file.title"
+          :label="(file?.arFiles?.length > 0 ? 'Добавить ' : 'Загрузить ') + file.titleAccusative"
           :options="{addAction: 'uploadSyllabusFile', params : {id:syllabusID, colName : file.colName} ,disabled: !isEditor}"/>
       <div v-for="(link,i) in file.arFiles" :key="i" class="my-2">
         <a :href="'https://lk.vavt.ru/helpers/getFile.php?fileSSL='+link.path" target="_blank">

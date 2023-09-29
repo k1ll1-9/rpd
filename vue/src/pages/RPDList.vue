@@ -1,18 +1,13 @@
 <template>
   <div v-if="RPDList">
     <template v-if="type === 'plans'">
-      <h2 class="my-2">Список РПД учебного плана</h2>
-      <h2 class="my-4">{{ syllabus.special }} - {{ syllabus.profile }} -
-        {{ (new Date(syllabus.year)).getFullYear() }}</h2>
+      <h2 class="my-2">Образовательная программа</h2>
+      <h2 class="my-4">Направление подготовки: {{ syllabus.special }}</h2>
+      <h2 class="my-4">Профиль: {{ syllabus.profile }}</h2>
+      <h2 class="my-4">Год набора: {{ (new Date(syllabus.year)).getFullYear() }}</h2>
       <h2 class="my-4">Уровень подготовки: {{ syllabus.qualification }}</h2>
       <h2 class="my-4">Форма обучения: {{ syllabus.educationForm }}</h2>
       <SyllabusFiles
-          v-if="!pub"
-          :files="files"
-          :syllabusID="syllabus.syllabusID"
-      />
-      <SyllabusFilesPub
-          v-else
           :files="files"
           :syllabusID="syllabus.syllabusID"
       />
@@ -124,7 +119,6 @@
 
 <script>
 import SyllabusFiles from "@/components/RPDList/SyllabusFiles";
-import SyllabusFilesPub from "@/components/Public/SyllabusFilesPub.vue";
 import Preloader from "@/components/Misc/Preloader";
 import ModalWarning from "@/components/UI/ModalWarning";
 import {Modal} from 'bootstrap'
@@ -134,7 +128,6 @@ export default {
   name: "RPDList",
   components: {
     SyllabusFiles,
-    SyllabusFilesPub,
     ModalWarning,
     Preloader
   },
@@ -147,7 +140,6 @@ export default {
       RPD2import: {},
       type: this.$route.query.type,
       externalKafs: ['Кафедра восточных языков', 'МИФИ', 'РАНХиГС'],
-      pub: process.env.VUE_APP_NODE_ENV === 'public'
     }
   },
   async created() {

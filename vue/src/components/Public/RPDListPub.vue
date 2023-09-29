@@ -1,8 +1,10 @@
 <template>
   <div v-if="RPDList">
     <template v-if="type === 'plans'">
-      <h2 class="my-4">{{ syllabus.special }} - {{ syllabus.profile }} -
-        {{ (new Date(syllabus.year)).getFullYear() }}</h2>
+      <h2 class="my-2">Образовательная программа</h2>
+      <h2 class="my-4">Направление подготовки: {{ syllabus.special }}</h2>
+      <h2 class="my-4">Профиль: {{ syllabus.profile }}</h2>
+      <h2 class="my-4">Год набора: {{ (new Date(syllabus.year)).getFullYear() }}</h2>
       <h2 class="my-4">Уровень подготовки: {{ syllabus.qualification }}</h2>
       <h2 class="my-4">Форма обучения: {{ syllabus.educationForm }}</h2>
       <SyllabusFiles

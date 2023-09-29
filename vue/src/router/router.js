@@ -38,10 +38,6 @@ const routes = [
         path: '/stat',
         component: Statistics
     },
-    {
-        path: '/list-pub',
-        component: RPDListPub
-    },
     list
 ]
 

@@ -24,7 +24,7 @@
           <td>
             <router-link
                 :to="{
-                path : '/list-pub',
+                path : path,
                 query : {
                   type: 'plans',
                   ...syllabus.query

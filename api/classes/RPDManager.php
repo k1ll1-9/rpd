@@ -264,42 +264,50 @@ class RPDManager
             [
                 'colName' => 'pdf_f',
                 'arFiles' => self::getArFiles($res['pdf_f']),
-                'title' => 'Учебный план'
+                'titleNominative' => 'Учебный план',
+                'titleAccusative' => 'Учебный план'
             ],
             [
                 'colName' => 'competencies_f',
                 'arFiles' => self::getArFiles($res['competencies_f']),
-                'title' => 'Компетенцию'
+                'titleNominative' => 'Компетенции',
+                'titleAccusative' => 'Компетенцию'
             ],
             [
                 'colName' => 'schedule_f',
                 'arFiles' => self::getArFiles($res['schedule_f']),
-                'title' => 'График'
+                'titleNominative' => 'Календарный учебный график',
+                'titleAccusative' => 'Календарный учебный график'
             ],
             [
                 'colName' => 'gia_f',
                 'arFiles' => self::getArFiles($res['gia_f']),
-                'title' => 'ГИА'
+                'titleNominative' => 'Программа ГИА',
+                'titleAccusative' => 'Программу ГИА'
             ],
             [
                 'colName' => 'practice_f',
                 'arFiles' => self::getArFiles($res['practice_f']),
-                'title' => 'Практику'
+                'titleNominative' => 'Программы практик',
+                'titleAccusative' => 'Программу практик'
             ],
             [
                 'colName' => 'oop_f',
                 'arFiles' => self::getArFiles($res['oop_f']),
-                'title' => 'ООП'
+                'titleNominative' => 'Общая характеристика ОПОП',
+                'titleAccusative' => 'Общую характеристику ОПОП'
             ],
             [
                 'colName' => 'methodical_f',
                 'arFiles' => self::getArFiles($res['methodical_f']),
-                'title' => 'Методический Документ'
+                'titleNominative' => 'Методический Документы',
+                'titleAccusative' => 'Методический Документ'
             ],
             [
                 'colName' => 'distant_f',
                 'arFiles' => self::getArFiles($res['distant_f']),
-                'title' => 'Дистант и ЭО'
+                'titleNominative' => 'Дистант и ЭО',
+                'titleAccusative' => 'Дистант и ЭО'
             ]
         ];
 

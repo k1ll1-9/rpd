@@ -172,6 +172,7 @@ export default {
       return {
         ...json,
         editable: this.$store.state.user.departmentString.includes(json.kafedra)
+            || (json.kafedra === 'Кафедра программы Торговая политика' && this.$store.state.user.ID===55062)
             || this.$store.state.user.role === 'admin'
             || this.$store.state.user.role === 'editor'
             || process.env.NODE_ENV === 'development',

@@ -172,7 +172,7 @@ export default {
       return {
         ...json,
         editable: this.$store.state.user.departmentString.includes(json.kafedra)
-            || this.$store.state.user.uniID ==='4ac70205-c257-11ed-819f-00155d00f575'
+            // || this.$store.state.user.uniID ==='4ac70205-c257-11ed-819f-00155d00f575'
             || this.$store.state.user.ID===55062
             || this.$store.state.user.role === 'admin'
             || this.$store.state.user.role === 'editor'

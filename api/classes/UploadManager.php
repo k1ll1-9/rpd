@@ -12,6 +12,7 @@ class UploadManager
     {
         $this->data = $data;
         $this->data['semesters'] = \array_keys($this->data['disciplineStructure']);
+        asort($this->data['semesters']);
         $this->data['semestersCount'] = \count($this->data['semesters']);
         self::getDisciplineValue();
         self::getCompetencies();
